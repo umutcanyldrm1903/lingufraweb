@@ -40,10 +40,12 @@ use App\Models\UserExperience;
 use App\Models\User;
 use App\Models\LiveLessonAttendance;
 use App\Models\Message;
+use App\Models\MobileNotificationRead;
 use Carbon\Carbon;
 use Dompdf\Dompdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
@@ -980,6 +982,53 @@ class DashboardController extends Controller {
         $limit = $request->filled('limit') && is_numeric($request->limit) ? (int) $request->limit : 30;
         $limit = max(1, min($limit, 100));
 
+        [$lessonNotifications, $messageNotifications, $paymentNotifications] = $this->buildNotificationCollections($user);
+        $lessonNotifications = $this->applyPersistedNotificationReads($user->id, $lessonNotifications);
+        $paymentNotifications = $this->applyPersistedNotificationReads($user->id, $paymentNotifications);
+
+        $notifications = $lessonNotifications
+            ->merge($messageNotifications)
+            ->merge($paymentNotifications)
+            ->sortByDesc('sort_time')
+            ->take($limit)
+            ->values()
+            ->map(function ($item) {
+                $item = (array) $item;
+                unset($item['sort_time']);
+                return $item;
+            });
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $notifications,
+        ], 200);
+    }
+
+    public function mark_all_notifications_as_read(): JsonResponse
+    {
+        $user = auth()->user();
+
+        Message::query()
+            ->where('receiver_id', $user->id)
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        [$lessonNotifications, , $paymentNotifications] = $this->buildNotificationCollections($user);
+        $this->storePersistedNotificationReads(
+            $user->id,
+            $lessonNotifications
+                ->merge($paymentNotifications)
+                ->filter(fn ($item) => is_array($item) && (($item['unread'] ?? false) === true))
+        );
+
+        return response()->json([
+            'status' => 'success',
+            'message' => __('Notifications marked as read.'),
+        ], 200);
+    }
+
+    private function buildNotificationCollections(User $user): array
+    {
         $lessonNotifications = collect();
         $liveResponse = $this->live_lessons()->getData(true);
         $upcomingLessons = collect(data_get($liveResponse, 'data.upcoming', []))
@@ -1091,23 +1140,77 @@ class DashboardController extends Controller {
                 ];
             });
 
-        $notifications = $lessonNotifications
-            ->merge($messageNotifications)
-            ->merge($paymentNotifications)
-            ->sortByDesc('sort_time')
-            ->take($limit)
-            ->values()
-            ->map(function ($item) {
-                $item = (array) $item;
-                unset($item['sort_time']);
-                return $item;
-            });
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $notifications,
-        ], 200);
+        return [$lessonNotifications, $messageNotifications, $paymentNotifications];
     }
+
+    private function applyPersistedNotificationReads(int $userId, Collection $notifications): Collection
+    {
+        if (!$this->canPersistNotificationReads() || $notifications->isEmpty()) {
+            return $notifications;
+        }
+
+        $keys = $notifications
+            ->pluck('id')
+            ->filter(fn ($id) => is_string($id) && $id !== '')
+            ->values();
+
+        if ($keys->isEmpty()) {
+            return $notifications;
+        }
+
+        $readLookup = MobileNotificationRead::query()
+            ->where('user_id', $userId)
+            ->whereIn('notification_key', $keys)
+            ->pluck('notification_key')
+            ->flip();
+
+        return $notifications->map(function ($item) use ($readLookup) {
+            $item = (array) $item;
+            $key = (string) ($item['id'] ?? '');
+            if ($key !== '' && $readLookup->has($key)) {
+                $item['unread'] = false;
+            }
+            return $item;
+        });
+    }
+
+    private function storePersistedNotificationReads(int $userId, Collection $notifications): void
+    {
+        if (!$this->canPersistNotificationReads() || $notifications->isEmpty()) {
+            return;
+        }
+
+        $now = now();
+        $records = $notifications
+            ->pluck('id')
+            ->filter(fn ($id) => is_string($id) && $id !== '')
+            ->unique()
+            ->map(fn ($id) => [
+                'user_id' => $userId,
+                'notification_key' => $id,
+                'read_at' => $now,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ])
+            ->values()
+            ->all();
+
+        if ($records === []) {
+            return;
+        }
+
+        MobileNotificationRead::query()->upsert(
+            $records,
+            ['user_id', 'notification_key'],
+            ['read_at', 'updated_at']
+        );
+    }
+
+    private function canPersistNotificationReads(): bool
+    {
+        return Schema::hasTable('mobile_notification_reads');
+    }
+
     public function support_requests(Request $request): JsonResponse
     {
         if (!Schema::hasTable('contact_messages')) {

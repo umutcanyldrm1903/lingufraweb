@@ -62,6 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('library', 'library');
         Route::get('guide', 'guide');
         Route::get('notifications', 'notifications');
+        Route::post('notifications/mark-all-read', 'mark_all_notifications_as_read');
         Route::get('support-requests', 'support_requests');
         Route::post('support-requests', 'create_support_request');
         Route::get('reports', 'reports');
