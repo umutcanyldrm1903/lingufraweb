@@ -4,7 +4,37 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'app/**'
+      - 'bootstrap/**'
+      - 'config/**'
+      - 'database/**'
+      - 'lang/**'
+      - 'Modules/**'
+      - 'public/**'
+      - 'resources/**'
+      - 'routes/**'
+      - 'storage/**'
+      - 'tests/**'
+      - '.env.example'
+      - '.gitignore'
+      - '.htaccess'
+      - 'artisan'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vite.config.js'
+      - 'vite-module-loader.js'
+      - 'server.php'
+      - 'tailwind.config.js'
+      - 'version.json'
+      - '.github/workflows/deploy-ftp.yml'
   workflow_dispatch:
+
+concurrency:
+  group: ftp-deploy-main
+  cancel-in-progress: true
 
 jobs:
   deploy:
@@ -20,8 +50,8 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: ${{ secrets.FTP_PORT || 21 }}
-          protocol: ${{ secrets.FTP_PROTOCOL || 'ftps' }}
-          server-dir: ${{ secrets.FTP_TARGET_DIR || '/public_html/' }}
+          protocol: ${{ secrets.FTP_PROTOCOL || 'ftp' }}
+          server-dir: ${{ secrets.FTP_TARGET_DIR || '/' }}
           dangerous-clean-slate: false
           exclude: |
             **/.git*
