@@ -7,6 +7,7 @@ use App\Models\InstructorAvailability;
 use App\Models\CourseReview;
 use App\Models\Course;
 use App\Models\StudentHomework;
+use App\Models\StudentHomeworkSubmission;
 use App\Models\StudentLibraryItem;
 use App\Models\StudentLiveLesson;
 use App\Models\StudentLiveLessonAttendance;
@@ -249,19 +250,27 @@ class InstructorDashboardController extends Controller
 
         $label = function (string $status) use ($isTr): string {
             return match ($status) {
-                'submitted' => $isTr ? 'Gönderildi' : 'Submitted',
-                'archived' => $isTr ? 'Arşivlendi' : 'Archived',
+                'submitted' => $isTr ? 'G?nderildi' : 'Submitted',
+                'reviewed' => $isTr ? '?ncelendi' : 'Reviewed',
+                'needs_revision' => $isTr ? 'Revizyon ?stendi' : 'Revision Requested',
+                'archived' => $isTr ? 'Ar?ivlendi' : 'Archived',
                 default => $isTr ? 'Bekliyor' : 'Pending',
             };
         };
 
         $map = function (StudentHomework $homework) use ($label): array {
+            $submissionMeta = $homework->submission
+                ? StudentHomeworkSubmission::parseNotePayload($homework->submission->note)
+                : null;
+            $submissionStatus = (string) ($homework->submission?->status ?? '');
+            $effectiveStatus = $submissionStatus !== '' ? $submissionStatus : (string) ($homework->status ?? 'open');
+
             return [
                 'id' => (int) $homework->id,
                 'title' => (string) ($homework->title ?? ''),
                 'description' => (string) ($homework->description ?? ''),
-                'status' => (string) ($homework->status ?? 'open'),
-                'status_label' => $label((string) ($homework->status ?? 'open')),
+                'status' => $effectiveStatus,
+                'status_label' => $label($effectiveStatus),
                 'due_at' => optional($homework->due_at)->toDateTimeString(),
                 'attachment_name' => (string) ($homework->attachment_name ?? ''),
                 'attachment_path' => (string) ($homework->attachment_path ?? ''),
@@ -273,6 +282,9 @@ class InstructorDashboardController extends Controller
                     'submission_path' => (string) ($homework->submission->submission_path ?? ''),
                     'submitted_at' => optional($homework->submission->submitted_at)->toDateTimeString(),
                     'note' => (string) ($homework->submission->note ?? ''),
+                    'student_note' => (string) ($submissionMeta['student_note'] ?? ''),
+                    'instructor_note' => (string) ($submissionMeta['instructor_note'] ?? ''),
+                    'reviewed_at' => optional($submissionMeta['reviewed_at'] ?? null)->toDateTimeString(),
                 ] : null,
             ];
         };
@@ -402,6 +414,55 @@ class InstructorDashboardController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Homework archived.',
+        ], 200);
+    }
+
+    public function reviewHomework(Request $request, StudentHomework $homework): JsonResponse
+    {
+        if ((int) $homework->instructor_id !== (int) auth()->id()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'This homework does not belong to you.',
+            ], 403);
+        }
+
+        $submission = $homework->submission;
+        if (!$submission) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No submission found for this homework.',
+            ], 404);
+        }
+
+        $validated = $request->validate([
+            'status' => ['required', Rule::in(['submitted', 'reviewed', 'needs_revision'])],
+            'instructor_note' => ['nullable', 'string'],
+        ]);
+
+        $existingNotePayload = StudentHomeworkSubmission::parseNotePayload($submission->note);
+        $reviewedAt = in_array($validated['status'], ['reviewed', 'needs_revision'], true)
+            ? now()
+            : null;
+
+        $submission->status = (string) $validated['status'];
+        $submission->note = StudentHomeworkSubmission::buildNotePayload(
+            $existingNotePayload['student_note'] ?? '',
+            $validated['instructor_note'] ?? $existingNotePayload['instructor_note'] ?? '',
+            $reviewedAt,
+        );
+        $submission->save();
+
+        $submissionMeta = StudentHomeworkSubmission::parseNotePayload($submission->note);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Homework review updated.',
+            'data' => [
+                'status' => (string) $submission->status,
+                'student_note' => (string) ($submissionMeta['student_note'] ?? ''),
+                'instructor_note' => (string) ($submissionMeta['instructor_note'] ?? ''),
+                'reviewed_at' => optional($submissionMeta['reviewed_at'] ?? null)->toDateTimeString(),
+            ],
         ], 200);
     }
 

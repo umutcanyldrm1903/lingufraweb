@@ -7,6 +7,7 @@ use App\Models\StudentHomework;
 use App\Models\StudentHomeworkSubmission;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class StudentHomeworkController extends Controller
@@ -39,14 +40,24 @@ class StudentHomeworkController extends Controller
             ]);
         }
 
+        $existingSubmission = $homework->submission()
+            ->where('student_id', auth()->id())
+            ->first();
+
         $validated = $request->validate([
-            'submission' => ['required', 'file', 'max:10240'],
+            'submission' => [Rule::requiredIf($existingSubmission === null), 'nullable', 'file', 'max:10240'],
             'note' => ['nullable', 'string'],
         ]);
 
-        $file = $request->file('submission');
-        $fileName = $file->getClientOriginalName();
-        $filePath = file_upload($file, 'uploads/student-homeworks/submissions/');
+        $filePath = $existingSubmission?->submission_path;
+        $fileName = $existingSubmission?->submission_name;
+        if ($request->hasFile('submission')) {
+            $file = $request->file('submission');
+            $fileName = $file->getClientOriginalName();
+            $filePath = file_upload($file, 'uploads/student-homeworks/submissions/');
+        }
+
+        $existingNotePayload = StudentHomeworkSubmission::parseNotePayload($existingSubmission?->note);
 
         StudentHomeworkSubmission::updateOrCreate(
             [
@@ -56,7 +67,11 @@ class StudentHomeworkController extends Controller
             [
                 'submission_path' => $filePath,
                 'submission_name' => $fileName,
-                'note' => $validated['note'] ?? null,
+                'note' => StudentHomeworkSubmission::buildNotePayload(
+                    $validated['note'] ?? $existingNotePayload['student_note'] ?? '',
+                    $existingNotePayload['instructor_note'] ?? '',
+                    $existingNotePayload['reviewed_at'] ?? null,
+                ),
                 'submitted_at' => now(),
                 'status' => 'submitted',
             ]

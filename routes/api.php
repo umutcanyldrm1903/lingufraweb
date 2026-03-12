@@ -58,6 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('quiz-attempts', 'quiz_attempts');
         Route::get('quiz-attempts/{id}', 'show_quiz_attempt')->where('id', '[a-zA-Z0-9-_]+');
         Route::get('homeworks', 'homeworks');
+        Route::post('homeworks/{homework}/submit', 'submit_homework')->whereNumber('homework');
         Route::get('guide', 'guide');
         Route::get('notifications', 'notifications');
         Route::get('support-requests', 'support_requests');
@@ -95,6 +96,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('homeworks', 'storeHomework');
         Route::put('homeworks/{homework}', 'updateHomework')->whereNumber('homework');
         Route::post('homeworks/{homework}/archive', 'archiveHomework')->whereNumber('homework');
+        Route::put('homeworks/{homework}/review', 'reviewHomework')->whereNumber('homework');
         Route::get('library', 'library');
         Route::post('library', 'storeLibrary');
         Route::put('library/{item}', 'updateLibrary')->whereNumber('item');
