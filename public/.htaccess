@@ -1,0 +1,29 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_headers.c>
+        # Flutter Web (CanvasKit/WASM) may fetch images via XHR; without CORS headers the browser
+        # blocks cross-origin image requests (statusCode: 0 / Same-Origin Policy).
+        <FilesMatch "\.(png|jpe?g|gif|webp|svg)$">
+            Header set Access-Control-Allow-Origin "*"
+        </FilesMatch>
+    </IfModule>
+
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L,R=301]
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
