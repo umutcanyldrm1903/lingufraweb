@@ -34,6 +34,7 @@ use App\Models\StudentLiveLesson;
 use App\Models\StudentLiveLessonAttendance;
 use App\Models\StudentHomework;
 use App\Models\StudentHomeworkSubmission;
+use App\Models\StudentLibraryItem;
 use App\Models\UserEducation;
 use App\Models\UserExperience;
 use App\Models\User;
@@ -885,6 +886,59 @@ class DashboardController extends Controller {
             ],
         ], 200);
     }
+
+    public function library(Request $request): JsonResponse
+    {
+        $studentId = auth()->id();
+        $selectedCategory = trim((string) $request->query('category', ''));
+
+        $items = StudentLibraryItem::query()
+            ->with('instructor:id,name')
+            ->where('student_id', $studentId)
+            ->orderByDesc('id')
+            ->get();
+
+        $categories = $items
+            ->pluck('category')
+            ->filter()
+            ->unique()
+            ->values()
+            ->map(fn ($category) => [
+                'name' => (string) $category,
+                'slug' => Str::slug((string) $category),
+            ]);
+
+        $filteredItems = $selectedCategory !== ''
+            ? $items->filter(function (StudentLibraryItem $item) use ($selectedCategory) {
+                $category = (string) ($item->category ?? '');
+                return $category === $selectedCategory || Str::slug($category) === $selectedCategory;
+            })->values()
+            : $items;
+
+        $mappedItems = $filteredItems->map(function (StudentLibraryItem $item) {
+            return [
+                'id' => (int) $item->id,
+                'category' => (string) ($item->category ?? ''),
+                'title' => (string) ($item->title ?? ''),
+                'description' => (string) ($item->description ?? ''),
+                'file_name' => (string) ($item->file_name ?? ''),
+                'file_type' => (string) ($item->file_type ?? ''),
+                'file_path' => (string) ($item->file_path ?? ''),
+                'instructor_name' => (string) ($item->instructor?->name ?? ''),
+                'created_at' => optional($item->created_at)->toDateTimeString(),
+            ];
+        })->values();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'categories' => $categories,
+                'selected_category' => $selectedCategory,
+                'items' => $mappedItems,
+            ],
+        ], 200);
+    }
+
     public function guide(Request $request): JsonResponse
     {
         $language = strtolower((string) $request->query('language', app()->getLocale()));

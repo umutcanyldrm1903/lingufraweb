@@ -59,6 +59,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('quiz-attempts/{id}', 'show_quiz_attempt')->where('id', '[a-zA-Z0-9-_]+');
         Route::get('homeworks', 'homeworks');
         Route::post('homeworks/{homework}/submit', 'submit_homework')->whereNumber('homework');
+        Route::get('library', 'library');
         Route::get('guide', 'guide');
         Route::get('notifications', 'notifications');
         Route::get('support-requests', 'support_requests');
