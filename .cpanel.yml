@@ -1,0 +1,14 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/lingufra/public_html
+    - /bin/mkdir -p "$DEPLOYPATH"
+    - /usr/bin/rsync -a --exclude=".git" --exclude=".github" --exclude=".env" --exclude="node_modules" --exclude="vendor" ./ "$DEPLOYPATH/"
+    - /bin/mkdir -p "$DEPLOYPATH/storage/framework/cache" "$DEPLOYPATH/storage/framework/sessions" "$DEPLOYPATH/storage/framework/views" "$DEPLOYPATH/storage/logs" "$DEPLOYPATH/bootstrap/cache"
+    - if [ -x /opt/cpanel/composer/bin/composer ]; then COMPOSER_BIN=/opt/cpanel/composer/bin/composer; elif command -v composer >/dev/null 2>&1; then COMPOSER_BIN=$(command -v composer); else COMPOSER_BIN=""; fi
+    - if [ -n "$COMPOSER_BIN" ] && [ -f "$DEPLOYPATH/composer.json" ]; then "$COMPOSER_BIN" install --no-dev --prefer-dist --optimize-autoloader --working-dir="$DEPLOYPATH"; fi
+    - if command -v php >/dev/null 2>&1; then PHP_BIN=$(command -v php); else PHP_BIN=/usr/local/bin/php; fi
+    - if [ -f "$DEPLOYPATH/artisan" ]; then "$PHP_BIN" "$DEPLOYPATH/artisan" optimize:clear; fi
+    - if [ -f "$DEPLOYPATH/artisan" ]; then "$PHP_BIN" "$DEPLOYPATH/artisan" config:cache; fi
+    - if [ -f "$DEPLOYPATH/artisan" ]; then "$PHP_BIN" "$DEPLOYPATH/artisan" route:cache; fi
+    - if [ -f "$DEPLOYPATH/artisan" ]; then "$PHP_BIN" "$DEPLOYPATH/artisan" view:cache; fi
