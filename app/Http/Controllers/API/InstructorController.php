@@ -445,6 +445,7 @@ class InstructorController extends Controller
             if (!$plan || ($plan->lessons_remaining ?? 0) <= 0) {
                 return response()->json([
                     'status' => 'error',
+                    'error_code' => 'no_credits',
                     'message' => 'Krediniz kalmadi. Derse katilmak icin paket satin alin.',
                 ], 422);
             }
@@ -541,6 +542,9 @@ class InstructorController extends Controller
 
             return response()->json([
                 'status' => 'error',
+                'error_code' => str_contains($e->getMessage(), 'not connected')
+                    ? 'zoom_not_connected'
+                    : 'zoom_meeting_create_failed',
                 'message' => $errorMessage,
             ], 422);
         }
