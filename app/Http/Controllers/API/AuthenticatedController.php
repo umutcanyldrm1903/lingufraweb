@@ -4,10 +4,12 @@ namespace App\Http\Controllers\API;
 
 use App\Models\User;
 use App\Enums\UserStatus;
+use Throwable;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Services\MailSenderService;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
@@ -46,7 +48,8 @@ class AuthenticatedController extends Controller {
                 $role = 'student';
             }
 
-            // Create the user
+            // Mobile API has no verification flow. Verify immediately so the
+            // account can be used right after registration.
             $user = User::create([
                 'role'               => $role,
                 'name'               => $request->name,
@@ -54,7 +57,8 @@ class AuthenticatedController extends Controller {
                 'status'             => 'active',
                 'is_banned'          => 'no',
                 'password'           => Hash::make($request->password),
-                'verification_token' => Str::random(100),
+                'verification_token' => null,
+                'email_verified_at'  => now(),
             ]);
 
             $user->phone = $request->phone;
@@ -67,31 +71,52 @@ class AuthenticatedController extends Controller {
                 );
             }
 
-            if (!(new MailSenderService)->sendVerifyMailToUserFromTrait('single_user', $user)) {
-                throw new \Exception('Failed to send email.');
-            }
             DB::commit();
 
             $google_tagmanager_status = Setting::where('key', 'google_tagmanager_status')->value('value');
             $marketing_setting_register = MarketingSetting::where('key', 'register')->value('value');
-            if ($user && $google_tagmanager_status == 'active' && $marketing_setting_register) {
-                $register_user = [
+            if ($google_tagmanager_status == 'active' && $marketing_setting_register) {
+                session()->put('registerUser', [
                     'name'  => $user->name,
                     'email' => $user->email,
-                ];
-                session()->put('registerUser', $register_user);
+                ]);
             }
+
+            try {
+                (new MailSenderService)->sendVerifyMailToUserFromTrait('single_user', $user);
+            } catch (Throwable $mailException) {
+                Log::warning('Mobile register welcome mail failed', [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'error' => $mailException->getMessage(),
+                ]);
+            }
+
+            $bearer_token = $user->createToken('mobile-app', ['*'])->plainTextToken;
 
             return response()->json([
                 'status'  => 'success',
-                'message' => 'A varification link has been send to your mail, please verify and enjoy our service',
+                'message' => 'Registered successfully.',
+                'bearer_token' => $bearer_token,
+                'user_id' => $user->id,
+                'role' => $user->role,
+                'data' => [
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role,
+                ],
             ], 201);
 
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
             DB::rollBack();
+            Log::error('Mobile registration failed', [
+                'email' => $request->email,
+                'error' => $e->getMessage(),
+            ]);
+
             return response()->json([
                 'status'  => 'error',
-                'message' => 'Registration failed due to an issue with sending the verification email. Please try again later.',
+                'message' => 'Registration failed. Please try again.',
             ], 500);
 
         }
@@ -185,10 +210,6 @@ class AuthenticatedController extends Controller {
             return response()->json(['status' => 'error', 'message' => 'Your account has been banned'], 403);
         }
 
-        // Check if email is verified
-        if (!$user->email_verified_at) {
-            return response()->json(['status' => 'error', 'message' => 'Please verify your email'], 403);
-        }
         //delete all extra token
         PersonalAccessToken::where('tokenable_id', $user->id)->where('tokenable_type', 'App\Models\User')->where('name', 'extra-token')->delete();
 
