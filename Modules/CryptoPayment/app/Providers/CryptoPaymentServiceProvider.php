@@ -30,6 +30,11 @@ class CryptoPaymentServiceProvider extends ServiceProvider
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->moduleName, 'database/migrations'));
 
+        // Payment config tables are not guaranteed during test bootstrap.
+        if (app()->runningUnitTests()) {
+            return;
+        }
+
         try {
             $configPath = module_path('CryptoPayment', 'config/coingate.php');
             $this->overrideConfigFromFile($configPath, 'coingate');
@@ -43,8 +48,8 @@ class CryptoPaymentServiceProvider extends ServiceProvider
             });
 
             $setConfigData = [
-                'crypto.sandbox'          => $cryptoData->crypto_sandbox,
-                'crypto.crypto_token'    => $cryptoData->crypto_token,
+                'crypto.sandbox'       => $cryptoData->crypto_sandbox ?? null,
+                'crypto.crypto_token'  => $cryptoData->crypto_token ?? null,
             ];
 
             config($setConfigData);

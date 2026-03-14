@@ -13,6 +13,10 @@ class SetupMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
+        if (app()->environment('testing')) {
+            return $next($request);
+        }
+
         if (empty(config('app.key'))) {
             Artisan::call('key:generate');
             Artisan::call('config:cache');

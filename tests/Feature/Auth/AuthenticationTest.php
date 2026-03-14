@@ -22,25 +22,26 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->post('/login', [
+        $response = $this->post('/user-login', [
             'email' => $user->email,
             'password' => 'password',
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(RouteServiceProvider::HOME);
+        $response->assertRedirect(RouteServiceProvider::STUDENT_DASHBORD);
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void
     {
         $user = User::factory()->create();
 
-        $this->post('/login', [
+        $response = $this->from('/login')->post('/user-login', [
             'email' => $user->email,
             'password' => 'wrong-password',
         ]);
 
         $this->assertGuest();
+        $response->assertSessionHasErrors('email');
     }
 
     public function test_users_can_logout(): void
@@ -50,6 +51,6 @@ class AuthenticationTest extends TestCase
         $response = $this->actingAs($user)->post('/logout');
 
         $this->assertGuest();
-        $response->assertRedirect('/');
+        $response->assertRedirect('/login');
     }
 }

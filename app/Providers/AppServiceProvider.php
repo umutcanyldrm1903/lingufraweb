@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Enums\ThemeList;
+use App\Support\SettingBag;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
@@ -26,24 +27,35 @@ class AppServiceProvider extends ServiceProvider {
      * Bootstrap any application services.
      */
     public function boot(): void {
-        try {
-            /** Cache settings */
-            $setting = Cache::rememberForever('setting', fn() => (object) Setting::pluck('value', 'key')->all());
-            $marketing_setting = Cache::rememberForever('marketing_setting', fn() => (object) MarketingSetting::pluck('value', 'key')->all());
-            $seo_setting = Cache::rememberForever('seo_setting', fn() => (object) SeoSetting::all()->groupBy('page_name')->mapWithKeys(function ($group, $pageName) {
-                return [$pageName => $group->first()];
-            }));
-
-            if ($setting) {
-                set_wasabi_config();
-                set_aws_config();
-            }
-        } catch (\Throwable $th) {
-            info($th);
-            $setting = (object) ['timezone' => config('app.timezone'), 'site_theme' => ThemeList::MAIN->value];
+        if (app()->runningUnitTests()) {
+            $setting = $this->makeSettingBag();
             $marketing_setting = (object) [];
             $seo_setting = (object) [];
+        } else {
+            try {
+                /** Cache settings */
+                $setting = $this->makeSettingBag(
+                    Cache::rememberForever('setting', fn() => Setting::pluck('value', 'key')->all())
+                );
+                $marketing_setting = Cache::rememberForever('marketing_setting', fn() => (object) MarketingSetting::pluck('value', 'key')->all());
+                $seo_setting = Cache::rememberForever('seo_setting', fn() => (object) SeoSetting::all()->groupBy('page_name')->mapWithKeys(function ($group, $pageName) {
+                    return [$pageName => $group->first()];
+                }));
+
+                set_wasabi_config();
+                set_aws_config();
+            } catch (\Throwable $th) {
+                info($th);
+                $setting = $this->makeSettingBag();
+                $marketing_setting = (object) [];
+                $seo_setting = (object) [];
+            }
         }
+
+        // Several blade templates access these values via Cache::get(...).
+        Cache::forever('setting', $setting);
+        Cache::forever('marketing_setting', $marketing_setting);
+        Cache::forever('seo_setting', $seo_setting);
 
         /** Share settings to all views */
         View::composer('*', function ($view) use ($setting, $marketing_setting, $seo_setting) {
@@ -59,8 +71,24 @@ class AppServiceProvider extends ServiceProvider {
         // Use Bootstrap 4 pagination
         Paginator::useBootstrapFour();
 
-        // Define default homepage based on site_theme from setting, with fallback
-        define('DEFAULT_HOMEPAGE', $setting?->site_theme ?? ThemeList::MAIN->value);
+        // Avoid redefining constant during repeated application boots in tests.
+        if (!defined('DEFAULT_HOMEPAGE')) {
+            define('DEFAULT_HOMEPAGE', $setting?->site_theme ?? ThemeList::MAIN->value);
+        }
+    }
+
+    private function makeSettingBag(array $attributes = []): object
+    {
+        $defaults = [
+            'timezone' => config('app.timezone'),
+            'site_theme' => ThemeList::MAIN->value,
+            'app_name' => config('app.name', 'LinguFranca'),
+            'recaptcha_status' => 'inactive',
+            'recaptcha_site_key' => null,
+            'recaptcha_secret_key' => null,
+        ];
+
+        return new SettingBag(array_merge($defaults, $attributes));
     }
 
     protected function registerBladeDirectives() {

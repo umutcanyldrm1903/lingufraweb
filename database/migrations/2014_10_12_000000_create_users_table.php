@@ -22,7 +22,9 @@ return new class extends Migration
             $table->timestamps();
         });
         
-        DB::statement('ALTER TABLE users AUTO_INCREMENT = 1000;');
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement('ALTER TABLE users AUTO_INCREMENT = 1000;');
+        }
     }
 
     /**

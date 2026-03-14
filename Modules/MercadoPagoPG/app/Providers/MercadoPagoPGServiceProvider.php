@@ -28,8 +28,13 @@ class MercadoPagoPGServiceProvider extends ServiceProvider
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->moduleName, 'database/migrations'));
 
+        // Payment config tables are not guaranteed during test bootstrap.
+        if (app()->runningUnitTests()) {
+            return;
+        }
+
         try {
-            $bkashData = Cache::rememberForever('mercadopagoConfig', function () {
+            Cache::rememberForever('mercadopagoConfig', function () {
                 return (object) MercadoPagoPG::pluck('value', 'key')->toArray();
             });
         } catch (Exception $e) {

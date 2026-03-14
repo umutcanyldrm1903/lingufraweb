@@ -31,6 +31,11 @@ class BkashPGServiceProvider extends ServiceProvider
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->moduleName, 'database/migrations'));
 
+        // Payment config tables are not guaranteed during test bootstrap.
+        if (app()->runningUnitTests()) {
+            return;
+        }
+
         try {
             $configPath = module_path('BkashPG', 'config/bkash.php');
             $this->overrideConfigFromFile($configPath, 'bkash');
@@ -44,11 +49,11 @@ class BkashPGServiceProvider extends ServiceProvider
             });
 
             $setConfigData = [
-                'bkash.sandbox'          => $bkashData->bkash_sandbox,
-                'bkash.bkash_app_key'    => $bkashData->bkash_key,
-                'bkash.bkash_app_secret' => $bkashData->bkash_secret,
-                'bkash.bkash_username'   => $bkashData->bkash_username,
-                'bkash.bkash_password'   => $bkashData->bkash_password,
+                'bkash.sandbox'          => $bkashData->bkash_sandbox ?? null,
+                'bkash.bkash_app_key'    => $bkashData->bkash_key ?? null,
+                'bkash.bkash_app_secret' => $bkashData->bkash_secret ?? null,
+                'bkash.bkash_username'   => $bkashData->bkash_username ?? null,
+                'bkash.bkash_password'   => $bkashData->bkash_password ?? null,
             ];
 
             config($setConfigData);
