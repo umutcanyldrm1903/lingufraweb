@@ -1,6 +1,6 @@
 @extends('frontend.layouts.master')
 
-@section('meta_title', $seo_setting['home_page']['seo_title'])
+@section('meta_title', (blank(data_get($seo_setting, 'home_page.seo_title')) || strcasecmp((string) data_get($seo_setting, 'home_page.seo_title'), 'SkillGro') === 0) ? ($setting->app_name ?? config('app.name')) : data_get($seo_setting, 'home_page.seo_title'))
 @section('meta_description', $seo_setting['home_page']['seo_description'])
 @section('meta_keywords', '')
 
