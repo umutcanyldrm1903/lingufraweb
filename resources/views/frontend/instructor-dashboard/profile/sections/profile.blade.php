@@ -6,6 +6,7 @@
         $lastName = $profile['last_name'] ?? ($nameParts[1] ?? '');
         $videoPath = $profile['intro_video'] ?? '';
         $videoUrl = $videoPath ? (str_starts_with($videoPath, 'http') ? $videoPath : asset($videoPath)) : null;
+        $introVideoMaxMb = (int) ceil(((int) config('course.instructor_intro_video_max_kb', 204800)) / 1024);
         $canTeach = (array) ($profile['can_teach'] ?? []);
         $certificates = (array) ($profile['certificates'] ?? []);
         $teachingMaterials = (array) ($profile['teaching_materials'] ?? []);
@@ -100,6 +101,7 @@
                 <div>
                     <h4>{{ __('Video') }}</h4>
                     <p>{{ __('Please upload a video so your video can be seen on your profile page') }}</p>
+                    <p>{{ __('Supported formats: MP4, WebM, OGG, MOV. Maximum :size MB.', ['size' => $introVideoMaxMb]) }}</p>
                 </div>
             </div>
             <label class="sp-profile-upload" for="intro_video">

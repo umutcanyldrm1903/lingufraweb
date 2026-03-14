@@ -20,13 +20,15 @@ class StudentProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $introVideoMaxKb = (int) config('course.instructor_intro_video_max_kb', 204800);
+
         return [
             'name' => ['required', 'string', 'max:50'],
             'email' => ['required', 'email', 'max:255'],
             'avatar' => ['nullable', 'image', 'max:2000'],
             'image' => ['nullable', 'image', 'max:2000'],
             'cover' => ['nullable', 'image', 'max:2000'],
-            'intro_video' => ['nullable', 'file', 'mimes:mp4,webm,ogg,mov', 'max:51200'],
+            'intro_video' => ['nullable', 'file', 'mimes:mp4,webm,ogg,mov', 'max:' . $introVideoMaxKb],
             'phone' => ['nullable', 'string', 'max:30'],
             'age' => ['nullable', 'integer', 'max:150'],
             'gender' => ['nullable', 'in:male,female'],
@@ -76,6 +78,8 @@ class StudentProfileUpdateRequest extends FormRequest
     // custom validation error messages
     function messages(): array
     {
+        $introVideoMaxMb = (int) ceil(((int) config('course.instructor_intro_video_max_kb', 204800)) / 1024);
+
         return [
             'name.required' => __('The name field is required'),
             'name.string' => __('The name must be a string'),
@@ -87,6 +91,7 @@ class StudentProfileUpdateRequest extends FormRequest
             'image.max' => __('The image may not be greater than 2000 kilobytes'),
             'cover.image' => __('The cover must be an image'),
             'cover.max' => __('The cover may not be greater than 2000 kilobytes'),
+            'intro_video.max' => __('The intro video may not be greater than :size MB.', ['size' => $introVideoMaxMb]),
             'phone.string' => __('The phone must be a string'),
             'phone.max' => __('The phone may not be greater than 30 characters'),
             'age.integer' => __('The age must be an integer'),

@@ -1480,6 +1480,9 @@ class DashboardController extends Controller {
     }
 
     public function update_profile(Request $request): JsonResponse {
+        $introVideoMaxKb = (int) config('course.instructor_intro_video_max_kb', 204800);
+        $introVideoMaxMb = (int) ceil($introVideoMaxKb / 1024);
+
         $validator = Validator::make($request->all(), [
             'name'  => ['required', 'string', 'max:50'],
             'email' => ['required', 'email', 'max:255'],
@@ -1509,7 +1512,7 @@ class DashboardController extends Controller {
             'work_type' => ['nullable', 'string', 'max:100'],
             'teaching_materials' => ['nullable', 'array'],
             'teaching_materials.*' => ['string', 'max:100'],
-            'intro_video' => ['nullable', 'file', 'mimes:mp4,webm,ogg,mov', 'max:51200'],
+            'intro_video' => ['nullable', 'file', 'mimes:mp4,webm,ogg,mov', 'max:' . $introVideoMaxKb],
         ], [
             'name.required'  => 'The name field is required',
             'name.string'    => 'The name must be a string',
@@ -1517,6 +1520,7 @@ class DashboardController extends Controller {
             'email.required' => 'The email field is required',
             'email.email'    => 'The email must be a valid email address',
             'email.max'      => 'The email may not be greater than 255 characters',
+            'intro_video.max' => "The intro video may not be greater than {$introVideoMaxMb} MB.",
             'phone.string'   => 'The phone must be a string',
             'phone.max'      => 'The phone may not be greater than 30 characters',
             'age.integer'    => 'The age must be an integer',
