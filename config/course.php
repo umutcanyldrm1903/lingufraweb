@@ -1,7 +1,7 @@
 <?php
 
 return [
-  'instructor_intro_video_max_kb' => (int) env('INSTRUCTOR_INTRO_VIDEO_MAX_KB', 204800),
+  'instructor_intro_video_max_kb' => (int) env('INSTRUCTOR_INTRO_VIDEO_MAX_KB', 512000),
 
   // supported file sources
   'storage_source' => [
