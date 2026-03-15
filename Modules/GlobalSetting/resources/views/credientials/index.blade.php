@@ -42,6 +42,7 @@
                                     @include('globalsetting::credientials.sections.google-analytic')
                                     @include('globalsetting::credientials.sections.wasabi')
                                     @include('globalsetting::credientials.sections.aws')
+                                    @include('globalsetting::credientials.sections.outreach-providers')
                                 </div>
                             </div>
                         </div>

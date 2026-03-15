@@ -424,6 +424,42 @@ class GlobalSettingController extends Controller {
         return redirect()->back()->with($notification);
     }
 
+    public function update_outreach_providers(Request $request) {
+        checkAdminHasPermissionAndThrowException('setting.update');
+        $validated = $request->validate([
+            'outreach_openai_api_key' => 'nullable|string',
+            'outreach_openai_model' => 'nullable|string|max:100',
+            'outreach_openai_base_url' => 'nullable|string|max:255',
+            'outreach_openai_timeout' => 'nullable|integer|min:5|max:300',
+            'outreach_lusha_api_key' => 'nullable|string',
+            'outreach_lusha_api_key_prefix' => 'nullable|string|max:50',
+            'outreach_lusha_base_url' => 'nullable|string|max:255',
+            'outreach_lusha_search_path' => 'nullable|string|max:255',
+            'outreach_lusha_enrich_path' => 'nullable|string|max:255',
+            'outreach_lusha_timeout' => 'nullable|integer|min:5|max:300',
+            'outreach_imap_host' => 'nullable|string|max:255',
+            'outreach_imap_port' => 'nullable|integer|min:1|max:65535',
+            'outreach_imap_encryption' => 'nullable|string|max:20',
+            'outreach_imap_username' => 'nullable|string|max:255',
+            'outreach_imap_password' => 'nullable|string',
+            'outreach_imap_mailbox' => 'nullable|string|max:100',
+            'outreach_imap_search' => 'nullable|string|max:100',
+        ]);
+
+        $validated['outreach_lusha_send_authorization_header'] = $request->boolean('outreach_lusha_send_authorization_header') ? '1' : '0';
+
+        foreach ($validated as $key => $value) {
+            Setting::updateOrCreate(['key' => $key], ['value' => $value ?? '']);
+        }
+
+        $this->put_setting_cache();
+
+        $notification = __('Update Successfully');
+        $notification = ['messege' => $notification, 'alert-type' => 'success'];
+
+        return redirect()->back()->with($notification);
+    }
+
     public function update_google_analytic(Request $request) {
         checkAdminHasPermissionAndThrowException('setting.update');
         $request->validate([

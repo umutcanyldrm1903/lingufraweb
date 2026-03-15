@@ -42,6 +42,12 @@
                 </a>
             </li>
 
+            <li class="{{ Route::is('admin.outreach-campaigns.*') || Route::is('admin.outreach-messages.*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('admin.outreach-campaigns.index') }}"><i class="fas fa-paper-plane"></i>
+                    <span>{{ __('Outreach Bot') }}</span>
+                </a>
+            </li>
+
             @if (Module::isEnabled('ContactMessage'))
                 <li class="{{ Route::is('admin.contact-messages') || Route::is('admin.contact-message') ? 'active' : '' }}">
                     <a class="nav-link" href="{{ route('admin.contact-messages') }}"><i class="fas fa-envelope"></i>

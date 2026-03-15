@@ -30,5 +30,8 @@
     <a class="nav-link" id="aws-tab" data-toggle="tab" href="#aws_tab" role="tab"
         aria-controls="aws-chat" aria-selected="false">{{ __('AWS Cloud Storage') }}</a>
 </li>
-
+<li class="nav-item">
+    <a class="nav-link" id="outreach-providers-tab" data-toggle="tab" href="#outreach_provider_tab" role="tab"
+        aria-controls="outreach-provider" aria-selected="false">{{ __('Outreach Providers') }}</a>
+</li>
 

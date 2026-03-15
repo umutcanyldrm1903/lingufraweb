@@ -39,6 +39,7 @@ Route::group(['as' => 'admin.', 'prefix' => 'admin', 'middleware' => ['auth:admi
         Route::put('update-pusher', 'update_pusher')->name('update-pusher');
         Route::put('update-wasabi-cloud', 'update_wasabi_cloud')->name('update-wasabi-cloud');
         Route::put('update-aws-cloud', 'update_aws_cloud')->name('update-aws-cloud');
+        Route::put('update-outreach-providers', 'update_outreach_providers')->name('update-outreach-providers');
 
         Route::get('cache-clear', 'cache_clear')->name('cache-clear');
         Route::post('cache-clear', 'cache_clear_confirm')->name('cache-clear-confirm');

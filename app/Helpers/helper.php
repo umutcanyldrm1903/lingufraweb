@@ -760,6 +760,8 @@ if (!function_exists('adminSearchRouteList')) {
             (object) ['name' => __('Subscriber Send bulk mail'), 'route' => route('admin.send-mail-to-newsletter'), 'permission' => 'newsletter.view'],
             (object) ['name' => __('Testimonial'), 'route' => route('admin.testimonial.index'), 'permission' => 'testimonial.view'],
             (object) ['name' => __('Contact Messages'), 'route' => route('admin.contact-messages'), 'permission' => 'contect.message.view'],
+            (object) ['name' => __('Outreach Bot'), 'route' => route('admin.outreach-campaigns.index'), 'permission' => ''],
+            (object) ['name' => __('Outreach Providers'), 'route' => route('admin.crediential-setting'), 'permission' => 'setting.view', 'tab' => 'outreach_provider_tab'],
             (object) ['name' => __('General Settings'), 'route' => route('admin.general-setting'), 'permission' => 'setting.view', 'tab' => 'general_tab'],
             (object) ['name' => __('Logo & Favicon'), 'route' => route('admin.general-setting'), 'permission' => 'setting.view', 'tab' => 'logo_favicon_tab'],
             (object) ['name' => __('Video Watermark'), 'route' => route('admin.general-setting'), 'permission' => 'setting.view', 'tab' => 'watermark_tab'],

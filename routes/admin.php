@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\RolesController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\OutreachCampaignController;
 use App\Http\Controllers\Admin\StudentPlanController;
 use App\Http\Controllers\Admin\TrialLessonRequestController;
 use App\Http\Controllers\Global\CloudStorageController;
@@ -33,6 +34,18 @@ Route::group(['as' => 'admin.', 'prefix' => 'admin'], function () {
         Route::resource('student-plans', StudentPlanController::class)->except('show');
         Route::get('trial-lesson-requests', [TrialLessonRequestController::class, 'index'])->name('trial-lesson-requests.index');
         Route::put('trial-lesson-requests/{trialLessonRequest}/status', [TrialLessonRequestController::class, 'updateStatus'])->name('trial-lesson-requests.update-status');
+        Route::resource('outreach-campaigns', OutreachCampaignController::class)
+            ->parameters(['outreach-campaigns' => 'outreachCampaign']);
+        Route::post('outreach-campaigns/{outreachCampaign}/import-lusha', [OutreachCampaignController::class, 'importLusha'])->name('outreach-campaigns.import-lusha');
+        Route::post('outreach-campaigns/{outreachCampaign}/enrich-lusha', [OutreachCampaignController::class, 'enrichLusha'])->name('outreach-campaigns.enrich-lusha');
+        Route::post('outreach-campaigns/{outreachCampaign}/generate', [OutreachCampaignController::class, 'generate'])->name('outreach-campaigns.generate');
+        Route::post('outreach-campaigns/{outreachCampaign}/approve', [OutreachCampaignController::class, 'approve'])->name('outreach-campaigns.approve');
+        Route::post('outreach-campaigns/{outreachCampaign}/send', [OutreachCampaignController::class, 'send'])->name('outreach-campaigns.send');
+        Route::post('outreach-campaigns/{outreachCampaign}/sync-replies', [OutreachCampaignController::class, 'syncReplies'])->name('outreach-campaigns.sync-replies');
+        Route::get('outreach-messages/{outreachMessage}/edit', [OutreachCampaignController::class, 'editMessage'])->name('outreach-messages.edit');
+        Route::put('outreach-messages/{outreachMessage}', [OutreachCampaignController::class, 'updateMessage'])->name('outreach-messages.update');
+        Route::post('outreach-messages/{outreachMessage}/approve', [OutreachCampaignController::class, 'approveMessage'])->name('outreach-messages.approve');
+        Route::post('outreach-messages/{outreachMessage}/send', [OutreachCampaignController::class, 'sendMessage'])->name('outreach-messages.send');
 
         Route::controller(AdminProfileController::class)->group(function () {
             Route::get('edit-profile', 'edit_profile')->name('edit-profile');

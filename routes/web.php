@@ -39,6 +39,7 @@ use App\Http\Controllers\Frontend\InstructorStudentController;
 use App\Http\Controllers\Frontend\StudentHomeworkController;
 use App\Http\Controllers\Frontend\StudentLibraryController;
 use App\Http\Controllers\Frontend\PlacementTestController;
+use App\Http\Controllers\Outreach\OutreachUnsubscribeController;
 
 Route::group(['middleware' => 'maintenance.mode'], function () {
 
@@ -52,6 +53,7 @@ Route::group(['middleware' => 'maintenance.mode'], function () {
     Route::get('set-currency', [HomePageController::class, 'setCurrency'])->name('set-currency');
 
     Route::get('/', [HomePageController::class, 'index'])->name('home');
+    Route::get('outreach/unsubscribe/{token}', OutreachUnsubscribeController::class)->name('outreach.unsubscribe');
 
     Route::get('corporate', [CorporateController::class, 'index'])->name('corporate.index');
     Route::get('corporate-form', [CorporateController::class, 'form'])->name('corporate.form');
