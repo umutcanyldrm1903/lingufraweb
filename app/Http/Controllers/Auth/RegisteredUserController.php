@@ -30,6 +30,7 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $setting = Cache::get('setting');
+        $recaptchaActive = data_get($setting, 'recaptcha_status') === 'active';
 
         $request->validate([
             'role' => ['nullable', Rule::in(['student', 'instructor'])],
@@ -41,7 +42,7 @@ class RegisteredUserController extends Controller
 
             'accept_terms' => ['accepted'],
             'marketing_consent' => ['nullable', 'boolean'],
-            'g-recaptcha-response' => $setting->recaptcha_status == 'active' ? ['required', new CustomRecaptcha()] : '',
+            'g-recaptcha-response' => $recaptchaActive ? ['required', new CustomRecaptcha()] : '',
         ], [
             'full_name.required' => __('Name is required'),
             'email.required' => __('Email is required'),
@@ -107,7 +108,10 @@ class RegisteredUserController extends Controller
 
         $settings = cache()->get('setting');
         $marketingSettings = cache()->get('marketing_setting');
-        if ($user && $settings->google_tagmanager_status == 'active' && $marketingSettings->register) {
+        $googleTagEnabled = data_get($settings, 'google_tagmanager_status') === 'active';
+        $registerEventEnabled = (bool) data_get($marketingSettings, 'register', false);
+
+        if ($user && $googleTagEnabled && $registerEventEnabled) {
             $register_user = [
                 'name' => $user->name,
                 'email' => $user->email,
