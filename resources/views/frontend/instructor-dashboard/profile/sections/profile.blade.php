@@ -186,6 +186,17 @@
                 </select>
             </div>
             <div class="form-grp">
+                <label for="age">{{ __('Age') }}</label>
+                <input
+                    id="age"
+                    name="age"
+                    type="number"
+                    min="0"
+                    max="150"
+                    step="1"
+                    value="{{ old('age', $user->age ?? '') }}">
+            </div>
+            <div class="form-grp">
                 <label for="birth_date">{{ __('Birth Date') }}</label>
                 <input id="birth_date" name="birth_date" type="date" value="{{ old('birth_date', $profile['birth_date'] ?? '') }}">
             </div>
