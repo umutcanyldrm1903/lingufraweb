@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Support\CorporateBrandCatalog;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 use Modules\Brand\app\Models\Brand;
@@ -23,7 +24,7 @@ class AboutPageController extends Controller {
         $ourFeatures = $sections->where('name', 'our_features_section')->first();
         $newsletterSection = $sections->where('name', 'newsletter_section')->first();
 
-        $brands = Brand::where('status', 1)->get();
+        $brands = CorporateBrandCatalog::merge(Brand::where('status', 1)->get());
         $reviews = Testimonial::all();
         $faqs = Faq::with('translation')->where('status', 1)->get();
         $faqSection = $sections->where('name', 'faq_section')->first();

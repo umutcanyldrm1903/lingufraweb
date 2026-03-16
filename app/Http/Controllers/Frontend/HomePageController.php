@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\UserEducation;
 use App\Models\UserExperience;
 use App\Rules\CustomRecaptcha;
+use App\Support\CorporateBrandCatalog;
 use App\Traits\MailSenderTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -71,7 +72,7 @@ class HomePageController extends Controller {
             ->where('show_at_trending', 1)
             ->get();
 
-        $brands = Brand::where('status', 1)->get();
+        $brands = CorporateBrandCatalog::merge(Brand::where('status', 1)->get());
 
         $featuredCourse = FeaturedCourseSection::first();
 

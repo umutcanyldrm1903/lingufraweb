@@ -49,6 +49,7 @@ use Modules\SiteAppearance\app\Models\SectionSetting;
 use Modules\SocialLink\app\Models\SocialLink;
 use Modules\Testimonial\app\Models\Testimonial;
 use App\Models\User;
+use App\Support\CorporateBrandCatalog;
 
 class FrontendController extends Controller {
     public function settings(): JsonResponse {
@@ -458,16 +459,16 @@ class FrontendController extends Controller {
             })
             ->values();
 
-        $brands = Brand::where('status', 1)
-            ->get(['name', 'image', 'url'])
-            ->map(function ($brand) {
-                return [
-                    'name' => (string) ($brand->name ?? ''),
-                    'image' => $brand->image ? asset($brand->image) : null,
-                    'url' => (string) ($brand->url ?? ''),
-                ];
-            })
-            ->values();
+        $brands = CorporateBrandCatalog::merge(
+            Brand::where('status', 1)->get(['name', 'image', 'url']),
+            true
+        )->map(function ($brand) {
+            return [
+                'name' => (string) ($brand->name ?? ''),
+                'image' => $brand->image ?: null,
+                'url' => (string) ($brand->url ?? ''),
+            ];
+        })->values();
 
         $testimonials = Testimonial::active()
             ->with('translations')
@@ -555,16 +556,16 @@ class FrontendController extends Controller {
             })
             ->values();
 
-        $brands = Brand::where('status', 1)
-            ->get(['name', 'image', 'url'])
-            ->map(function ($brand) {
-                return [
-                    'name' => (string) ($brand->name ?? ''),
-                    'image' => $brand->image ? asset($brand->image) : null,
-                    'url' => (string) ($brand->url ?? ''),
-                ];
-            })
-            ->values();
+        $brands = CorporateBrandCatalog::merge(
+            Brand::where('status', 1)->get(['name', 'image', 'url']),
+            true
+        )->map(function ($brand) {
+            return [
+                'name' => (string) ($brand->name ?? ''),
+                'image' => $brand->image ?: null,
+                'url' => (string) ($brand->url ?? ''),
+            ];
+        })->values();
 
         $featuredCourse = FeaturedCourseSection::first();
 
