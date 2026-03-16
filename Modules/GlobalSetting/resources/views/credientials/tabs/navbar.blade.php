@@ -32,6 +32,5 @@
 </li>
 <li class="nav-item">
     <a class="nav-link" id="outreach-providers-tab" data-toggle="tab" href="#outreach_provider_tab" role="tab"
-        aria-controls="outreach-provider" aria-selected="false">{{ __('Outreach Providers') }}</a>
+        aria-controls="outreach-provider" aria-selected="false">Outreach Sağlayıcıları</a>
 </li>
-

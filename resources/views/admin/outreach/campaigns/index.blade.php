@@ -1,6 +1,6 @@
 @extends('admin.master_layout')
 @section('title')
-    <title>{{ __('Outreach Bot') }}</title>
+    <title>Outreach Bot</title>
 @endsection
 
 @section('admin-content')
@@ -22,21 +22,30 @@
                     <div class="card-body">
                         <form action="{{ route('admin.outreach-campaigns.index') }}" method="GET" class="row">
                             <div class="col-md-5 form-group">
-                                <input type="text" class="form-control" name="keyword" value="{{ request('keyword') }}" placeholder="{{ __('Search campaign, company, product') }}">
+                                <input type="text" class="form-control" name="keyword" value="{{ request('keyword') }}" placeholder="Kampanya, şirket veya ürün ara">
                             </div>
                             <div class="col-md-3 form-group">
                                 <select name="status" class="form-control">
-                                    <option value="">{{ __('All Statuses') }}</option>
+                                    <option value="">Tüm Durumlar</option>
                                     @foreach (['draft', 'imported', 'enriched', 'generated', 'approved', 'sent'] as $status)
-                                        <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
+                                        <option value="{{ $status }}" @selected(request('status') === $status)>
+                                            {{ [
+                                                'draft' => 'Taslak',
+                                                'imported' => 'Lead Yüklendi',
+                                                'enriched' => 'Zenginleştirildi',
+                                                'generated' => 'Mesaj Üretildi',
+                                                'approved' => 'Onaylandı',
+                                                'sent' => 'Gönderildi',
+                                            ][$status] }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
                             <div class="col-md-4 form-group d-flex">
-                                <button type="submit" class="btn btn-primary mr-2">{{ __('Search') }}</button>
-                                <a href="{{ route('admin.outreach-campaigns.index') }}" class="btn btn-light border mr-2">{{ __('Clear') }}</a>
+                                <button type="submit" class="btn btn-primary mr-2">Ara</button>
+                                <a href="{{ route('admin.outreach-campaigns.index') }}" class="btn btn-light border mr-2">Temizle</a>
                                 @if (!$tableMissing)
-                                    <a href="{{ route('admin.outreach-campaigns.create') }}" class="btn btn-success">{{ __('Create Campaign') }}</a>
+                                    <a href="{{ route('admin.outreach-campaigns.create') }}" class="btn btn-success">Yeni Kampanya</a>
                                 @endif
                             </div>
                         </form>
@@ -45,26 +54,26 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <h4>{{ __('Campaigns') }}</h4>
+                        <h4>Kampanyalar</h4>
                     </div>
                     <div class="card-body">
                         @if ($tableMissing)
                             <div class="alert alert-warning mb-0">
-                                {{ __('Outreach tables are missing. Run migrations first.') }}
+                                Outreach tabloları eksik. Önce migration ya da SQL import işlemini yap.
                             </div>
                         @else
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped">
                                     <thead>
                                         <tr>
-                                            <th>{{ __('Campaign') }}</th>
-                                            <th>{{ __('Status') }}</th>
-                                            <th>{{ __('Leads') }}</th>
-                                            <th>{{ __('Messages') }}</th>
-                                            <th>{{ __('Sent') }}</th>
-                                            <th>{{ __('Replies') }}</th>
-                                            <th>{{ __('Updated') }}</th>
-                                            <th>{{ __('Action') }}</th>
+                                            <th>Kampanya</th>
+                                            <th>Durum</th>
+                                            <th>Lead</th>
+                                            <th>Mesaj</th>
+                                            <th>Gönderilen</th>
+                                            <th>Yanıt</th>
+                                            <th>Güncellendi</th>
+                                            <th>İşlem</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -77,7 +86,18 @@
                                                         <div><small>{{ $campaign->product_name }}</small></div>
                                                     @endif
                                                 </td>
-                                                <td><span class="badge badge-info text-uppercase">{{ $campaign->status }}</span></td>
+                                                <td>
+                                                    <span class="badge badge-info">
+                                                        {{ [
+                                                            'draft' => 'Taslak',
+                                                            'imported' => 'Lead Yüklendi',
+                                                            'enriched' => 'Zenginleştirildi',
+                                                            'generated' => 'Mesaj Üretildi',
+                                                            'approved' => 'Onaylandı',
+                                                            'sent' => 'Gönderildi',
+                                                        ][$campaign->status] ?? $campaign->status }}
+                                                    </span>
+                                                </td>
                                                 <td>{{ $campaign->leads_count }}</td>
                                                 <td>{{ $campaign->messages_count }}</td>
                                                 <td>{{ $campaign->sent_messages_count }}</td>
@@ -90,7 +110,7 @@
                                                     <a href="{{ route('admin.outreach-campaigns.edit', $campaign) }}" class="btn btn-sm btn-warning">
                                                         <i class="far fa-edit"></i>
                                                     </a>
-                                                    <form action="{{ route('admin.outreach-campaigns.destroy', $campaign) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ __('Delete this campaign and all related leads/messages?') }}')">
+                                                    <form action="{{ route('admin.outreach-campaigns.destroy', $campaign) }}" method="POST" class="d-inline" onsubmit="return confirm('Bu kampanyayı ve bağlı lead/mesaj kayıtlarını silmek istediğine emin misin?')">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-sm btn-danger">
@@ -101,7 +121,7 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="8" class="text-center text-muted">{{ __('No Data!') }}</td>
+                                                <td colspan="8" class="text-center text-muted">Henüz kayıt yok.</td>
                                             </tr>
                                         @endforelse
                                     </tbody>

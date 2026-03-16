@@ -456,6 +456,7 @@ class OutreachCampaignController extends Controller
 
         $validated['status'] = $validated['status'] ?? ($outreachCampaign?->status ?: 'draft');
         $validated['require_approval'] = $request->boolean('require_approval');
+        $validated['timezone'] = 'Europe/Istanbul';
 
         return $validated;
     }
