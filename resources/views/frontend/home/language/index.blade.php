@@ -9,10 +9,6 @@
         @include('frontend.home.language.sections.banner-area')
     @endif
 
-    @if ($sectionSetting?->counter_section)
-        @include('frontend.home.language.sections.fact-area')
-    @endif
-
     @include('frontend.home.language.sections.partner-area')
 
     @if (view()->exists('frontend.home.language.sections.placement-test-area'))
@@ -33,20 +29,36 @@
         </section>
     @endif
 
+    @if ($sectionSetting?->counter_section)
+        @include('frontend.home.language.sections.fact-area')
+    @endif
+
+    @if ($sectionSetting?->featured_course_section)
+        @include('frontend.home.language.sections.course-area')
+    @endif
+
+    @if ($sectionSetting?->instructor_section)
+        @include('frontend.home.language.sections.instructor-area')
+    @endif
+
+    @if ($sectionSetting?->testimonial_section)
+        @include('frontend.home.language.sections.testimonial-area')
+    @endif
+
+    @if ($sectionSetting?->about_section)
+        @include('frontend.home.language.sections.about-area')
+    @endif
+
+    @if ($sectionSetting?->top_category_section)
+        @include('frontend.home.language.sections.category-area')
+    @endif
+
     @include('frontend.home.language.sections.video-showcase-area', [
         'videoSet' => [1, 2, 3],
         'videoTitle' => __('Firma Tanitim Videolari'),
         'videoSubtitle' => __('Kurucudan, ekipten ve markadan kisa tanitim mesajlarini izle.'),
         'videoPrefix' => __('Tanitim'),
     ])
-
-    @if ($sectionSetting?->latest_blog_section)
-        @include('frontend.home.language.sections.blog-area')
-    @endif
-
-    @if ($sectionSetting?->instructor_section)
-        @include('frontend.home.language.sections.instructor-area')
-    @endif
 
     @include('frontend.home.language.sections.video-showcase-area', [
         'videoSet' => [4, 5, 6],
@@ -55,14 +67,6 @@
         'videoPrefix' => __('Bolum'),
     ])
 
-    @if ($sectionSetting?->featured_course_section)
-        @include('frontend.home.language.sections.course-area')
-    @endif
-
-    @if ($sectionSetting?->testimonial_section)
-        @include('frontend.home.language.sections.testimonial-area')
-    @endif
-
     @include('frontend.home.language.sections.video-showcase-area', [
         'videoSet' => [7, 8, 9],
         'videoTitle' => __('Kurum ve Platform Sunumu'),
@@ -70,12 +74,8 @@
         'videoPrefix' => __('Video'),
     ])
 
-    @if ($sectionSetting?->top_category_section)
-        @include('frontend.home.language.sections.category-area')
-    @endif
-
-    @if ($sectionSetting?->about_section)
-        @include('frontend.home.language.sections.about-area')
+    @if ($sectionSetting?->latest_blog_section)
+        @include('frontend.home.language.sections.blog-area')
     @endif
 
     @if ($sectionSetting?->news_letter_section)
