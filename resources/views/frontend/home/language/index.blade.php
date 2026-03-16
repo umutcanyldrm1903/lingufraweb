@@ -13,9 +13,7 @@
         @include('frontend.home.language.sections.fact-area')
     @endif
 
-    @if (collect($brands ?? [])->isNotEmpty())
-        @include('frontend.home.language.sections.partner-area')
-    @endif
+    @include('frontend.home.language.sections.partner-area')
 
     @if (view()->exists('frontend.home.language.sections.placement-test-area'))
         @include('frontend.home.language.sections.placement-test-area')
