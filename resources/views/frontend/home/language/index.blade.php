@@ -18,23 +18,23 @@
             <div class="container">
                 <div class="alert alert-info d-flex justify-content-between align-items-center flex-wrap gap-2 mb-0">
                     <div>
-                        <strong>{{ __('2-Minute English Level Test') }}</strong>
-                        <div>{{ __('Answer 8 quick questions and get an instant level result with a recommended plan.') }}</div>
+                        <strong>{{ __('2 dakikalik seviye testi') }}</strong>
+                        <div>{{ __('8 kisa soruyu cevapla, seviyeni ogren ve sana uygun paketi hemen gor.') }}</div>
                     </div>
                     <a href="{{ route('placement-test.show') }}" class="btn btn-primary">
-                        {{ __('Start Level Test') }}
+                        {{ __('Teste basla') }}
                     </a>
                 </div>
             </div>
         </section>
     @endif
 
-    @if ($sectionSetting?->counter_section)
-        @include('frontend.home.language.sections.fact-area')
-    @endif
-
     @if ($sectionSetting?->featured_course_section)
         @include('frontend.home.language.sections.course-area')
+    @endif
+
+    @if ($sectionSetting?->counter_section)
+        @include('frontend.home.language.sections.fact-area')
     @endif
 
     @if ($sectionSetting?->instructor_section)
@@ -54,24 +54,10 @@
     @endif
 
     @include('frontend.home.language.sections.video-showcase-area', [
-        'videoSet' => [1, 2, 3],
-        'videoTitle' => __('Firma Tanitim Videolari'),
-        'videoSubtitle' => __('Kurucudan, ekipten ve markadan kisa tanitim mesajlarini izle.'),
-        'videoPrefix' => __('Tanitim'),
-    ])
-
-    @include('frontend.home.language.sections.video-showcase-area', [
-        'videoSet' => [4, 5, 6],
-        'videoTitle' => __('LinguFranca Hakkinda'),
-        'videoSubtitle' => __('Egitim modeli, panel akislari ve kurum vizyonunu videolardan incele.'),
-        'videoPrefix' => __('Bolum'),
-    ])
-
-    @include('frontend.home.language.sections.video-showcase-area', [
-        'videoSet' => [7, 8, 9],
-        'videoTitle' => __('Kurum ve Platform Sunumu'),
-        'videoSubtitle' => __('Videolari buyutup detayli izle, markayi daha yakindan tani.'),
-        'videoPrefix' => __('Video'),
+        'videoSet' => [1, 4, 7],
+        'videoTitle' => __('LinguFranca\'ya kisa bir bakis'),
+        'videoSubtitle' => __('Platformu, egitim yaklasimini ve marka dunyasini tek bir premium video vitrinde kesfet.'),
+        'videoPrefix' => __('Secim'),
     ])
 
     @if ($sectionSetting?->latest_blog_section)

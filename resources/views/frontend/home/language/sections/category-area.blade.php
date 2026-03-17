@@ -2,20 +2,20 @@
     <div class="container custom-container">
         <div class="lang-journey__grid">
             <div class="lang-journey__intro">
-                <p class="lang-journey__eyebrow">{{ __('Öğrenme yolculuğun') }}</p>
-                <h2 class="lang-journey__title">{{ __('Özgüvenli İngilizceye giden net bir yol') }}</h2>
+                <p class="lang-journey__eyebrow">{{ __('Ogrenme yolculugun') }}</p>
+                <h2 class="lang-journey__title">{{ __('Ozguvenli Ingilizceye giden net bir yol') }}</h2>
                 <p class="lang-journey__lead">
-                    {{ __('Seni adım adım yönlendiriyoruz: sade bir plan, destekleyici bir koç ve ölçülebilir ilerleme.') }}
+                    {{ __('Seni adim adim yonlendiriyoruz: sade bir plan, destekleyici bir egitmen ve olculebilir ilerleme ile hedefini netlestiriyoruz.') }}
                 </p>
 
                 <div class="lang-journey__checks">
-                    <div class="lang-journey__check"><span class="dot"></span>{{ __('Size özel plan ve canlı dersler') }}</div>
-                    <div class="lang-journey__check"><span class="dot"></span>{{ __('Seviyeye uygun içerik ve geri bildirim') }}</div>
+                    <div class="lang-journey__check"><span class="dot"></span>{{ __('Sana ozel plan ve canli dersler') }}</div>
+                    <div class="lang-journey__check"><span class="dot"></span>{{ __('Seviyene uygun icerik ve net geri bildirim') }}</div>
                     <div class="lang-journey__check"><span class="dot"></span>{{ __('Esnek program ve raporlanabilir ilerleme') }}</div>
                 </div>
 
                 <div class="lang-journey__cta">
-                    <a href="{{ route('register') }}" class="btn lang-journey__btn">{{ __('Hemen başla') }}</a>
+                    <a href="{{ route('register') }}" class="btn lang-journey__btn">{{ __('Hemen basla') }}</a>
                 </div>
             </div>
 
@@ -26,7 +26,7 @@
                         <span class="lang-journey__step-icon"><i class="fas fa-compass"></i></span>
                     </div>
                     <h3 class="lang-journey__step-title">{{ __('Hedefini belirle') }}</h3>
-                    <p class="lang-journey__step-text">{{ __('Seviyeni ve odağını söyle, sana uygun yol haritasını hazırlayalım.') }}</p>
+                    <p class="lang-journey__step-text">{{ __('Seviyeni ve odagini soyle, sana uygun yol haritasini birlikte hazirlayalim.') }}</p>
                 </div>
 
                 <div class="lang-journey__step">
@@ -34,8 +34,8 @@
                         <span class="lang-journey__step-index">02</span>
                         <span class="lang-journey__step-icon"><i class="fas fa-user-friends"></i></span>
                     </div>
-                    <h3 class="lang-journey__step-title">{{ __('Eğitmeninle tanış') }}</h3>
-                    <p class="lang-journey__step-text">{{ __('İhtiyacını anlayan bir eğitmenle eşleş.') }}</p>
+                    <h3 class="lang-journey__step-title">{{ __('Egitmeninle tanis') }}</h3>
+                    <p class="lang-journey__step-text">{{ __('Ihtiyacini anlayan egitmenle esles, ritmini kur ve ilk derste guven kazan.') }}</p>
                 </div>
 
                 <div class="lang-journey__step">
@@ -43,8 +43,8 @@
                         <span class="lang-journey__step-index">03</span>
                         <span class="lang-journey__step-icon"><i class="fas fa-chart-line"></i></span>
                     </div>
-                    <h3 class="lang-journey__step-title">{{ __('İlerlemeni takip et') }}</h3>
-                    <p class="lang-journey__step-text">{{ __('Net hedeflerle haftadan haftaya gelişimini gör.') }}</p>
+                    <h3 class="lang-journey__step-title">{{ __('Ilerlemeni takip et') }}</h3>
+                    <p class="lang-journey__step-text">{{ __('Net hedeflerle haftadan haftaya gelisimini gor, motivasyonunu kaybetmeden ilerle.') }}</p>
                 </div>
             </div>
         </div>
@@ -56,7 +56,10 @@
     .lang-journey {
         position: relative;
         overflow: hidden;
-        background: var(--tg-common-color-gray-8);
+        background:
+            radial-gradient(700px circle at 10% 20%, rgba(246, 161, 5, 0.09), transparent 50%),
+            radial-gradient(620px circle at 85% 80%, rgba(14, 92, 147, 0.12), transparent 54%),
+            linear-gradient(180deg, #f7fbff 0%, #eef5fb 100%);
         --brand-primary: var(--tg-theme-primary);
         --brand-accent: var(--tg-theme-secondary);
     }
@@ -92,13 +95,13 @@
     .lang-journey__grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 36px;
+        gap: 40px;
         align-items: center;
     }
 
     .lang-journey__intro {
         display: grid;
-        gap: 14px;
+        gap: 16px;
     }
 
     .lang-journey__eyebrow {
@@ -123,7 +126,7 @@
         color: var(--tg-body-color);
         font-weight: 700;
         font-size: 16px;
-        max-width: 520px;
+        max-width: 560px;
     }
 
     .lang-journey__checks {
@@ -152,7 +155,7 @@
         display: flex;
         gap: 12px;
         flex-wrap: wrap;
-        margin-top: 6px;
+        margin-top: 8px;
     }
 
     .lang-journey__btn {
@@ -170,18 +173,17 @@
         color: var(--tg-common-color-white);
     }
 
-
     .lang-journey__steps {
         display: grid;
         gap: 18px;
     }
 
     .lang-journey__step {
-        background: linear-gradient(160deg, #ffffff 0%, #f3f7ff 100%);
-        border-radius: 20px;
-        padding: 18px 20px;
+        background: linear-gradient(160deg, #ffffff 0%, #f6f9fd 100%);
+        border-radius: 22px;
+        padding: 20px 22px;
         border: 1px solid rgba(14, 92, 147, 0.12);
-        box-shadow: 0 18px 44px rgba(15, 23, 42, 0.14);
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.11);
         display: grid;
         gap: 10px;
     }
