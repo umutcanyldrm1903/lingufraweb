@@ -5,6 +5,22 @@
         ->whereNull('parent_id')
         ->get();
     $isLoggedIn = Auth::guard('web')->check() || Auth::guard('admin')->check();
+    $studentRegisterUrl = route('register', ['role' => 'student']);
+    $instructorRegisterUrl = route('register', ['role' => 'instructor']);
+    $isTurkishLocale = getSessionLanguage() === 'tr';
+    $registerPickerEyebrow = $isTurkishLocale ? 'Kayit Secimi' : 'Account Type';
+    $registerPickerTitle = $isTurkishLocale ? 'Nasil devam etmek istiyorsunuz?' : 'How would you like to continue?';
+    $registerPickerLead = $isTurkishLocale
+        ? 'Dogru kayit akisini secin. Ogrenci ve egitmen hesaplari ayri ilerler.'
+        : 'Choose the right signup flow. Student and instructor accounts continue separately.';
+    $registerPickerStudentLabel = $isTurkishLocale ? 'Ogrenci olarak kayit ol' : 'Sign up as a student';
+    $registerPickerStudentText = $isTurkishLocale
+        ? 'Ders, paket, seviye testi ve ogrenim yolculugu icin ogrenci hesabina gec.'
+        : 'Continue with the student flow for lessons, packages, and placement tests.';
+    $registerPickerInstructorLabel = $isTurkishLocale ? 'Egitmen olarak basvur' : 'Apply as an instructor';
+    $registerPickerInstructorText = $isTurkishLocale
+        ? 'Egitmen paneli ve basvuru sureci icin egitmen kaydina yonlen.'
+        : 'Continue with the instructor flow for the teaching application and dashboard.';
 @endphp
 <!-- header-area -->
 <header>
@@ -232,7 +248,7 @@
                                     @if (!$isLoggedIn)
                                         @if (Route::has('register'))
                                             <li class="tgmenu__cta-item">
-                                                <a href="{{ route('register') }}" class="tgmenu__cta tgmenu__cta--primary">
+                                                <a href="{{ $studentRegisterUrl }}" class="tgmenu__cta tgmenu__cta--primary" data-register-modal-trigger>
                                                     {{ __('Sign Up') }}
                                                 </a>
                                             </li>
@@ -336,7 +352,7 @@
                                 @endauth
                                 @guest
                                     <li><a href="{{ route('login') }}">{{ __('login') }}</a></li>
-                                    <li><a href="{{ route('register') }}">{{ __('register') }}</a></li>
+                                    <li><a href="{{ $studentRegisterUrl }}" data-register-modal-trigger>{{ __('register') }}</a></li>
                                 @endguest
 
                                 @auth('web')
@@ -396,6 +412,37 @@
 </header>
 <!-- header-area-end -->
 
+@guest
+    <div class="lf-register-modal" id="lf-register-modal" aria-hidden="true">
+        <div class="lf-register-modal__backdrop" data-register-modal-close></div>
+        <div class="lf-register-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="lf-register-modal-title">
+            <button type="button" class="lf-register-modal__close" data-register-modal-close aria-label="Close">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <p class="lf-register-modal__eyebrow">{{ $registerPickerEyebrow }}</p>
+            <h3 class="lf-register-modal__title" id="lf-register-modal-title">{{ $registerPickerTitle }}</h3>
+            <p class="lf-register-modal__lead">{{ $registerPickerLead }}</p>
+
+            <div class="lf-register-modal__actions">
+                <a href="{{ $studentRegisterUrl }}" class="lf-register-modal__option">
+                    <span class="lf-register-modal__icon"><i class="fas fa-user-graduate" aria-hidden="true"></i></span>
+                    <span class="lf-register-modal__content">
+                        <strong>{{ $registerPickerStudentLabel }}</strong>
+                        <small>{{ $registerPickerStudentText }}</small>
+                    </span>
+                </a>
+                <a href="{{ $instructorRegisterUrl }}" class="lf-register-modal__option lf-register-modal__option--alt">
+                    <span class="lf-register-modal__icon"><i class="fas fa-chalkboard-teacher" aria-hidden="true"></i></span>
+                    <span class="lf-register-modal__content">
+                        <strong>{{ $registerPickerInstructorLabel }}</strong>
+                        <small>{{ $registerPickerInstructorText }}</small>
+                    </span>
+                </a>
+            </div>
+        </div>
+    </div>
+@endguest
+
 <style>
     /* Cowboy header palette */
     header .tg-header__top{background:#0e5c93 !important;color:#fff !important;}
@@ -454,4 +501,218 @@
     header .tgmenu__action select.select_js{background:rgba(255,255,255,0.18);color:#fff;border-color:rgba(255,255,255,0.35);}
     header .tgmenu__action select.select_js{background:#fff;color:#0e5c93;border-color:#d7e4f1;}
     header .tg-header__top .select_js option{color:#1c1c1c;}
+
+    .lf-register-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .lf-register-modal.is-open {
+        display: flex;
+    }
+
+    .lf-register-modal__backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(2, 8, 23, 0.68);
+        backdrop-filter: blur(4px);
+    }
+
+    .lf-register-modal__dialog {
+        position: relative;
+        width: min(720px, 100%);
+        background: #fff;
+        border-radius: 24px;
+        padding: 28px;
+        box-shadow: 0 30px 90px rgba(15, 23, 42, 0.34);
+        border: 1px solid rgba(14, 92, 147, 0.12);
+    }
+
+    .lf-register-modal__close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        width: 42px;
+        height: 42px;
+        border: 0;
+        border-radius: 999px;
+        background: #eff6ff;
+        color: #0e5c93;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .lf-register-modal__eyebrow {
+        margin: 0 0 8px;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #f6a105;
+    }
+
+    .lf-register-modal__title {
+        margin: 0;
+        color: #0f172a;
+        font-size: 32px;
+        line-height: 1.1;
+        font-weight: 1000;
+    }
+
+    .lf-register-modal__lead {
+        margin: 10px 0 0;
+        color: #475569;
+        font-size: 16px;
+        line-height: 1.65;
+        max-width: 560px;
+    }
+
+    .lf-register-modal__actions {
+        margin-top: 24px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .lf-register-modal__option {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 20px;
+        border-radius: 20px;
+        border: 1px solid #dbe7f3;
+        background: linear-gradient(180deg, #f8fbff 0%, #eef6ff 100%);
+        text-decoration: none;
+        transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    }
+
+    .lf-register-modal__option:hover {
+        transform: translateY(-2px);
+        border-color: rgba(14, 92, 147, 0.28);
+        box-shadow: 0 18px 38px rgba(14, 92, 147, 0.14);
+    }
+
+    .lf-register-modal__option--alt {
+        background: linear-gradient(180deg, #fff9ef 0%, #fff3d8 100%);
+    }
+
+    .lf-register-modal__icon {
+        width: 52px;
+        height: 52px;
+        flex: 0 0 52px;
+        border-radius: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #0e5c93;
+        color: #fff;
+        font-size: 20px;
+        box-shadow: 0 14px 30px rgba(14, 92, 147, 0.22);
+    }
+
+    .lf-register-modal__option--alt .lf-register-modal__icon {
+        background: #f6a105;
+        color: #111827;
+        box-shadow: 0 14px 30px rgba(246, 161, 5, 0.24);
+    }
+
+    .lf-register-modal__content {
+        display: grid;
+        gap: 6px;
+    }
+
+    .lf-register-modal__content strong {
+        color: #0f172a;
+        font-size: 20px;
+        line-height: 1.25;
+        font-weight: 900;
+    }
+
+    .lf-register-modal__content small {
+        color: #475569;
+        font-size: 14px;
+        line-height: 1.65;
+    }
+
+    body.lf-register-modal-open {
+        overflow: hidden;
+    }
+
+    @media (max-width: 767px) {
+        .lf-register-modal {
+            padding: 14px;
+        }
+
+        .lf-register-modal__dialog {
+            padding: 22px 18px 18px;
+            border-radius: 20px;
+        }
+
+        .lf-register-modal__title {
+            font-size: 26px;
+        }
+
+        .lf-register-modal__lead {
+            font-size: 14px;
+        }
+
+        .lf-register-modal__actions {
+            grid-template-columns: 1fr;
+        }
+
+        .lf-register-modal__option {
+            padding: 16px;
+            border-radius: 18px;
+        }
+
+        .lf-register-modal__content strong {
+            font-size: 18px;
+        }
+    }
 </style>
+
+@guest
+    <script>
+        (() => {
+            const modal = document.getElementById('lf-register-modal');
+            if (!modal) return;
+
+            const openers = document.querySelectorAll('[data-register-modal-trigger]');
+            const closers = modal.querySelectorAll('[data-register-modal-close]');
+
+            const closeModal = () => {
+                modal.classList.remove('is-open');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('lf-register-modal-open');
+            };
+
+            const openModal = (event) => {
+                event.preventDefault();
+                document.body.classList.remove('mobile-menu-visible');
+                modal.classList.add('is-open');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('lf-register-modal-open');
+            };
+
+            openers.forEach((trigger) => {
+                trigger.addEventListener('click', openModal);
+            });
+
+            closers.forEach((trigger) => {
+                trigger.addEventListener('click', closeModal);
+            });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape' && modal.classList.contains('is-open')) {
+                    closeModal();
+                }
+            });
+        })();
+    </script>
+@endguest

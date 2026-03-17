@@ -15,7 +15,7 @@
                 </div>
 
                 <div class="lang-journey__cta">
-                    <a href="{{ route('register') }}" class="btn lang-journey__btn">{{ __('Hemen basla') }}</a>
+                    <a href="{{ route('register', ['role' => 'student']) }}" class="btn lang-journey__btn">{{ __('Hemen basla') }}</a>
                 </div>
             </div>
 
