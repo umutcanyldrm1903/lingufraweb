@@ -421,7 +421,23 @@
         }
 
         .lf-footer__list {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-columns: 1fr;
+        }
+
+        .lf-footer__stores,
+        .lf-footer__payments-row,
+        .lf-footer__social {
+            justify-content: flex-start;
+        }
+
+        .lf-footer__store {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .lf-footer__store img {
+            max-width: 100%;
+            height: auto;
         }
     }
 </style>

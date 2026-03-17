@@ -113,6 +113,39 @@
 @if ($setting->cookie_status == 'active')
     <script src="{{ asset('frontend/js/cookieconsent.min.js') }}"></script>
 
+    <style>
+        @media (max-width: 575.98px) {
+            .wpcc-container {
+                left: 12px !important;
+                right: 12px !important;
+                bottom: 12px !important;
+                width: auto !important;
+                max-width: none !important;
+                padding: 14px !important;
+                border-radius: 18px !important;
+            }
+
+            .wpcc-message {
+                margin-bottom: 12px !important;
+                font-size: 13px !important;
+                line-height: 1.55 !important;
+            }
+
+            .wpcc-compliance {
+                width: 100% !important;
+                display: block !important;
+            }
+
+            .wpcc-btn {
+                width: 100% !important;
+                min-height: 44px !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+        }
+    </style>
+
     <script>
         "use strict";
         window.addEventListener("load", function() {

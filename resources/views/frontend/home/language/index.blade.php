@@ -195,6 +195,120 @@
                 padding: 16px !important;
                 border-radius: 16px !important;
             }
+
+            body.home_language .lang-hero__orb,
+            body.home_language .lang-hero__mesh,
+            body.home_language .lang-corporate::before,
+            body.home_language .lang-corporate::after,
+            body.home_language .lang-instructor-cta::before,
+            body.home_language .lang-instructor-cta::after,
+            body.home_language .lang-journey::before,
+            body.home_language .lang-journey::after,
+            body.home_language .lang-testimonial::before,
+            body.home_language .lang-testimonial::after,
+            body.home_language .lang-app::after,
+            body.home_language .lang-community::after {
+                display: none !important;
+            }
+
+            body.home_language .lang-hero__feature-grid,
+            body.home_language .lang-hero__stores,
+            body.home_language .lang-app__phones {
+                display: none !important;
+            }
+
+            body.home_language .lang-hero,
+            body.home_language .lang-corporate,
+            body.home_language .lang-instructor-cta,
+            body.home_language .lang-journey,
+            body.home_language .lang-testimonial,
+            body.home_language .lang-community,
+            body.home_language .lang-app,
+            body.home_language .lf-teacher-vault,
+            body.home_language .lf-video-showcase,
+            body.home_language footer.lf-footer {
+                overflow: visible !important;
+            }
+
+            body.home_language .lang-hero__rotator-wrap {
+                width: 100%;
+                justify-content: space-between;
+                gap: 8px;
+            }
+
+            body.home_language .lang-hero__rotator {
+                min-width: 0;
+                flex: 1 1 auto;
+            }
+
+            body.home_language .lang-hero__rotator-item,
+            body.home_language .lang-hero__bullet-list li,
+            body.home_language .lang-corporate__lead,
+            body.home_language .lang-instructor-cta__lead,
+            body.home_language .lang-journey__lead,
+            body.home_language .lang-community__lead,
+            body.home_language .lang-app__lead,
+            body.home_language .lf-teacher-vault__lead,
+            body.home_language .lf-video-showcase__subtitle {
+                font-size: 15px !important;
+                line-height: 1.7 !important;
+            }
+
+            body.home_language .lang-corporate,
+            body.home_language .lang-instructor-cta,
+            body.home_language .lang-journey,
+            body.home_language .lang-testimonial,
+            body.home_language .lang-community,
+            body.home_language .lang-app,
+            body.home_language .lf-teacher-vault,
+            body.home_language .lf-video-showcase {
+                padding-top: 72px !important;
+                padding-bottom: 72px !important;
+            }
+
+            body.home_language .lang-corporate__title,
+            body.home_language .lang-instructor-cta__title,
+            body.home_language .lang-journey__title,
+            body.home_language .lang-community__title,
+            body.home_language .lang-app__title,
+            body.home_language .lang-testimonial__title,
+            body.home_language .lf-teacher-vault__title,
+            body.home_language .lf-video-showcase__title {
+                font-size: 30px !important;
+                line-height: 1.12 !important;
+            }
+
+            body.home_language .lang-corporate__media-bg,
+            body.home_language .lang-instructor-cta__blob,
+            body.home_language .lang-app__glow {
+                display: none !important;
+            }
+
+            body.home_language .lang-corporate__img,
+            body.home_language .lang-instructor-cta__img,
+            body.home_language .lang-app__img {
+                max-width: 320px !important;
+                width: 100% !important;
+            }
+
+            body.home_language .lang-community__shell,
+            body.home_language .lf-teacher-vault__shell {
+                padding: 24px !important;
+                border-radius: 24px !important;
+            }
+
+            body.home_language .lang-community__showcase,
+            body.home_language .lf-teacher-vault__footer {
+                grid-template-columns: 1fr !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+            }
+
+            body.home_language .lang-journey__grid,
+            body.home_language .lang-community__showcase,
+            body.home_language .lf-video-showcase__grid {
+                gap: 16px !important;
+            }
         }
 
         @media (max-width: 575px) {
@@ -208,14 +322,87 @@
                 font-size: 28px !important;
             }
 
+            body.home_language .lang-hero__copy {
+                max-width: 100% !important;
+            }
+
+            body.home_language .lang-hero__rotator-wrap {
+                flex-wrap: wrap;
+                padding: 10px 12px !important;
+            }
+
+            body.home_language .lang-hero__rotator-label {
+                flex: 0 0 auto;
+            }
+
+            body.home_language .lang-hero__rotator {
+                width: 100% !important;
+                min-width: 0 !important;
+                min-height: 42px !important;
+            }
+
+            body.home_language .lang-hero__rotator-item {
+                justify-content: flex-start !important;
+                align-items: flex-start !important;
+                white-space: normal !important;
+                line-height: 1.35 !important;
+            }
+
+            body.home_language .lang-hero__bullet-list {
+                gap: 10px !important;
+                margin-bottom: 18px !important;
+            }
+
+            body.home_language .lang-hero__bullet-list li {
+                font-size: 14px !important;
+            }
+
             body.home_language .lang-hero__cta .btn {
                 width: 100% !important;
                 justify-content: center;
             }
 
-            body.home_language .lang-hero__stores {
-                width: 100%;
-                justify-content: center;
+            body.home_language .lang-corporate__actions,
+            body.home_language .lang-journey__cta,
+            body.home_language .lang-app__stores,
+            body.home_language .lf-teacher-vault__actions {
+                display: grid !important;
+                gap: 10px !important;
+                width: 100% !important;
+            }
+
+            body.home_language .lang-corporate__actions .lang-btn,
+            body.home_language .lang-instructor-cta__btn,
+            body.home_language .lang-journey__btn,
+            body.home_language .lang-app__store,
+            body.home_language .lf-teacher-vault__action,
+            body.home_language .lf-teacher-vault__browse {
+                width: 100% !important;
+                justify-content: center !important;
+            }
+
+            body.home_language .lang-community__phone,
+            body.home_language .lang-community__card,
+            body.home_language .lf-teacher-vault__card {
+                border-radius: 20px !important;
+            }
+
+            body.home_language .lang-corporate__title,
+            body.home_language .lang-instructor-cta__title,
+            body.home_language .lang-journey__title,
+            body.home_language .lang-community__title,
+            body.home_language .lang-app__title,
+            body.home_language .lang-testimonial__title,
+            body.home_language .lf-teacher-vault__title,
+            body.home_language .lf-video-showcase__title {
+                font-size: 26px !important;
+            }
+
+            body.home_language .lang-testimonial__card,
+            body.home_language .lang-journey__step,
+            body.home_language .lf-teacher-vault__body {
+                padding-left: 16px !important;
+                padding-right: 16px !important;
             }
         }
 
