@@ -7,9 +7,11 @@
             ? (str_starts_with($profileVideo, 'http') ? $profileVideo : asset($profileVideo))
             : null;
 
-        $isDirectVideo = $videoUrl && !str_contains(strtolower($videoUrl), 'youtube.com')
-            && !str_contains(strtolower($videoUrl), 'youtu.be')
-            && !str_contains(strtolower($videoUrl), 'vimeo.com');
+        $lowerVideoUrl = strtolower((string) $videoUrl);
+        $isDirectVideo = $videoUrl
+            && !str_contains($lowerVideoUrl, 'youtube.com')
+            && !str_contains($lowerVideoUrl, 'youtu.be')
+            && !str_contains($lowerVideoUrl, 'vimeo.com');
 
         $summary = trim((string) ($instructor->short_bio ?? ''));
         if ($summary === '') {
@@ -20,39 +22,32 @@
             'id' => $instructor->id,
             'name' => $instructor->name,
             'image' => asset($instructor->image),
-            'title' => $instructor->job_title ?: __('İngilizce Eğitmeni'),
-            'summary' => \Illuminate\Support\Str::limit($summary ?: __('Öğretmenin anlatım tarzını, enerjisini ve profil yaklaşımını kısa videodan inceleyebilirsin.'), 110),
-            'detailUrl' => route('instructor-details', ['id' => $instructor->id, 'slug' => \Illuminate\Support\Str::slug($instructor->name)]),
+            'title' => $instructor->job_title ?: __('Ingilizce Egitmeni'),
+            'summary' => \Illuminate\Support\Str::limit(
+                $summary ?: __('Ogretmenin anlatim tarzini ve enerjisini kisa tanitim videosundan hizlica inceleyebilirsin.'),
+                110
+            ),
+            'detailUrl' => route('instructor-details', [
+                'id' => $instructor->id,
+                'slug' => \Illuminate\Support\Str::slug($instructor->name),
+            ]),
             'videoUrl' => $videoUrl,
             'isDirectVideo' => $isDirectVideo,
         ];
     })->filter(fn ($card) => filled($card['videoUrl']))->values();
-
-    $videoCount = $cards->count();
 @endphp
 
-@if ($videoCount)
+@if ($cards->count())
     <section class="lf-teacher-vault section-py-110" id="teacher-intro-videos">
         <div class="container">
             <div class="lf-teacher-vault__shell">
                 <div class="lf-teacher-vault__header">
                     <div class="lf-teacher-vault__copy">
-                        <span class="lf-teacher-vault__eyebrow">{{ __('Öğretmen Tanıtım Videoları') }}</span>
-                        <h2 class="lf-teacher-vault__title">{{ __('Tüm öğretmen videolarını tek alanda incele') }}</h2>
+                        <span class="lf-teacher-vault__eyebrow">{{ __('Ogretmen Tanitim Videolari') }}</span>
+                        <h2 class="lf-teacher-vault__title">{{ __('Tum ogretmen videolarini tek alanda incele') }}</h2>
                         <p class="lf-teacher-vault__lead">
-                            {{ __('Topluluk alanından ayrı, sadece öğretmen videolarına ayrılmış temiz bir vitrin. Öğretmenleri karşılaştır, stilini gör ve sonra profil detayına geç.') }}
+                            {{ __('Topluluk akisindan tamamen ayri bu alan, sadece ogretmen tanitim videolari icin tasarlandi. Kartlari karsilastir, videolari izle ve sonra detayli profil sayfasina gec.') }}
                         </p>
-                    </div>
-
-                    <div class="lf-teacher-vault__meta">
-                        <div class="lf-teacher-vault__metric">
-                            <strong>{{ $videoCount }}</strong>
-                            <span>{{ __('aktif öğretmen videosu') }}</span>
-                        </div>
-                        <div class="lf-teacher-vault__metric">
-                            <strong>{{ __('Tamamı ayrı') }}</strong>
-                            <span>{{ __('topluluk akışından bağımsız') }}</span>
-                        </div>
                     </div>
                 </div>
 
@@ -63,7 +58,7 @@
                                 <img src="{{ $card['image'] }}" alt="{{ $card['name'] }}">
 
                                 <div class="lf-teacher-vault__overlay">
-                                    <span class="lf-teacher-vault__tag">{{ __('Tanıtım videosu') }}</span>
+                                    <span class="lf-teacher-vault__tag">{{ __('Tanitim videosu') }}</span>
 
                                     @if ($card['isDirectVideo'])
                                         <button
@@ -117,6 +112,22 @@
                         </article>
                     @endforeach
                 </div>
+
+                @if (Route::has('all-instructors'))
+                    <div class="lf-teacher-vault__footer">
+                        <div class="lf-teacher-vault__footer-copy">
+                            <strong>{{ __('Daha fazla egitmen ve daha detayli filtreleme icin listeye gec') }}</strong>
+                            <p>
+                                {{ __('Bu alanda ilk izlenimi videodan alirsin. Tum egitmenler sayfasinda ise uzmanlik, aksan, deneyim ve ders yaklasimina gore filtreleme yaparak sana en uygun egitmeni secip detayli profiline ulasabilirsin.') }}
+                            </p>
+                        </div>
+                        <div class="lf-teacher-vault__footer-actions">
+                            <a href="{{ route('all-instructors') }}" class="lf-teacher-vault__browse">
+                                {{ __('Tum egitmenleri gor') }}
+                            </a>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </section>
@@ -140,15 +151,11 @@
         }
 
         .lf-teacher-vault__header {
-            display: flex;
-            justify-content: space-between;
-            gap: 28px;
-            align-items: end;
             margin-bottom: 30px;
         }
 
         .lf-teacher-vault__copy {
-            max-width: 760px;
+            max-width: 860px;
         }
 
         .lf-teacher-vault__eyebrow {
@@ -167,7 +174,7 @@
             font-size: 44px;
             line-height: 1.04;
             font-weight: 1000;
-            max-width: 740px;
+            max-width: 760px;
         }
 
         .lf-teacher-vault__lead {
@@ -175,36 +182,6 @@
             color: #5a748d;
             font-size: 16px;
             line-height: 1.8;
-            font-weight: 700;
-        }
-
-        .lf-teacher-vault__meta {
-            display: grid;
-            gap: 14px;
-            min-width: 240px;
-        }
-
-        .lf-teacher-vault__metric {
-            padding: 18px 20px;
-            border-radius: 22px;
-            background: linear-gradient(180deg, #f8fbff 0%, #edf4fa 100%);
-            border: 1px solid rgba(13, 71, 112, 0.08);
-        }
-
-        .lf-teacher-vault__metric strong {
-            display: block;
-            color: #0e5c93;
-            font-size: 22px;
-            line-height: 1.1;
-            font-weight: 1000;
-        }
-
-        .lf-teacher-vault__metric span {
-            display: block;
-            margin-top: 6px;
-            color: #67829b;
-            font-size: 13px;
-            line-height: 1.6;
             font-weight: 700;
         }
 
@@ -324,7 +301,8 @@
             margin-top: 18px;
         }
 
-        .lf-teacher-vault__action {
+        .lf-teacher-vault__action,
+        .lf-teacher-vault__browse {
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -339,6 +317,7 @@
             letter-spacing: 0.1em;
             text-transform: uppercase;
             text-decoration: none;
+            white-space: nowrap;
         }
 
         .lf-teacher-vault__link {
@@ -348,6 +327,39 @@
             letter-spacing: 0.08em;
             text-transform: uppercase;
             text-decoration: none;
+        }
+
+        .lf-teacher-vault__footer {
+            margin-top: 28px;
+            padding: 24px 26px;
+            border-radius: 26px;
+            border: 1px solid rgba(13, 71, 112, 0.08);
+            background: linear-gradient(180deg, #f8fbff 0%, #eef5fb 100%);
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            align-items: center;
+        }
+
+        .lf-teacher-vault__footer-copy {
+            max-width: 780px;
+        }
+
+        .lf-teacher-vault__footer-copy strong {
+            display: block;
+            color: #092947;
+            font-size: 22px;
+            line-height: 1.15;
+            font-weight: 1000;
+            margin-bottom: 8px;
+        }
+
+        .lf-teacher-vault__footer-copy p {
+            margin: 0;
+            color: #617b94;
+            font-size: 14px;
+            line-height: 1.8;
+            font-weight: 700;
         }
 
         @media (max-width: 1199px) {
@@ -362,27 +374,18 @@
                 border-radius: 26px;
             }
 
-            .lf-teacher-vault__header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .lf-teacher-vault__meta {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                min-width: 0;
-            }
-
             .lf-teacher-vault__title {
                 font-size: 34px;
+            }
+
+            .lf-teacher-vault__footer {
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
 
         @media (max-width: 767px) {
             .lf-teacher-vault__grid {
-                grid-template-columns: 1fr;
-            }
-
-            .lf-teacher-vault__meta {
                 grid-template-columns: 1fr;
             }
         }
@@ -402,7 +405,8 @@
                 flex-direction: column;
             }
 
-            .lf-teacher-vault__action {
+            .lf-teacher-vault__action,
+            .lf-teacher-vault__browse {
                 width: 100%;
             }
         }
