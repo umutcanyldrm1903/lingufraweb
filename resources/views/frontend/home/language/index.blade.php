@@ -455,7 +455,7 @@
         }
 
         body.home_language .lf-video-showcase__card {
-            --video-ratio: 9 / 16;
+            --video-ratio: 16 / 9;
             position: relative;
             display: flex;
             align-items: stretch;
@@ -632,6 +632,7 @@
 
             body.home_language .lf-video-showcase__card {
                 border-radius: 16px;
+                min-height: 220px;
             }
 
             body.home_language .lf-video-showcase__title {

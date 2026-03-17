@@ -18,6 +18,7 @@
                 @php
                     $num = str_pad((string) ((int) $videoNo), 2, '0', STR_PAD_LEFT);
                     $file = 'uploads/website-videos/home-showcase/home-video-' . $num . '.mp4';
+                    $poster = 'uploads/website-videos/home-showcase/posters/home-video-' . $num . '.jpg';
                 @endphp
                 <article class="lf-video-showcase__card js-lf-video-card">
                     <div class="lf-video-showcase__media">
@@ -27,7 +28,8 @@
                             muted
                             loop
                             playsinline
-                            preload="none"
+                            preload="metadata"
+                            poster="{{ asset($poster) }}"
                             data-src="{{ asset($file) }}"
                             data-video-id="{{ $num }}"
                             aria-label="{{ __('LinguFranca video') }} {{ $num }}"

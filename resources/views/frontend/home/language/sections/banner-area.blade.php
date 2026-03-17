@@ -809,6 +809,27 @@
             justify-content: center;
         }
     }
+
+    @media (max-width: 767px) {
+        .lang-hero {
+            background:
+                radial-gradient(520px circle at 12% 12%, rgba(246, 161, 5, 0.18), transparent 46%),
+                radial-gradient(680px circle at 100% 0%, rgba(109, 196, 255, 0.16), transparent 42%),
+                linear-gradient(180deg, #071a2d 0%, #0b3558 56%, #09223c 100%);
+        }
+
+        .lang-hero__bg-video-wrap {
+            display: none;
+        }
+
+        .lang-hero::before {
+            background:
+                linear-gradient(180deg, rgba(2, 8, 18, 0.12) 0%, rgba(2, 8, 18, 0.26) 100%),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 34px 34px, 34px 34px;
+        }
+    }
 </style>
 @endpush
 
