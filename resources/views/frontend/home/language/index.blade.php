@@ -41,6 +41,10 @@
         @include('frontend.home.language.sections.instructor-area')
     @endif
 
+    @if (($featuredInstructorVideos ?? collect())->count())
+        @include('frontend.home.language.sections.instructor-video-area')
+    @endif
+
     @if ($sectionSetting?->testimonial_section)
         @include('frontend.home.language.sections.testimonial-area')
     @endif

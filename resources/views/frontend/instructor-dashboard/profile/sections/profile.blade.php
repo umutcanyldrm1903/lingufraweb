@@ -99,14 +99,14 @@
         <div class="sp-profile-video-block">
             <div class="sp-profile-video-head">
                 <div>
-                    <h4>{{ __('Video') }}</h4>
-                    <p>{{ __('Please upload a video so your video can be seen on your profile page') }}</p>
-                    <p>{{ __('Supported formats: MP4, WebM, OGG, MOV. Maximum :size MB.', ['size' => $introVideoMaxMb]) }}</p>
+                    <h4>{{ __('Öğretmen Tanıtım Videosu') }}</h4>
+                    <p>{{ __('Bu video yalnızca öğretmen profilindeki tanıtım alanında gösterilir.') }}</p>
+                    <p>{{ __('Desteklenen formatlar: MP4, WebM, OGG, MOV. Maksimum :size MB.', ['size' => $introVideoMaxMb]) }}</p>
                 </div>
             </div>
             <label class="sp-profile-upload" for="intro_video">
                 <i class="fas fa-upload" aria-hidden="true"></i>
-                <span>{{ __('Upload Video') }}</span>
+                <span>{{ __('Tanıtım videosu yükle') }}</span>
             </label>
             <div class="sp-profile-video">
                 @if ($videoUrl)
@@ -115,7 +115,7 @@
                     </video>
                 @else
                     <div class="sp-profile-video-empty">
-                        <span>{{ __('No intro video') }}</span>
+                        <span>{{ __('Henüz tanıtım videosu yok') }}</span>
                     </div>
                 @endif
             </div>

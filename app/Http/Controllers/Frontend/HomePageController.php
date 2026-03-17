@@ -87,6 +87,28 @@ class HomePageController extends Controller {
             }])
             ->get();
 
+        $featuredInstructorVideos = $selectedInstructors
+            ->filter(fn($instructor) => filled(data_get($instructor->instructor_profile, 'intro_video')))
+            ->values();
+
+        if ($featuredInstructorVideos->count() < 3 && Schema::hasColumn('users', 'instructor_profile')) {
+            $extraInstructorVideos = User::query()
+                ->active()
+                ->unbanned()
+                ->instructor()
+                ->whereNotIn('id', $featuredInstructorVideos->pluck('id')->all())
+                ->where('instructor_profile', 'like', '%"intro_video":"%')
+                ->limit(6)
+                ->get()
+                ->filter(fn($instructor) => filled(data_get($instructor->instructor_profile, 'intro_video')))
+                ->take(3 - $featuredInstructorVideos->count())
+                ->values();
+
+            $featuredInstructorVideos = $featuredInstructorVideos
+                ->concat($extraInstructorVideos)
+                ->values();
+        }
+
         $testimonials = Testimonial::all();
 
         $featuredBlogs = Blog::with(['translation', 'author'])
@@ -104,6 +126,7 @@ class HomePageController extends Controller {
             'newsletterSection',
             'featuredInstructorSection',
             'selectedInstructors',
+            'featuredInstructorVideos',
             'counter',
             'faqSection',
             'faqs',
