@@ -93,7 +93,10 @@ class RegisteredUserController extends Controller
             try {
                 $referral = app(ReferralService::class);
                 $referral->ensureReferralCode($user);
-                $referral->attachReferrerFromCode($user, $request->input('referral_code'));
+                $referral->attachReferrerFromCode(
+                    $user,
+                    $role === 'student' ? $request->input('referral_code') : null
+                );
             } catch (\Throwable $e) {
                 report($e);
             }

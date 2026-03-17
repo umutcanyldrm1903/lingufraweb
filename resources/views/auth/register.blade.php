@@ -53,20 +53,22 @@
                                 <x-frontend.validation-error name="phone" />
                             </div>
                         </div>
-                        <div class="col-md-12">
-                            <div class="form-grp">
-                                <label>{{ __('Referral Code') }}</label>
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    name="referral_code"
-                                    value="{{ old('referral_code', request()->query('ref')) }}"
-                                    placeholder="{{ __('Referral Code') }}"
-                                    autocomplete="off"
-                                >
-                                <x-frontend.validation-error name="referral_code" />
+                        @if ($defaultRole !== 'instructor')
+                            <div class="col-md-12">
+                                <div class="form-grp">
+                                    <label>{{ __('Referral Code') }}</label>
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        name="referral_code"
+                                        value="{{ old('referral_code', request()->query('ref')) }}"
+                                        placeholder="{{ __('Referral Code') }}"
+                                        autocomplete="off"
+                                    >
+                                    <x-frontend.validation-error name="referral_code" />
+                                </div>
                             </div>
-                        </div>
+                        @endif
                         <div class="col-md-12">
                             <div class="form-grp">
                                 <label>{{ __('Email') }} <code>*</code></label>
