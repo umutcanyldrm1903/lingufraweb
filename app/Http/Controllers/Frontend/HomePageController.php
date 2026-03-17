@@ -91,21 +91,21 @@ class HomePageController extends Controller {
             ->filter(fn($instructor) => filled(data_get($instructor->instructor_profile, 'intro_video')))
             ->values();
 
-        if ($featuredInstructorVideos->count() < 3 && Schema::hasColumn('users', 'instructor_profile')) {
+        if (Schema::hasColumn('users', 'instructor_profile')) {
             $extraInstructorVideos = User::query()
                 ->active()
                 ->unbanned()
                 ->instructor()
                 ->whereNotIn('id', $featuredInstructorVideos->pluck('id')->all())
                 ->where('instructor_profile', 'like', '%"intro_video":"%')
-                ->limit(6)
+                ->orderBy('name')
                 ->get()
                 ->filter(fn($instructor) => filled(data_get($instructor->instructor_profile, 'intro_video')))
-                ->take(3 - $featuredInstructorVideos->count())
                 ->values();
 
             $featuredInstructorVideos = $featuredInstructorVideos
                 ->concat($extraInstructorVideos)
+                ->unique('id')
                 ->values();
         }
 

@@ -1,51 +1,15 @@
 @php
-    $featuredInstructorVideos = ($featuredInstructorVideos ?? collect())->take(3)->values();
+    $featuredInstructorVideos = ($featuredInstructorVideos ?? collect())->values();
 
-    $resolveInstructorVideo = function ($instructor) {
+    $cards = $featuredInstructorVideos->map(function ($instructor) {
         $profileVideo = data_get($instructor?->instructor_profile, 'intro_video');
         $videoUrl = $profileVideo
             ? (str_starts_with($profileVideo, 'http') ? $profileVideo : asset($profileVideo))
             : null;
 
-        $embedUrl = null;
-        if ($videoUrl) {
-            $lower = strtolower($videoUrl);
-            if (str_contains($lower, 'youtube.com') || str_contains($lower, 'youtu.be')) {
-                $parts = parse_url($videoUrl) ?: [];
-                $host = $parts['host'] ?? '';
-                $path = $parts['path'] ?? '';
-                $videoId = null;
-
-                if ($host === 'youtu.be') {
-                    $videoId = trim($path, '/');
-                } else {
-                    $query = [];
-                    parse_str($parts['query'] ?? '', $query);
-                    $videoId = $query['v'] ?? null;
-
-                    if (!$videoId && str_contains($path, '/embed/')) {
-                        $segments = explode('/', trim($path, '/'));
-                        $embedIndex = array_search('embed', $segments, true);
-                        if ($embedIndex !== false && isset($segments[$embedIndex + 1])) {
-                            $videoId = $segments[$embedIndex + 1];
-                        }
-                    }
-                }
-
-                if ($videoId) {
-                    $embedUrl = 'https://www.youtube.com/embed/' . $videoId;
-                }
-            } elseif (str_contains($lower, 'vimeo.com')) {
-                $parts = parse_url($videoUrl) ?: [];
-                $segments = array_values(array_filter(explode('/', trim($parts['path'] ?? '', '/'))));
-                foreach ($segments as $segment) {
-                    if (ctype_digit($segment)) {
-                        $embedUrl = 'https://player.vimeo.com/video/' . $segment;
-                        break;
-                    }
-                }
-            }
-        }
+        $isDirectVideo = $videoUrl && !str_contains(strtolower($videoUrl), 'youtube.com')
+            && !str_contains(strtolower($videoUrl), 'youtu.be')
+            && !str_contains(strtolower($videoUrl), 'vimeo.com');
 
         $summary = trim((string) ($instructor->short_bio ?? ''));
         if ($summary === '') {
@@ -53,106 +17,105 @@
         }
 
         return [
-            'videoUrl' => $videoUrl,
-            'embedUrl' => $embedUrl,
-            'poster' => asset($instructor->image),
-            'summary' => \Illuminate\Support\Str::limit($summary, 150),
+            'id' => $instructor->id,
+            'name' => $instructor->name,
+            'image' => asset($instructor->image),
+            'title' => $instructor->job_title ?: __('İngilizce Eğitmeni'),
+            'summary' => \Illuminate\Support\Str::limit($summary ?: __('Öğretmenin anlatım tarzını, enerjisini ve profil yaklaşımını kısa videodan inceleyebilirsin.'), 110),
             'detailUrl' => route('instructor-details', ['id' => $instructor->id, 'slug' => \Illuminate\Support\Str::slug($instructor->name)]),
+            'videoUrl' => $videoUrl,
+            'isDirectVideo' => $isDirectVideo,
         ];
-    };
+    })->filter(fn ($card) => filled($card['videoUrl']))->values();
 
-    $primaryInstructor = $featuredInstructorVideos->first();
-    $secondaryInstructors = $featuredInstructorVideos->slice(1)->values();
+    $videoCount = $cards->count();
 @endphp
 
-@if ($primaryInstructor)
-    @php $primaryVideo = $resolveInstructorVideo($primaryInstructor); @endphp
-
-    <section class="lf-instructor-videos section-py-110" id="teacher-intro-videos">
+@if ($videoCount)
+    <section class="lf-teacher-vault section-py-110" id="teacher-intro-videos">
         <div class="container">
-            <div class="lf-instructor-videos__shell">
-                <div class="lf-instructor-videos__head">
-                    <div>
-                        <p class="lf-instructor-videos__eyebrow">{{ __('Öğretmen Tanıtım Videoları') }}</p>
-                        <h2 class="lf-instructor-videos__title">{{ __('Ders almadan önce eğitmenini videodan tanı') }}</h2>
-                    </div>
-                    <p class="lf-instructor-videos__lead">
-                        {{ __('Her öğretmenin profil videosu ayrı gösterilir. Böylece stilini, enerjisini ve anlatımını dersten önce net biçimde görebilirsin.') }}
-                    </p>
-                </div>
-
-                <div class="row g-4 align-items-stretch">
-                    <div class="col-lg-7">
-                        <article class="lf-instructor-videos__feature">
-                            <div class="lf-instructor-videos__feature-media">
-                                @if ($primaryVideo['embedUrl'])
-                                    <iframe
-                                        src="{{ $primaryVideo['embedUrl'] }}"
-                                        title="{{ $primaryInstructor->name }}"
-                                        loading="lazy"
-                                        allowfullscreen
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share">
-                                    </iframe>
-                                @elseif ($primaryVideo['videoUrl'])
-                                    <video controls preload="metadata" playsinline poster="{{ $primaryVideo['poster'] }}">
-                                        <source src="{{ $primaryVideo['videoUrl'] }}">
-                                    </video>
-                                @else
-                                    <div class="lf-instructor-videos__empty">
-                                        <i class="fas fa-video"></i>
-                                        <span>{{ __('Video bulunamadı') }}</span>
-                                    </div>
-                                @endif
-                            </div>
-
-                            <div class="lf-instructor-videos__feature-body">
-                                <span class="lf-instructor-videos__pill">{{ __('Öne çıkan tanıtım videosu') }}</span>
-                                <h3>{{ $primaryInstructor->name }}</h3>
-                                <p class="lf-instructor-videos__role">{{ $primaryInstructor->job_title ?: __('Eğitmen') }}</p>
-                                <p class="lf-instructor-videos__summary">
-                                    {{ $primaryVideo['summary'] ?: __('Bu eğitmenin profil videosunu izleyerek ders tarzını ve anlatım yaklaşımını hızlıca inceleyebilirsin.') }}
-                                </p>
-                                <a href="{{ $primaryVideo['detailUrl'] }}" class="lf-instructor-videos__cta">
-                                    {{ __('Profili incele') }}
-                                </a>
-                            </div>
-                        </article>
+            <div class="lf-teacher-vault__shell">
+                <div class="lf-teacher-vault__header">
+                    <div class="lf-teacher-vault__copy">
+                        <span class="lf-teacher-vault__eyebrow">{{ __('Öğretmen Tanıtım Videoları') }}</span>
+                        <h2 class="lf-teacher-vault__title">{{ __('Tüm öğretmen videolarını tek alanda incele') }}</h2>
+                        <p class="lf-teacher-vault__lead">
+                            {{ __('Topluluk alanından ayrı, sadece öğretmen videolarına ayrılmış temiz bir vitrin. Öğretmenleri karşılaştır, stilini gör ve sonra profil detayına geç.') }}
+                        </p>
                     </div>
 
-                    <div class="col-lg-5">
-                        <div class="lf-instructor-videos__stack">
-                            @foreach ($secondaryInstructors as $instructor)
-                                @php $video = $resolveInstructorVideo($instructor); @endphp
-                                <article class="lf-instructor-videos__mini">
-                                    <div class="lf-instructor-videos__mini-media">
-                                        @if ($video['embedUrl'])
-                                            <iframe
-                                                src="{{ $video['embedUrl'] }}"
-                                                title="{{ $instructor->name }}"
-                                                loading="lazy"
-                                                allowfullscreen
-                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share">
-                                            </iframe>
-                                        @elseif ($video['videoUrl'])
-                                            <video controls preload="metadata" playsinline poster="{{ $video['poster'] }}">
-                                                <source src="{{ $video['videoUrl'] }}">
-                                            </video>
-                                        @else
-                                            <div class="lf-instructor-videos__empty">
-                                                <i class="fas fa-video"></i>
-                                                <span>{{ __('Video bulunamadı') }}</span>
-                                            </div>
-                                        @endif
-                                    </div>
-                                    <div class="lf-instructor-videos__mini-body">
-                                        <strong>{{ $instructor->name }}</strong>
-                                        <span>{{ $instructor->job_title ?: __('Eğitmen') }}</span>
-                                        <a href="{{ $video['detailUrl'] }}">{{ __('Profili incele') }}</a>
-                                    </div>
-                                </article>
-                            @endforeach
+                    <div class="lf-teacher-vault__meta">
+                        <div class="lf-teacher-vault__metric">
+                            <strong>{{ $videoCount }}</strong>
+                            <span>{{ __('aktif öğretmen videosu') }}</span>
+                        </div>
+                        <div class="lf-teacher-vault__metric">
+                            <strong>{{ __('Tamamı ayrı') }}</strong>
+                            <span>{{ __('topluluk akışından bağımsız') }}</span>
                         </div>
                     </div>
+                </div>
+
+                <div class="lf-teacher-vault__grid">
+                    @foreach ($cards as $card)
+                        <article class="lf-teacher-vault__card">
+                            <div class="lf-teacher-vault__media">
+                                <img src="{{ $card['image'] }}" alt="{{ $card['name'] }}">
+
+                                <div class="lf-teacher-vault__overlay">
+                                    <span class="lf-teacher-vault__tag">{{ __('Tanıtım videosu') }}</span>
+
+                                    @if ($card['isDirectVideo'])
+                                        <button
+                                            type="button"
+                                            class="lf-teacher-vault__play js-lf-open-video-modal"
+                                            data-video-src="{{ $card['videoUrl'] }}"
+                                            aria-label="{{ __('Videoyu izle') }}"
+                                        >
+                                            <i class="fas fa-play" aria-hidden="true"></i>
+                                        </button>
+                                    @else
+                                        <a
+                                            href="{{ $card['detailUrl'] }}"
+                                            class="lf-teacher-vault__play"
+                                            aria-label="{{ __('Profilden videoyu izle') }}"
+                                        >
+                                            <i class="fas fa-play" aria-hidden="true"></i>
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <div class="lf-teacher-vault__body">
+                                <div class="lf-teacher-vault__person">
+                                    <strong>{{ $card['name'] }}</strong>
+                                    <span>{{ $card['title'] }}</span>
+                                </div>
+
+                                <p class="lf-teacher-vault__summary">{{ $card['summary'] }}</p>
+
+                                <div class="lf-teacher-vault__actions">
+                                    @if ($card['isDirectVideo'])
+                                        <button
+                                            type="button"
+                                            class="lf-teacher-vault__action js-lf-open-video-modal"
+                                            data-video-src="{{ $card['videoUrl'] }}"
+                                        >
+                                            {{ __('Videoyu izle') }}
+                                        </button>
+                                    @else
+                                        <a href="{{ $card['detailUrl'] }}" class="lf-teacher-vault__action">
+                                            {{ __('Profilden izle') }}
+                                        </a>
+                                    @endif
+
+                                    <a href="{{ $card['detailUrl'] }}" class="lf-teacher-vault__link">
+                                        {{ __('Profili incele') }}
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                    @endforeach
                 </div>
             </div>
         </div>
@@ -161,232 +124,286 @@
 
 @push('styles')
     <style>
-        .lf-instructor-videos {
+        .lf-teacher-vault {
             background:
-                radial-gradient(700px circle at 12% 18%, rgba(246, 161, 5, 0.12), transparent 42%),
-                linear-gradient(180deg, #f7fbff 0%, #eef5fb 100%);
+                radial-gradient(800px circle at 10% 12%, rgba(246, 161, 5, 0.1), transparent 38%),
+                radial-gradient(900px circle at 92% 8%, rgba(14, 92, 147, 0.08), transparent 44%),
+                linear-gradient(180deg, #f7fbff 0%, #eef4f9 100%);
         }
 
-        .lf-instructor-videos__shell {
-            padding: 38px;
+        .lf-teacher-vault__shell {
+            padding: 42px;
             border-radius: 34px;
-            border: 1px solid rgba(15, 71, 113, 0.08);
             background: rgba(255, 255, 255, 0.88);
-            box-shadow: 0 34px 90px rgba(10, 49, 83, 0.12);
+            border: 1px solid rgba(13, 71, 112, 0.08);
+            box-shadow: 0 26px 80px rgba(9, 37, 61, 0.1);
         }
 
-        .lf-instructor-videos__head {
-            display: grid;
-            grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr);
-            gap: 24px;
+        .lf-teacher-vault__header {
+            display: flex;
+            justify-content: space-between;
+            gap: 28px;
             align-items: end;
-            margin-bottom: 28px;
+            margin-bottom: 30px;
         }
 
-        .lf-instructor-videos__eyebrow {
-            margin: 0 0 10px;
+        .lf-teacher-vault__copy {
+            max-width: 760px;
+        }
+
+        .lf-teacher-vault__eyebrow {
+            display: inline-flex;
+            margin-bottom: 12px;
             color: #f6a105;
             font-size: 12px;
-            font-weight: 900;
-            letter-spacing: .18em;
+            font-weight: 1000;
+            letter-spacing: 0.18em;
             text-transform: uppercase;
         }
 
-        .lf-instructor-videos__title {
-            margin: 0;
-            color: #082946;
-            font-size: 42px;
-            line-height: 1.05;
+        .lf-teacher-vault__title {
+            margin: 0 0 12px;
+            color: #092947;
+            font-size: 44px;
+            line-height: 1.04;
             font-weight: 1000;
-            max-width: 680px;
+            max-width: 740px;
         }
 
-        .lf-instructor-videos__lead {
+        .lf-teacher-vault__lead {
             margin: 0;
-            color: #56738f;
+            color: #5a748d;
             font-size: 16px;
-            line-height: 1.75;
+            line-height: 1.8;
             font-weight: 700;
         }
 
-        .lf-instructor-videos__feature,
-        .lf-instructor-videos__mini {
-            height: 100%;
-            border-radius: 28px;
-            border: 1px solid rgba(10, 61, 101, 0.08);
-            background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
-            box-shadow: 0 24px 60px rgba(8, 41, 70, 0.1);
+        .lf-teacher-vault__meta {
+            display: grid;
+            gap: 14px;
+            min-width: 240px;
+        }
+
+        .lf-teacher-vault__metric {
+            padding: 18px 20px;
+            border-radius: 22px;
+            background: linear-gradient(180deg, #f8fbff 0%, #edf4fa 100%);
+            border: 1px solid rgba(13, 71, 112, 0.08);
+        }
+
+        .lf-teacher-vault__metric strong {
+            display: block;
+            color: #0e5c93;
+            font-size: 22px;
+            line-height: 1.1;
+            font-weight: 1000;
+        }
+
+        .lf-teacher-vault__metric span {
+            display: block;
+            margin-top: 6px;
+            color: #67829b;
+            font-size: 13px;
+            line-height: 1.6;
+            font-weight: 700;
+        }
+
+        .lf-teacher-vault__grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .lf-teacher-vault__card {
             overflow: hidden;
+            border-radius: 28px;
+            background: #fff;
+            border: 1px solid rgba(13, 71, 112, 0.08);
+            box-shadow: 0 20px 54px rgba(12, 42, 69, 0.08);
+            transition: transform .18s ease, box-shadow .18s ease;
         }
 
-        .lf-instructor-videos__feature-media,
-        .lf-instructor-videos__mini-media {
+        .lf-teacher-vault__card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 28px 64px rgba(12, 42, 69, 0.12);
+        }
+
+        .lf-teacher-vault__media {
             position: relative;
-            background: #dbe8f4;
+            aspect-ratio: 4 / 3;
+            overflow: hidden;
+            background: #dce8f2;
         }
 
-        .lf-instructor-videos__feature-media {
-            aspect-ratio: 16 / 9;
-        }
-
-        .lf-instructor-videos__mini-media {
-            aspect-ratio: 16 / 10;
-        }
-
-        .lf-instructor-videos__feature-media video,
-        .lf-instructor-videos__feature-media iframe,
-        .lf-instructor-videos__mini-media video,
-        .lf-instructor-videos__mini-media iframe {
+        .lf-teacher-vault__media img {
             width: 100%;
             height: 100%;
-            border: 0;
-            display: block;
             object-fit: cover;
-            background: #dbe8f4;
+            display: block;
         }
 
-        .lf-instructor-videos__feature-body {
-            padding: 24px 26px 28px;
+        .lf-teacher-vault__overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding: 18px;
+            background: linear-gradient(180deg, rgba(7, 17, 30, 0.04) 0%, rgba(7, 17, 30, 0.18) 48%, rgba(7, 17, 30, 0.58) 100%);
         }
 
-        .lf-instructor-videos__pill {
+        .lf-teacher-vault__tag {
             display: inline-flex;
             align-items: center;
             min-height: 34px;
-            padding: 0 14px;
+            padding: 0 12px;
             border-radius: 999px;
-            background: rgba(246, 161, 5, 0.12);
-            color: #9a6500;
+            background: rgba(255, 255, 255, 0.92);
+            color: #123f6a;
             font-size: 11px;
-            font-weight: 900;
-            letter-spacing: .1em;
+            font-weight: 1000;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
         }
 
-        .lf-instructor-videos__feature-body h3 {
-            margin: 16px 0 8px;
-            color: #082946;
-            font-size: 30px;
-            font-weight: 900;
-        }
-
-        .lf-instructor-videos__role {
-            margin: 0 0 12px;
+        .lf-teacher-vault__play {
+            width: 58px;
+            height: 58px;
+            display: inline-grid;
+            place-items: center;
+            border: 0;
+            border-radius: 50%;
+            background: #ffffff;
             color: #0e5c93;
+            box-shadow: 0 18px 34px rgba(0, 0, 0, 0.18);
+            text-decoration: none;
+            transition: transform .18s ease, background .18s ease, color .18s ease;
+        }
+
+        .lf-teacher-vault__play:hover {
+            transform: scale(1.05);
+            background: #0e5c93;
+            color: #fff;
+        }
+
+        .lf-teacher-vault__body {
+            padding: 22px 22px 24px;
+        }
+
+        .lf-teacher-vault__person strong {
+            display: block;
+            color: #092947;
+            font-size: 24px;
+            line-height: 1.1;
+            font-weight: 1000;
+        }
+
+        .lf-teacher-vault__person span {
+            display: block;
+            margin-top: 6px;
+            color: #54718a;
             font-size: 14px;
-            font-weight: 900;
+            line-height: 1.5;
+            font-weight: 700;
         }
 
-        .lf-instructor-videos__summary {
-            margin: 0;
-            color: #566f88;
-            font-size: 15px;
-            line-height: 1.8;
-            font-weight: 600;
+        .lf-teacher-vault__summary {
+            margin: 14px 0 0;
+            color: #617b94;
+            font-size: 14px;
+            line-height: 1.75;
+            font-weight: 700;
+            min-height: 74px;
         }
 
-        .lf-instructor-videos__cta {
+        .lf-teacher-vault__actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .lf-teacher-vault__action {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            margin-top: 18px;
-            min-height: 48px;
-            padding: 0 20px;
+            min-height: 46px;
+            padding: 0 18px;
+            border: 0;
             border-radius: 999px;
             background: #0e5c93;
             color: #fff;
             font-size: 12px;
-            font-weight: 900;
-            letter-spacing: .12em;
+            font-weight: 1000;
+            letter-spacing: 0.1em;
             text-transform: uppercase;
             text-decoration: none;
-            transition: transform .18s ease, background .18s ease;
         }
 
-        .lf-instructor-videos__cta:hover {
-            transform: translateY(-2px);
-            background: #083d65;
-            color: #fff;
-        }
-
-        .lf-instructor-videos__stack {
-            display: grid;
-            gap: 18px;
-            height: 100%;
-        }
-
-        .lf-instructor-videos__mini {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr);
-        }
-
-        .lf-instructor-videos__mini-body {
-            display: grid;
-            gap: 6px;
-            padding: 18px 18px 20px;
-        }
-
-        .lf-instructor-videos__mini-body strong {
-            color: #082946;
-            font-size: 20px;
-            font-weight: 900;
-            line-height: 1.1;
-        }
-
-        .lf-instructor-videos__mini-body span {
-            color: #56738f;
-            font-size: 14px;
-            font-weight: 700;
-        }
-
-        .lf-instructor-videos__mini-body a {
-            margin-top: 4px;
+        .lf-teacher-vault__link {
             color: #0e5c93;
             font-size: 12px;
-            font-weight: 900;
-            letter-spacing: .1em;
+            font-weight: 1000;
+            letter-spacing: 0.08em;
             text-transform: uppercase;
             text-decoration: none;
         }
 
-        .lf-instructor-videos__empty {
-            display: grid;
-            place-items: center;
-            gap: 10px;
-            height: 100%;
-            color: #56738f;
-            font-weight: 800;
-        }
-
-        .lf-instructor-videos__empty i {
-            color: #f6a105;
-            font-size: 26px;
+        @media (max-width: 1199px) {
+            .lf-teacher-vault__grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
         }
 
         @media (max-width: 991px) {
-            .lf-instructor-videos__shell {
+            .lf-teacher-vault__shell {
                 padding: 24px;
                 border-radius: 26px;
             }
 
-            .lf-instructor-videos__head {
+            .lf-teacher-vault__header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .lf-teacher-vault__meta {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                min-width: 0;
+            }
+
+            .lf-teacher-vault__title {
+                font-size: 34px;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .lf-teacher-vault__grid {
                 grid-template-columns: 1fr;
             }
 
-            .lf-instructor-videos__title {
-                font-size: 32px;
+            .lf-teacher-vault__meta {
+                grid-template-columns: 1fr;
             }
         }
 
         @media (max-width: 575px) {
-            .lf-instructor-videos__title {
+            .lf-teacher-vault__title {
                 font-size: 28px;
             }
 
-            .lf-instructor-videos__feature-body,
-            .lf-instructor-videos__mini-body {
+            .lf-teacher-vault__body {
                 padding-left: 16px;
                 padding-right: 16px;
+            }
+
+            .lf-teacher-vault__actions {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .lf-teacher-vault__action {
+                width: 100%;
             }
         }
     </style>
