@@ -114,7 +114,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('messages')->controller(MessageController::class)->group(function () {
         Route::get('threads', 'threads');
         Route::get('thread/{user}', 'thread')->whereNumber('user');
+        Route::get('thread/{user}/moderation', 'moderation')->whereNumber('user');
         Route::post('thread/{user}', 'send')->whereNumber('user');
+        Route::post('thread/{user}/block', 'block')->whereNumber('user');
+        Route::delete('thread/{user}/block', 'unblock')->whereNumber('user');
+        Route::post('thread/{user}/report', 'report')->whereNumber('user');
     });
     Route::controller(CartController::class)->group(function () {
         Route::get('cart-list', 'index');
