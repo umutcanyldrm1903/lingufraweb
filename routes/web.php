@@ -92,6 +92,7 @@ Route::group(['middleware' => 'maintenance.mode'], function () {
     Route::get('contact', [ContactController::class, 'index'])->name('contact.index');
     Route::post('contact/send-mail', [ContactController::class, 'sendMail'])->name('contact.send-mail');
     /** Legal pages */
+    Route::view('mobile-app-privacy-policy', 'frontend.pages.mobile-app-privacy-policy')->name('mobile-app-privacy-policy');
     Route::view('teslimat-ve-iade-sartlari', 'frontend.pages.delivery-return-terms')->name('delivery-return-terms');
     Route::view('mesafeli-satis-sozlesmesi', 'frontend.pages.distance-sales-contract')->name('distance-sales-contract');
 
