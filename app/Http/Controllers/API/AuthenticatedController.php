@@ -26,13 +26,12 @@ class AuthenticatedController extends Controller {
             'role' => ['nullable', Rule::in(['student', 'instructor'])],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
-            'phone' => ['required', 'string', 'max:50'],
+            'phone' => ['nullable', 'string', 'max:50'],
             'password' => ['required', 'confirmed', 'min:4', 'max:100'],
         ], [
             'name.required' => 'Name is required',
             'email.required' => 'Email is required',
             'email.unique' => 'Email already exist',
-            'phone.required' => 'Phone is required',
             'password.required' => 'Password is required',
             'password.confirmed' => 'Confirm password does not match',
             'password.min' => 'You have to provide minimum 4 character password',
@@ -61,7 +60,8 @@ class AuthenticatedController extends Controller {
                 'email_verified_at'  => now(),
             ]);
 
-            $user->phone = $request->phone;
+            $phone = trim((string) $request->input('phone', ''));
+            $user->phone = $phone !== '' ? $phone : null;
             $user->save();
 
             if ($role === 'instructor' && class_exists(InstructorRequest::class)) {

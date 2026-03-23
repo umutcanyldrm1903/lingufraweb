@@ -24,7 +24,6 @@ use App\Models\CourseChapterItem;
 use App\Models\CourseChapterLesson;
 use App\Models\CourseProgress;
 use App\Models\CourseReview;
-use App\Models\CourseLiveClass;
 use App\Models\LessonQuestion;
 use App\Models\LessonReply;
 use App\Models\Quiz;
@@ -38,7 +37,6 @@ use App\Models\StudentLibraryItem;
 use App\Models\UserEducation;
 use App\Models\UserExperience;
 use App\Models\User;
-use App\Models\LiveLessonAttendance;
 use App\Models\Message;
 use App\Models\MobileNotificationRead;
 use Carbon\Carbon;
@@ -108,38 +106,6 @@ class DashboardController extends Controller {
         $defaultDurationMinutes = (int) config('student_plans.default_lesson_duration', 40);
         $now = now();
 
-        $courseIds = Enrollment::query()
-            ->where('user_id', $user->id)
-            ->where('has_access', 1)
-            ->pluck('course_id')
-            ->filter()
-            ->unique()
-            ->values();
-
-        $courseLiveClasses = collect();
-        if ($courseIds->isNotEmpty()) {
-            $courseLiveClasses = CourseLiveClass::query()
-                ->whereNotNull('start_time')
-                ->whereHas('lesson', function ($query) use ($courseIds) {
-                    $query->whereIn('course_id', $courseIds);
-                })
-                ->with([
-                    'lesson:id,course_id,title,duration',
-                    'lesson.course:id,slug,title,thumbnail,instructor_id',
-                    'lesson.course.instructor:id,name,image',
-                ])
-                ->orderBy('start_time')
-                ->get();
-        }
-
-        $attendedLessonIds = [];
-        if (Schema::hasTable('live_lesson_attendances')) {
-            $attendedLessonIds = LiveLessonAttendance::query()
-                ->where('user_id', $user->id)
-                ->pluck('lesson_id')
-                ->toArray();
-        }
-
         $studentLiveLessons = collect();
         $attendedStudentLessonIds = [];
 
@@ -156,62 +122,6 @@ class DashboardController extends Controller {
                 ->where('student_id', $user->id)
                 ->pluck('student_live_lesson_id')
                 ->toArray();
-        }
-
-        $courseUpcomingItems = collect();
-        $coursePastItems = collect();
-
-        foreach ($courseLiveClasses as $live) {
-            $lesson = $live->lesson;
-            $course = $lesson?->course;
-            $instructor = $course?->instructor;
-            $startTime = $live->start_time;
-            $durationMinutes = (int) ($lesson?->duration ?? $defaultDurationMinutes);
-            $endTime = $startTime ? $startTime->copy()->addMinutes($durationMinutes) : null;
-
-            $startWindow = $startTime ? $startTime->copy()->subMinutes(15) : null;
-            $canJoin = $startWindow && $endTime ? $now->between($startWindow, $endTime) : false;
-
-            $status = 'scheduled';
-            if ($endTime && $now->greaterThanOrEqualTo($endTime)) {
-                $status = 'completed';
-            } elseif ($startTime && $endTime && $now->between($startTime, $endTime)) {
-                $status = 'started';
-            }
-
-            $item = [
-                'kind' => 'course',
-                'id' => (int) $live->id,
-                'lesson_id' => $lesson?->id,
-                'title' => $lesson?->title ?: 'Canli Ders',
-                'course_title' => $course?->title,
-                'course_slug' => $course?->slug,
-                'instructor_name' => $instructor?->name,
-                'thumbnail' => $course?->thumbnail,
-                'start_time' => optional($startTime)->toIso8601String(),
-                'end_time' => optional($endTime)->toIso8601String(),
-                'duration_minutes' => $durationMinutes,
-                'type' => $live->type,
-                'meeting_id' => $canJoin ? $live->meeting_id : null,
-                'password' => $canJoin ? $live->password : null,
-                'join_url' => $canJoin ? $live->join_url : null,
-                'can_join' => $canJoin,
-                'attended' => in_array((int) ($lesson?->id ?? 0), $attendedLessonIds, true),
-                'status' => $status,
-            ];
-
-            $isUpcoming = false;
-            if ($endTime) {
-                $isUpcoming = $endTime->gt($now);
-            } elseif ($startTime) {
-                $isUpcoming = $startTime->greaterThanOrEqualTo($now);
-            }
-
-            if ($isUpcoming) {
-                $courseUpcomingItems->push($item);
-            } else {
-                $coursePastItems->push($item);
-            }
         }
 
         $studentUpcomingItems = collect();
@@ -240,8 +150,8 @@ class DashboardController extends Controller {
                 'kind' => 'student',
                 'id' => (int) $live->id,
                 'lesson_id' => (int) $live->id,
-                'title' => $live->title ?: 'Ozel Canli Ders',
-                'course_title' => 'Ozel Ders',
+                'title' => $live->title ?: 'Private Live Lesson',
+                'course_title' => 'Private Lesson',
                 'course_slug' => null,
                 'instructor_name' => $live->instructor?->name,
                 'thumbnail' => $live->instructor?->image,
@@ -271,13 +181,11 @@ class DashboardController extends Controller {
             }
         }
 
-        $upcomingLiveClasses = $courseUpcomingItems
-            ->merge($studentUpcomingItems)
+        $upcomingLiveClasses = $studentUpcomingItems
             ->sortBy('start_time')
             ->values();
 
-        $pastLiveClasses = $coursePastItems
-            ->merge($studentPastItems)
+        $pastLiveClasses = $studentPastItems
             ->sortByDesc('start_time')
             ->values();
 
@@ -1408,14 +1316,6 @@ class DashboardController extends Controller {
             return response()->json(['status' => 'error', 'message' => 'UnAuthenticated'], 401);
         }
 
-        $phoneDigits = preg_replace('/\D+/', '', (string) ($user->phone ?? ''));
-        if ($phoneDigits === '') {
-            return response()->json([
-                'status' => 'error',
-                'message' => __('Please add your phone number first.'),
-            ], 422);
-        }
-
         if (!Schema::hasTable('trial_lesson_requests')) {
             return response()->json([
                 'status' => 'error',
@@ -1453,7 +1353,7 @@ class DashboardController extends Controller {
 
         DB::table('trial_lesson_requests')->insert([
             'user_id' => $user->id,
-            'phone' => (string) ($user->phone ?? ''),
+            'phone' => ($phone = trim((string) ($user->phone ?? ''))) !== '' ? $phone : null,
             'status' => 'pending',
             'created_at' => now(),
             'updated_at' => now(),
@@ -1462,7 +1362,7 @@ class DashboardController extends Controller {
         $whatsappLeadPhone = preg_replace('/\D+/', '', (string) config('app.whatsapp_lead_phone', ''));
         $trialMessage = "Merhaba, deneme dersi ayirtmak istiyorum.\n"
             . 'Ad Soyad: ' . ($user->name ?? '') . "\n"
-            . 'Telefon: ' . ($user->phone ?? '') . "\n"
+            . 'Telefon: ' . (($user->phone ?? '') !== '' ? $user->phone : '-') . "\n"
             . 'E-posta: ' . ($user->email ?? '') . "\n"
             . 'Kullanıcı ID: ' . ($user->id ?? '');
 

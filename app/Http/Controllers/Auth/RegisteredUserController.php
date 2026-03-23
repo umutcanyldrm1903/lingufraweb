@@ -36,7 +36,7 @@ class RegisteredUserController extends Controller
             'role' => ['nullable', Rule::in(['student', 'instructor'])],
             'full_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
-            'phone' => ['required', 'string', 'max:50'],
+            'phone' => ['nullable', 'string', 'max:50'],
             'referral_code' => ['nullable', 'string', 'max:50'],
             'password' => ['required', 'confirmed', 'min:4', 'max:100'],
 
@@ -47,7 +47,6 @@ class RegisteredUserController extends Controller
             'full_name.required' => __('Name is required'),
             'email.required' => __('Email is required'),
             'email.unique' => __('Email already exist'),
-            'phone.required' => __('Phone is required'),
             'password.required' => __('Password is required'),
             'password.confirmed' => __('Confirm password does not match'),
             'password.min' => __('You have to provide minimum 4 character password'),
@@ -76,7 +75,8 @@ class RegisteredUserController extends Controller
         ]);
 
         if ($user) {
-            $user->phone = $request->phone;
+            $phone = trim((string) $request->input('phone', ''));
+            $user->phone = $phone !== '' ? $phone : null;
             $user->save();
 
             UserOnboarding::updateOrCreate(

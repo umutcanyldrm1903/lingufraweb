@@ -711,14 +711,6 @@ class StudentDashboardController extends Controller {
             return redirect()->route('login');
         }
 
-        $phoneDigits = preg_replace('/\\D+/', '', (string) ($user->phone ?? ''));
-        if ($phoneDigits === '') {
-            return redirect()->route('student.setting.index')->with([
-                'messege' => __('Please add your phone number first.'),
-                'alert-type' => 'error',
-            ]);
-        }
-
         if (!Schema::hasTable('trial_lesson_requests')) {
             return redirect()->back()->with([
                 'messege' => __('Trial request table not found. Please run migrations.'),
@@ -757,7 +749,7 @@ class StudentDashboardController extends Controller {
 
         DB::table('trial_lesson_requests')->insert([
             'user_id' => $user->id,
-            'phone' => (string) ($user->phone ?? ''),
+            'phone' => ($phone = trim((string) ($user->phone ?? ''))) !== '' ? $phone : null,
             'status' => 'pending',
             'created_at' => now(),
             'updated_at' => now(),

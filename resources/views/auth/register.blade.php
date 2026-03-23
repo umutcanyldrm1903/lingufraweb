@@ -48,8 +48,8 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-grp">
-                                <label>{{ __('Phone (WhatsApp)') }} <code>*</code></label>
-                                <input type="text" class="form-control" name="phone" value="{{ old('phone') }}" placeholder="{{ __('Phone Number') }}" autocomplete="tel" inputmode="tel" required>
+                                <label>{{ __('Phone (WhatsApp)') }}</label>
+                                <input type="text" class="form-control" name="phone" value="{{ old('phone') }}" placeholder="{{ __('Phone Number') }}" autocomplete="tel" inputmode="tel">
                                 <x-frontend.validation-error name="phone" />
                             </div>
                         </div>
