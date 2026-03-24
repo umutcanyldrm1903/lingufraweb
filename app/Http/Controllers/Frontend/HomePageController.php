@@ -12,6 +12,7 @@ use App\Models\UserEducation;
 use App\Models\UserExperience;
 use App\Rules\CustomRecaptcha;
 use App\Support\CorporateBrandCatalog;
+use App\Support\SeoBlogLibrary;
 use App\Traits\MailSenderTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -112,9 +113,13 @@ class HomePageController extends Controller {
 
         $testimonials = Testimonial::all();
 
-        $featuredBlogs = Blog::with(['translation', 'author'])
+        $featuredBlogs = Blog::with(['translation', 'category.translation', 'author'])
             ->whereHas('category', function ($q) {$q->where('status', 1);})
             ->where(['show_homepage' => 1, 'status' => 1])->orderBy('created_at', 'desc')->limit(4)->get();
+        $featuredBlogs = app(SeoBlogLibrary::class)->featured(
+            app(SeoBlogLibrary::class)->mergeWithDatabase($featuredBlogs),
+            4
+        );
         $sectionSetting = SectionSetting::first();
 
         return view('frontend.home.' . $theme_name . '.index', compact(
@@ -183,6 +188,14 @@ class HomePageController extends Controller {
                 'weekly',
                 '0.7'
             ));
+        $staticBlogUrls = app(SeoBlogLibrary::class)
+            ->mergeWithDatabase(collect())
+            ->map(fn($blog) => $this->sitemapEntry(
+                route('blog.show', $blog->slug),
+                $blog->updated_at ?? $blog->created_at,
+                'weekly',
+                '0.7'
+            ));
 
         $customPageUrls = CustomPage::query()
             ->select(['slug', 'updated_at', 'created_at'])
@@ -214,6 +227,7 @@ class HomePageController extends Controller {
         $urls = $staticUrls
             ->merge($courseUrls)
             ->merge($blogUrls)
+            ->merge($staticBlogUrls)
             ->merge($customPageUrls)
             ->merge($instructorUrls)
             ->unique('loc')

@@ -4,40 +4,42 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Rules\CustomRecaptcha;
+use App\Support\SeoBlogLibrary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Modules\Blog\app\Models\Blog;
-use Modules\Blog\app\Models\BlogCategory;
 use Modules\Blog\app\Models\BlogComment;
+use Throwable;
 
 class BlogController extends Controller
 {
-    function index() {
-        $query = Blog::query();
-        $query->when(request('search'), function($query) {
-            $query->whereHas('translation', function($query) {
-                $query->where('title', 'like', '%' . request('search') . '%')
-                    ->orWhere('description', 'like', '%' . request('search') . '%');
-            });
-        });
-        $query->when(request('category'), function($query) {
-            $query->whereHas('category', function($query) {
-                $query->where('slug', request('category'));
-            });
-        });
-        $query->whereHas('category', function($q) { $q->where('status', 1); });
-        $blogs = $query->where(['status' => 1])->orderBy('created_at', 'desc')->paginate(9);
+    private SeoBlogLibrary $seoBlogLibrary;
 
-        $categories = BlogCategory::where('status', 1)->get();
-        $popularBlogs = Blog::where(['status' => 1])->whereHas('category', function($q) { $q->where('status', 1); })->where('is_popular', 1)->orderBy('created_at', 'desc')->limit(8)->get();
+    public function __construct(SeoBlogLibrary $seoBlogLibrary)
+    {
+        $this->seoBlogLibrary = $seoBlogLibrary;
+    }
+
+    function index() {
+        $allBlogs = $this->allBlogs();
+        $filteredBlogs = $this->seoBlogLibrary->filter($allBlogs, request('search'), request('category'));
+        $blogs = $this->seoBlogLibrary->paginate($filteredBlogs, 9);
+        $categories = $this->seoBlogLibrary->categories($allBlogs);
+        $popularBlogs = $this->seoBlogLibrary->popular($allBlogs, 8);
+
         return view('frontend.pages.blog', compact('blogs', 'categories', 'popularBlogs'));
     }
 
     function show(string $slug) {
-       $blog = Blog::where('slug', $slug)->whereHas('category', function($q) { $q->where('status', 1); })->firstOrFail();
-       $latestBlogs = Blog::where(['status' => 1])->where('id', '!=', $blog->id)->orderBy('created_at', 'desc')->limit(8)->get();
-       $categories = BlogCategory::where('status', 1)->get();
-       $comments = BlogComment::where(['blog_id' => $blog->id])->where('status', 1)->orderBy('created_at', 'desc')->get();
+       $allBlogs = $this->allBlogs();
+       $blog = $allBlogs->firstWhere('slug', $slug);
+       abort_if(!$blog, 404);
+
+       $latestBlogs = $this->seoBlogLibrary->latest($allBlogs, $blog->slug, 8);
+       $categories = $this->seoBlogLibrary->categories($allBlogs);
+       $comments = data_get($blog, 'is_static')
+            ? collect()
+            : BlogComment::where(['blog_id' => $blog->id])->where('status', 1)->orderBy('created_at', 'desc')->get();
 
        return view('frontend.pages.blog-details', compact('blog', 'latestBlogs', 'categories', 'comments'));
     }
@@ -59,5 +61,22 @@ class BlogController extends Controller
        $comment->comment = $request->comment;
        $comment->save();
        return redirect()->back()->withFragment('comments')->with(['messege' => __('Comment added successfully. waiting for approval'), 'alert-type' => 'success']);
+    }
+
+    private function allBlogs()
+    {
+        try {
+            $databaseBlogs = Blog::with(['translation', 'category.translation', 'author'])
+                ->whereHas('category', function ($query) {
+                    $query->where('status', 1);
+                })
+                ->where('status', 1)
+                ->orderBy('created_at', 'desc')
+                ->get();
+        } catch (Throwable) {
+            $databaseBlogs = collect();
+        }
+
+        return $this->seoBlogLibrary->mergeWithDatabase($databaseBlogs);
     }
 }
