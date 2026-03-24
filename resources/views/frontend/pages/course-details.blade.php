@@ -1,21 +1,72 @@
 @extends('frontend.layouts.master')
+@php
+    $courseDescription = $course->seo_description
+        ?: \Illuminate\Support\Str::of(strip_tags((string) $course->description))->squish()->limit(160, '...')->toString();
+    $courseKeywords = collect([
+        $course?->title,
+        $course?->category?->translation?->name,
+        $course?->instructor?->name,
+        $setting->app_name,
+        'online course',
+        'english lesson',
+    ])->filter()->implode(', ');
+    $courseRatingValue = number_format((float) $course->reviews()->where('status', 1)->avg('rating'), 1, '.', '');
+    $courseRatingCount = (int) $course->reviews()->where('status', 1)->count();
+    $coursePrice = $course->discount ?: $course->price;
+@endphp
 @section('meta_title', $course?->title . ' || ' . $setting->app_name)
-@push('custom_meta')
-    <meta property="description" content="{{ $course->seo_description }}" />
-    <meta property="og:title" content="{{ $course?->title }}" />
-    <meta property="og:description" content="{{ $course->seo_description }}" />
-    <meta property="og:image" content="{{ asset($course->thumbnail) }}" />
-    <meta property="og:URL" content="{{ url()->current() }}" />
-    <meta property="og:type" content="website" />
-@endpush
+@section('meta_description', $courseDescription)
+@section('meta_keywords', $courseKeywords)
+@section('canonical_url', route('course.show', $course->slug))
+@section('meta_image', $course->thumbnail)
 @push('styles')
     <link rel="stylesheet" href="{{ asset('frontend/css/shareon.min.css') }}">
+    <style>
+        .courses__details-links {
+            margin-top: 24px;
+            padding: 24px;
+            border-radius: 24px;
+            background: #f7fbff;
+            border: 1px solid rgba(14, 92, 147, 0.1);
+        }
+
+        .courses__details-links .title {
+            margin-bottom: 14px;
+        }
+
+        .courses__details-links-list {
+            display: grid;
+            gap: 10px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .courses__details-links-list a {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 16px;
+            background: #fff;
+            border: 1px solid rgba(14, 92, 147, 0.1);
+            color: var(--tg-heading-color);
+            font-weight: 800;
+        }
+
+        .courses__details-links-list a:hover {
+            border-color: rgba(246, 161, 5, 0.48);
+            color: var(--tg-theme-primary);
+        }
+    </style>
 @endpush
 @section('contents')
     <!-- breadcrumb-area -->
     <x-frontend.breadcrumb :title="__('Course Details')" :links="[
         ['url' => route('home'), 'text' => __('Home')],
-        ['url' => route('become-instructor'), 'text' => __('Course Details')],
+        ['url' => route('courses'), 'text' => __('Courses')],
+        ['url' => '', 'text' => $course?->title],
     ]" />
     <!-- breadcrumb-area-end -->
 
@@ -568,6 +619,35 @@
                                 <a class="twitter"></a>
                             </div>
                         </div>
+                        <div class="courses__details-links">
+                            <h5 class="title">{{ __('Explore More') }}</h5>
+                            <ul class="courses__details-links-list">
+                                <li>
+                                    <a href="{{ route('courses', ['category' => $course->category->id]) }}">
+                                        <span>{{ __('More courses in this category') }}</span>
+                                        <i class="flaticon-arrow-right"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('all-instructors') }}">
+                                        <span>{{ __('Compare instructors and teaching styles') }}</span>
+                                        <i class="flaticon-arrow-right"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('placement-test.show') }}">
+                                        <span>{{ __('Take the placement test before you enroll') }}</span>
+                                        <i class="flaticon-arrow-right"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('blogs') }}">
+                                        <span>{{ __('Read blog guides about language learning') }}</span>
+                                        <i class="flaticon-arrow-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                         <div class="courses__details-enroll">
                             <div class="tg-button-wrap">
                                 @if (in_array($course->id, session('enrollments') ?? []))
@@ -623,6 +703,72 @@
     </div>
     <!-- courses-details-area-end -->
 @endsection
+
+@push('structured_data')
+    @php
+        $courseSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Course',
+            'name' => $course?->title,
+            'description' => $courseDescription,
+            'url' => route('course.show', $course->slug),
+            'image' => asset($course->thumbnail),
+            'provider' => [
+                '@type' => 'EducationalOrganization',
+                'name' => $setting->app_name,
+                'url' => route('home'),
+            ],
+            'instructor' => [
+                '@type' => 'Person',
+                'name' => $course->instructor->name,
+                'url' => route('instructor-details', $course->instructor->id),
+            ],
+            'courseMode' => 'online',
+            'offers' => [
+                '@type' => 'Offer',
+                'url' => route('course.show', $course->slug),
+                'priceCurrency' => session('currency_code') ?? 'TRY',
+                'price' => number_format((float) $coursePrice, 2, '.', ''),
+                'availability' => 'https://schema.org/InStock',
+            ],
+        ];
+
+        if ($courseRatingCount > 0) {
+            $courseSchema['aggregateRating'] = [
+                '@type' => 'AggregateRating',
+                'ratingValue' => $courseRatingValue,
+                'reviewCount' => $courseRatingCount,
+            ];
+        }
+
+        $courseBreadcrumbSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [
+                [
+                    '@type' => 'ListItem',
+                    'position' => 1,
+                    'name' => 'Home',
+                    'item' => route('home'),
+                ],
+                [
+                    '@type' => 'ListItem',
+                    'position' => 2,
+                    'name' => 'Courses',
+                    'item' => route('courses'),
+                ],
+                [
+                    '@type' => 'ListItem',
+                    'position' => 3,
+                    'name' => $course?->title,
+                    'item' => route('course.show', $course->slug),
+                ],
+            ],
+        ];
+    @endphp
+    <script type="application/ld+json">{!! json_encode($courseSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
+    <script type="application/ld+json">{!! json_encode($courseBreadcrumbSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
+@endpush
 
 @push('scripts')
     <script src="{{ asset('frontend/js/default/course-details.js') }}"></script>

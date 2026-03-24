@@ -1,19 +1,24 @@
 @extends('frontend.layouts.master')
-@section('meta_title', $blog->translation->title . ' || ' . $setting->app_name)
-
-@push('custom_meta')
-    <meta name="description" content="{{ $blog->translation->seo_description }}">
-    <meta property="keywords" content="{{ getTags(json_decode($blog->tags)) }}" />
-    <meta property="og:title" content="{{ $blog->translation->seo_title }}" />
-    <meta property="og:description" content="{{ $blog->translation->seo_description }}" />
-    <meta property="og:image" content="{{ asset($blog->image) }}" />
-    <meta property="og:URL" content="{{ url()->current() }}" />
-    <meta property="og:type" content="website" />
-@endpush
+@php
+    $blogTitle = $blog->translation->seo_title ?: $blog->translation->title;
+    $blogDescription = $blog->translation->seo_description
+        ?: \Illuminate\Support\Str::of(strip_tags((string) $blog->translation->description))->squish()->limit(160, '...')->toString();
+    $blogKeywords = getTags(json_decode($blog->tags)) ?: collect([
+        $blog->translation->title,
+        $setting->app_name,
+        'blog',
+        'language learning',
+    ])->filter()->implode(', ');
+@endphp
+@section('meta_title', $blogTitle . ' || ' . $setting->app_name)
+@section('meta_description', $blogDescription)
+@section('meta_keywords', $blogKeywords)
+@section('canonical_url', route('blog.show', $blog->slug))
+@section('meta_image', $blog->image)
+@section('og_type', 'article')
 @push('styles')
     <link rel="stylesheet" href="{{ asset('frontend/css/shareon.min.css') }}">
 @endpush
-@section('meta_title', $setting->app_name . ' | ' . $blog->title)
 @section('contents')
     <!-- breadcrumb-area -->
     <x-frontend.breadcrumb :title="__('Blog Details')" :links="[
@@ -53,13 +58,13 @@
                                 <div class="row">
                                     <div class="col-xl-6 col-md-7">
                                         <div class="tg-post-tag">
-                                            @if($blog->tags)
-                                            <h5 class="tag-title">{{ __('Tags ') }}:</h5>
-                                            <ul class="list-wrap p-0 mb-0">
-                                                @foreach (json_decode($blog->tags) ?? [] as $tag)
-                                                    <li><a href="javascript:;">{{ $tag->value }}</a></li>
-                                                @endforeach
-                                            </ul>
+                                            @if ($blog->tags)
+                                                <h5 class="tag-title">{{ __('Tags ') }}:</h5>
+                                                <ul class="list-wrap p-0 mb-0">
+                                                    @foreach (json_decode($blog->tags) ?? [] as $tag)
+                                                        <li><a href="javascript:;">{{ $tag->value }}</a></li>
+                                                    @endforeach
+                                                </ul>
                                             @endif
                                         </div>
                                     </div>
@@ -214,6 +219,59 @@
     </section>
     <!-- blog-details-area-end -->
 @endsection
+
+@push('structured_data')
+    @php
+        $blogSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Article',
+            'headline' => $blog->translation->title,
+            'description' => $blogDescription,
+            'image' => [asset($blog->image)],
+            'datePublished' => optional($blog->created_at)->format(\DateTimeInterface::ATOM),
+            'dateModified' => optional($blog->updated_at ?? $blog->created_at)->format(\DateTimeInterface::ATOM),
+            'mainEntityOfPage' => route('blog.show', $blog->slug),
+            'author' => [
+                '@type' => 'Person',
+                'name' => $blog->author->name,
+            ],
+            'publisher' => [
+                '@type' => 'Organization',
+                'name' => $setting->app_name,
+                'logo' => [
+                    '@type' => 'ImageObject',
+                    'url' => asset($setting->logo ?? $setting->favicon),
+                ],
+            ],
+        ];
+        $blogBreadcrumbSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [
+                [
+                    '@type' => 'ListItem',
+                    'position' => 1,
+                    'name' => 'Home',
+                    'item' => route('home'),
+                ],
+                [
+                    '@type' => 'ListItem',
+                    'position' => 2,
+                    'name' => 'Blog',
+                    'item' => route('blogs'),
+                ],
+                [
+                    '@type' => 'ListItem',
+                    'position' => 3,
+                    'name' => $blog->translation->title,
+                    'item' => route('blog.show', $blog->slug),
+                ],
+            ],
+        ];
+    @endphp
+    <script type="application/ld+json">{!! json_encode($blogSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
+    <script type="application/ld+json">{!! json_encode($blogBreadcrumbSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
+@endpush
 
 @push('scripts')
     <script src="{{ asset('frontend/js/shareon.iife.js') }}"></script>

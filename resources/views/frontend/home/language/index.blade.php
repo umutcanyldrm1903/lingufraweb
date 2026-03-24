@@ -2,7 +2,9 @@
 
 @section('meta_title', (blank(data_get($seo_setting, 'home_page.seo_title')) || strcasecmp((string) data_get($seo_setting, 'home_page.seo_title'), 'SkillGro') === 0) ? ($setting->app_name ?? config('app.name')) : data_get($seo_setting, 'home_page.seo_title'))
 @section('meta_description', $seo_setting['home_page']['seo_description'])
-@section('meta_keywords', '')
+@section('meta_keywords', 'online ingilizce kursu, birebir ingilizce dersi, kurumsal ingilizce egitimi, seviye tespit sinavi, online dil okulu')
+@section('canonical_url', route('home'))
+@section('meta_image', $setting->logo ?? $setting->favicon ?? '')
 
 @section('contents')
     @if ($sectionSetting?->hero_section)
@@ -68,6 +70,46 @@
         @include('frontend.home.language.sections.blog-area')
     @endif
 
+    <section class="lf-seo-links section-py-100">
+        <div class="container">
+            <div class="lf-seo-links__shell">
+                <div class="lf-seo-links__copy">
+                    <span class="eyebrow">{{ __('One cikan sayfalar') }}</span>
+                    <h2 class="lf-seo-links__title">{{ __('Ziyaretcileri en hizli donusen sayfalara yonlendir') }}</h2>
+                    <p class="lf-seo-links__lead">
+                        {{ __('Programlar, kurumsal cozumler, egitmenler ve seviye testi arasinda guclu bir bag kurarak hem kullanici akislarini hem de site ici SEO sinyallerini guclendiriyoruz.') }}
+                    </p>
+                </div>
+                <div class="lf-seo-links__grid">
+                    <a href="{{ route('courses') }}" class="lf-seo-links__item">
+                        <strong>{{ __('Online Ingilizce Kurslari') }}</strong>
+                        <span>{{ __('Tum aktif programlari incele') }}</span>
+                    </a>
+                    <a href="{{ route('corporate.index') }}" class="lf-seo-links__item">
+                        <strong>{{ __('Kurumsal Ingilizce Egitimi') }}</strong>
+                        <span>{{ __('Sirketler icin teklif al') }}</span>
+                    </a>
+                    <a href="{{ route('all-instructors') }}" class="lf-seo-links__item">
+                        <strong>{{ __('Uzman Egitmenler') }}</strong>
+                        <span>{{ __('Ogretmen profillerini kesfet') }}</span>
+                    </a>
+                    <a href="{{ route('placement-test.show') }}" class="lf-seo-links__item">
+                        <strong>{{ __('Seviye Tespit Sinavi') }}</strong>
+                        <span>{{ __('2 dakikada seviyeni ogren') }}</span>
+                    </a>
+                    <a href="{{ route('blogs') }}" class="lf-seo-links__item">
+                        <strong>{{ __('Blog Rehberleri') }}</strong>
+                        <span>{{ __('Dil ogrenme ipuclarini oku') }}</span>
+                    </a>
+                    <a href="{{ route('contact.index') }}" class="lf-seo-links__item">
+                        <strong>{{ __('Iletisim ve Danismanlik') }}</strong>
+                        <span>{{ __('Ekiple dogrudan baglan') }}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     @if ($sectionSetting?->news_letter_section)
         @include('frontend.home.language.sections.newsletter-area')
     @endif
@@ -83,6 +125,45 @@
     </div>
 
 @endsection
+
+@push('structured_data')
+    @php
+        $homePageSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'WebPage',
+            'name' => $setting->app_name,
+            'url' => route('home'),
+            'description' => $seo_setting['home_page']['seo_description'],
+            'about' => [
+                ['@type' => 'Thing', 'name' => 'Online dil egitimi'],
+                ['@type' => 'Thing', 'name' => 'Kurumsal ingilizce egitimi'],
+                ['@type' => 'Thing', 'name' => 'Canli birebir dersler'],
+            ],
+        ];
+        $faqEntities = collect($faqs ?? [])
+            ->filter(fn($faq) => filled($faq?->question) && filled($faq?->answer))
+            ->map(fn($faq) => [
+                '@type' => 'Question',
+                'name' => trim(strip_tags((string) $faq->question)),
+                'acceptedAnswer' => [
+                    '@type' => 'Answer',
+                    'text' => trim(strip_tags((string) $faq->answer)),
+                ],
+            ])
+            ->values()
+            ->all();
+    @endphp
+    <script type="application/ld+json">{!! json_encode($homePageSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
+    @if (!empty($faqEntities))
+        <script type="application/ld+json">
+            {!! json_encode([
+                '@context' => 'https://schema.org',
+                '@type' => 'FAQPage',
+                'mainEntity' => $faqEntities,
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
+        </script>
+    @endif
+@endpush
 
 @push('styles')
     <style>
@@ -292,7 +373,8 @@
             }
 
             body.home_language .lang-community__shell,
-            body.home_language .lf-teacher-vault__shell {
+            body.home_language .lf-teacher-vault__shell,
+            body.home_language .lf-seo-links__shell {
                 padding: 24px !important;
                 border-radius: 24px !important;
             }
@@ -306,8 +388,13 @@
 
             body.home_language .lang-journey__grid,
             body.home_language .lang-community__showcase,
-            body.home_language .lf-video-showcase__grid {
+            body.home_language .lf-video-showcase__grid,
+            body.home_language .lf-seo-links__grid {
                 gap: 16px !important;
+            }
+
+            body.home_language .lf-seo-links__shell {
+                grid-template-columns: 1fr !important;
             }
         }
 
@@ -404,12 +491,89 @@
                 padding-left: 16px !important;
                 padding-right: 16px !important;
             }
+
+            body.home_language .lf-seo-links__grid {
+                grid-template-columns: 1fr !important;
+            }
+
+            body.home_language .lf-seo-links__item {
+                min-height: auto;
+            }
         }
 
         body.home_language .lf-video-showcase {
             position: relative;
             padding-top: 84px;
             padding-bottom: 84px;
+        }
+
+        body.home_language .lf-seo-links {
+            position: relative;
+        }
+
+        body.home_language .lf-seo-links__shell {
+            display: grid;
+            grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+            gap: 24px;
+            padding: 34px;
+            border-radius: 32px;
+            background: linear-gradient(135deg, rgba(14, 92, 147, 0.98), rgba(11, 63, 108, 0.98));
+            color: #fff;
+            box-shadow: 0 26px 60px rgba(15, 23, 42, 0.18);
+            overflow: hidden;
+        }
+
+        body.home_language .lf-seo-links__title {
+            margin: 0 0 12px;
+            color: #fff;
+            font-size: clamp(28px, 3vw, 40px);
+            line-height: 1.08;
+            font-weight: 1000;
+        }
+
+        body.home_language .lf-seo-links__lead {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.82);
+            font-size: 17px;
+            line-height: 1.8;
+            font-weight: 600;
+        }
+
+        body.home_language .lf-seo-links__grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        body.home_language .lf-seo-links__item {
+            display: grid;
+            gap: 6px;
+            min-height: 132px;
+            padding: 20px;
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.09);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: #fff;
+            text-decoration: none;
+            transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease;
+        }
+
+        body.home_language .lf-seo-links__item:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.14);
+            border-color: rgba(246, 161, 5, 0.48);
+        }
+
+        body.home_language .lf-seo-links__item strong {
+            font-size: 18px;
+            line-height: 1.3;
+            font-weight: 900;
+        }
+
+        body.home_language .lf-seo-links__item span {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            font-weight: 700;
         }
 
         body.home_language .lf-video-showcase::before {
@@ -622,6 +786,12 @@
             body.home_language .lf-video-showcase__grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
+
+            body.home_language .lf-seo-links__shell {
+                grid-template-columns: 1fr;
+                padding: 24px;
+                border-radius: 24px;
+            }
         }
 
         @media (max-width: 575px) {
@@ -641,6 +811,14 @@
 
             body.home_language .lf-video-showcase__subtitle {
                 font-size: 15px;
+            }
+
+            body.home_language .lf-seo-links__grid {
+                grid-template-columns: 1fr;
+            }
+
+            body.home_language .lf-seo-links__item {
+                min-height: auto;
             }
         }
     </style>

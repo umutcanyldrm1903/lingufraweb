@@ -15,6 +15,7 @@ use App\Support\CorporateBrandCatalog;
 use App\Traits\MailSenderTrait;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -136,6 +137,101 @@ class HomePageController extends Controller {
             'featuredBlogs',
             'sectionSetting'
         ));
+    }
+
+    public function sitemap(): Response {
+        $staticUrls = collect([
+            $this->sitemapEntry(route('home'), now(), 'daily', '1.0'),
+            $this->sitemapEntry(route('courses'), now(), 'daily', '0.9'),
+            $this->sitemapEntry(route('corporate.index'), now(), 'weekly', '0.9'),
+            $this->sitemapEntry(route('corporate.form'), now(), 'weekly', '0.6'),
+            $this->sitemapEntry(route('all-instructors'), now(), 'daily', '0.8'),
+            $this->sitemapEntry(route('blogs'), now(), 'daily', '0.8'),
+            $this->sitemapEntry(route('about-us'), now(), 'monthly', '0.7'),
+            $this->sitemapEntry(route('contact.index'), now(), 'monthly', '0.7'),
+            $this->sitemapEntry(route('placement-test.show'), now(), 'weekly', '0.8'),
+            $this->sitemapEntry(route('mobile-app-privacy-policy'), now(), 'yearly', '0.3'),
+            $this->sitemapEntry(route('delivery-return-terms'), now(), 'yearly', '0.3'),
+            $this->sitemapEntry(route('distance-sales-contract'), now(), 'yearly', '0.3'),
+        ]);
+
+        $courseUrls = Course::query()
+            ->where('status', 'active')
+            ->select(['slug', 'updated_at', 'created_at'])
+            ->get()
+            ->map(fn($course) => $this->sitemapEntry(
+                route('course.show', $course->slug),
+                $course->updated_at ?? $course->created_at,
+                'weekly',
+                '0.8'
+            ));
+
+        $blogUrls = Blog::query()
+            ->where('status', 1)
+            ->select(['slug', 'updated_at', 'created_at'])
+            ->get()
+            ->map(fn($blog) => $this->sitemapEntry(
+                route('blog.show', $blog->slug),
+                $blog->updated_at ?? $blog->created_at,
+                'weekly',
+                '0.7'
+            ));
+
+        $customPageUrls = CustomPage::query()
+            ->select(['slug', 'updated_at', 'created_at'])
+            ->get()
+            ->map(fn($page) => $this->sitemapEntry(
+                route('custom-page', $page->slug),
+                $page->updated_at ?? $page->created_at,
+                'monthly',
+                '0.6'
+            ));
+
+        $instructorUrls = User::query()
+            ->select(['id', 'name', 'status', 'role', 'is_banned', 'updated_at', 'created_at'])
+            ->where('status', 'active')
+            ->where('role', 'instructor')
+            ->where(function ($query) {
+                $query->where('is_banned', 'no')
+                    ->orWhereNull('is_banned')
+                    ->orWhere('is_banned', '0');
+            })
+            ->get()
+            ->map(fn($instructor) => $this->sitemapEntry(
+                route('instructor-details', [$instructor->id, Str::slug((string) $instructor->name) ?: 'instructor']),
+                $instructor->updated_at ?? $instructor->created_at,
+                'weekly',
+                '0.6'
+            ));
+
+        $urls = $staticUrls
+            ->merge($courseUrls)
+            ->merge($blogUrls)
+            ->merge($customPageUrls)
+            ->merge($instructorUrls)
+            ->unique('loc')
+            ->values();
+
+        return response()
+            ->view('frontend.seo.sitemap', compact('urls'))
+            ->header('Content-Type', 'application/xml; charset=UTF-8');
+    }
+
+    public function robots(): Response {
+        $content = implode(PHP_EOL, [
+            'User-agent: *',
+            'Allow: /',
+            'Disallow: /admin',
+            'Disallow: /student/',
+            'Disallow: /instructor/',
+            'Disallow: /cart',
+            'Disallow: /checkout',
+            'Disallow: /wishlist',
+            'Disallow: /learning/',
+            'Sitemap: ' . route('sitemap'),
+        ]);
+
+        return response($content, 200)->header('Content-Type', 'text/plain; charset=UTF-8');
     }
 
     function countries(): JsonResponse {
@@ -477,5 +573,22 @@ class HomePageController extends Controller {
             }
         }
         return redirect('/');
+    }
+
+    private function sitemapEntry(string $loc, mixed $timestamp = null, string $changefreq = 'weekly', string $priority = '0.7'): array {
+        return [
+            'loc' => $loc,
+            'lastmod' => $this->resolveSitemapTimestamp($timestamp),
+            'changefreq' => $changefreq,
+            'priority' => $priority,
+        ];
+    }
+
+    private function resolveSitemapTimestamp(mixed $timestamp): string {
+        if ($timestamp instanceof \DateTimeInterface) {
+            return $timestamp->format(\DateTimeInterface::ATOM);
+        }
+
+        return now()->format(\DateTimeInterface::ATOM);
     }
 }

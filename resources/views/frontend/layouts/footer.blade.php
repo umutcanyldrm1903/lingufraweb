@@ -37,6 +37,17 @@
                 @if ($footerSetting?->footer_text)
                     <p class="lf-footer__text">{{ $footerSetting?->footer_text }}</p>
                 @endif
+                <div class="lf-footer__seo">
+                    <h6 class="lf-footer__title">{{ __('Popular Pages') }}</h6>
+                    <div class="lf-footer__seo-links">
+                        <a href="{{ route('courses') }}">{{ __('Online English Courses') }}</a>
+                        <a href="{{ route('corporate.index') }}">{{ __('Corporate English Training') }}</a>
+                        <a href="{{ route('all-instructors') }}">{{ __('Expert Instructors') }}</a>
+                        <a href="{{ route('placement-test.show') }}">{{ __('Placement Test') }}</a>
+                        <a href="{{ route('blogs') }}">{{ __('Language Learning Blog') }}</a>
+                        <a href="{{ route('contact.index') }}">{{ __('Contact Team') }}</a>
+                    </div>
+                </div>
             </div>
 
             <div class="lf-footer__col">
@@ -244,6 +255,36 @@
         color: rgba(255, 255, 255, 0.78);
         max-width: 420px;
         font-size: 13px;
+    }
+
+    .lf-footer__seo {
+        display: grid;
+        gap: 10px;
+    }
+
+    .lf-footer__seo-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .lf-footer__seo-links a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 38px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        font-size: 12px;
+        letter-spacing: 0.2px;
+    }
+
+    .lf-footer__seo-links a:hover {
+        background: rgba(246, 161, 5, 0.18);
+        border-color: rgba(246, 161, 5, 0.42);
+        color: #fff;
+        text-decoration: none;
     }
 
     .lf-footer__title {

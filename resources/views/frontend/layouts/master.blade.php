@@ -1,16 +1,84 @@
 <!doctype html>
-<html class="no-js" lang="en">
+<html class="no-js" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
+    @php
+        $siteName = $setting->app_name ?? config('app.name');
+        $metaTitle = trim($__env->yieldContent('meta_title', $siteName));
+        $rawMetaDescription = trim($__env->yieldContent('meta_description', ''));
+        $metaDescription = $rawMetaDescription !== ''
+            ? $rawMetaDescription
+            : sprintf(
+                '%s ile online dil egitimi, canli dersler, kurumsal cozumler ve uzman egitmenlerle gelisim programlarini kesfedin.',
+                $siteName
+            );
+        $metaKeywords = trim($__env->yieldContent('meta_keywords', ''));
+        $metaRobots = trim($__env->yieldContent('meta_robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'));
+        $canonicalUrl = trim($__env->yieldContent('canonical_url', url()->current())) ?: url()->current();
+        $metaImagePath = trim($__env->yieldContent('meta_image', ''));
+        $defaultMetaImagePath = trim((string) ($setting->logo ?? $setting->favicon ?? ''));
+        $resolvedMetaImagePath = str_replace('\\', '/', $metaImagePath !== '' ? $metaImagePath : $defaultMetaImagePath);
+        $metaImage = null;
+
+        if ($resolvedMetaImagePath !== '') {
+            $metaImage = \Illuminate\Support\Str::startsWith($resolvedMetaImagePath, ['http://', 'https://', '//', 'data:'])
+                ? $resolvedMetaImagePath
+                : asset($resolvedMetaImagePath);
+        }
+
+        $hrefLang = app()->getLocale() === 'tr' ? 'tr-TR' : str_replace('_', '-', app()->getLocale());
+        $organizationSchema = array_filter([
+            '@context' => 'https://schema.org',
+            '@type' => 'EducationalOrganization',
+            'name' => $siteName,
+            'url' => url('/'),
+            'logo' => $metaImage,
+            'image' => $metaImage,
+        ]);
+        $websiteSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'WebSite',
+            'name' => $siteName,
+            'url' => url('/'),
+            'potentialAction' => [
+                '@type' => 'SearchAction',
+                'target' => route('courses') . '?search={search_term_string}',
+                'query-input' => 'required name=search_term_string',
+            ],
+        ];
+    @endphp
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>@yield('meta_title', $setting->app_name)</title>
+    <title>{{ $metaTitle }}</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="description" content="@yield('meta_description', '')">
+    <meta name="description" content="{{ $metaDescription }}">
+    @if ($metaKeywords !== '')
+        <meta name="keywords" content="{{ $metaKeywords }}">
+    @endif
+    <meta name="robots" content="{{ $metaRobots }}">
+    <meta name="author" content="{{ $siteName }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="{{ $canonicalUrl }}">
+    <link rel="alternate" href="{{ $canonicalUrl }}" hreflang="{{ $hrefLang }}">
+    <link rel="alternate" href="{{ $canonicalUrl }}" hreflang="x-default">
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:title" content="{{ $metaTitle }}">
+    <meta property="og:description" content="{{ $metaDescription }}">
+    <meta property="og:url" content="{{ $canonicalUrl }}">
+    <meta property="og:site_name" content="{{ $siteName }}">
+    @if ($metaImage)
+        <meta property="og:image" content="{{ $metaImage }}">
+        <meta name="twitter:image" content="{{ $metaImage }}">
+    @endif
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $metaTitle }}">
+    <meta name="twitter:description" content="{{ $metaDescription }}">
 
     <!-- Custom Meta -->
     @stack('custom_meta')
+    <script type="application/ld+json">{!! json_encode($organizationSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
+    <script type="application/ld+json">{!! json_encode($websiteSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
+    @stack('structured_data')
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/x-icon" href="{{ asset($setting->favicon) }}">
     <!-- CSS here -->

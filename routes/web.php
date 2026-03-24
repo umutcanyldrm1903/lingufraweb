@@ -53,6 +53,8 @@ Route::group(['middleware' => 'maintenance.mode'], function () {
     Route::get('set-currency', [HomePageController::class, 'setCurrency'])->name('set-currency');
 
     Route::get('/', [HomePageController::class, 'index'])->name('home');
+    Route::get('robots.txt', [HomePageController::class, 'robots'])->name('robots');
+    Route::get('sitemap.xml', [HomePageController::class, 'sitemap'])->name('sitemap');
     Route::get('outreach/unsubscribe/{token}', OutreachUnsubscribeController::class)->name('outreach.unsubscribe');
 
     Route::get('corporate', [CorporateController::class, 'index'])->name('corporate.index');
