@@ -81,10 +81,6 @@
                     </p>
                 </div>
                 <div class="lf-seo-links__grid">
-                    <a href="{{ route('courses') }}" class="lf-seo-links__item">
-                        <strong>{{ __('Online Ingilizce Kurslari') }}</strong>
-                        <span>{{ __('Tum aktif programlari incele') }}</span>
-                    </a>
                     <a href="{{ route('corporate.index') }}" class="lf-seo-links__item">
                         <strong>{{ __('Kurumsal Ingilizce Egitimi') }}</strong>
                         <span>{{ __('Sirketler icin teklif al') }}</span>
@@ -101,7 +97,7 @@
                         <strong>{{ __('Blog Rehberleri') }}</strong>
                         <span>{{ __('Dil ogrenme ipuclarini oku') }}</span>
                     </a>
-                    <a href="{{ route('contact.index') }}" class="lf-seo-links__item">
+                    <a href="{{ route('contact.index') }}" class="lf-seo-links__item lf-seo-links__item--wide">
                         <strong>{{ __('Iletisim ve Danismanlik') }}</strong>
                         <span>{{ __('Ekiple dogrudan baglan') }}</span>
                     </a>
@@ -509,6 +505,23 @@
 
         body.home_language .lf-seo-links {
             position: relative;
+            overflow: hidden;
+            background: linear-gradient(180deg, #0f5c93 0%, #0b4f80 54%, #0a466f 100%);
+        }
+
+        body.home_language .lf-seo-links::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(720px circle at 8% 18%, rgba(255, 255, 255, 0.08), transparent 52%),
+                radial-gradient(680px circle at 92% 82%, rgba(246, 161, 5, 0.12), transparent 48%);
+            pointer-events: none;
+        }
+
+        body.home_language .lf-seo-links .container {
+            position: relative;
+            z-index: 1;
         }
 
         body.home_language .lf-seo-links__shell {
@@ -517,10 +530,11 @@
             gap: 24px;
             padding: 34px;
             border-radius: 32px;
-            background: linear-gradient(135deg, rgba(14, 92, 147, 0.98), rgba(11, 63, 108, 0.98));
+            background: linear-gradient(135deg, rgba(13, 82, 131, 0.98), rgba(9, 58, 94, 0.98));
             color: #fff;
-            box-shadow: 0 26px 60px rgba(15, 23, 42, 0.18);
+            box-shadow: 0 26px 60px rgba(3, 18, 32, 0.18);
             overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         body.home_language .lf-seo-links__title {
@@ -574,6 +588,10 @@
             color: rgba(255, 255, 255, 0.8);
             font-size: 14px;
             font-weight: 700;
+        }
+
+        body.home_language .lf-seo-links__item--wide {
+            grid-column: 1 / -1;
         }
 
         body.home_language .lf-video-showcase::before {
@@ -819,6 +837,10 @@
 
             body.home_language .lf-seo-links__item {
                 min-height: auto;
+            }
+
+            body.home_language .lf-seo-links__item--wide {
+                grid-column: auto;
             }
         }
     </style>
