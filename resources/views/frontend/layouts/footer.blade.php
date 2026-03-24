@@ -40,7 +40,6 @@
                 <div class="lf-footer__seo">
                     <h6 class="lf-footer__title">{{ __('Popular Pages') }}</h6>
                     <div class="lf-footer__seo-links">
-                        <a href="{{ route('courses') }}">{{ __('Online English Courses') }}</a>
                         <a href="{{ route('corporate.index') }}">{{ __('Corporate English Training') }}</a>
                         <a href="{{ route('all-instructors') }}">{{ __('Expert Instructors') }}</a>
                         <a href="{{ route('placement-test.show') }}">{{ __('Placement Test') }}</a>
