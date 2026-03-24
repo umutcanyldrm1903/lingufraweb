@@ -1,8 +1,8 @@
 @extends('frontend.layouts.master')
 
-@section('meta_title', (blank(data_get($seo_setting, 'home_page.seo_title')) || strcasecmp((string) data_get($seo_setting, 'home_page.seo_title'), 'SkillGro') === 0) ? ($setting->app_name ?? config('app.name')) : data_get($seo_setting, 'home_page.seo_title'))
-@section('meta_description', $seo_setting['home_page']['seo_description'])
-@section('meta_keywords', 'online ingilizce kursu, birebir ingilizce dersi, kurumsal ingilizce egitimi, seviye tespit sinavi, online dil okulu')
+@section('meta_title', 'Ingilizce Ders, Ozel Ders ve Online Programlar | ' . ($setting->app_name ?? config('app.name')))
+@section('meta_description', 'Turkiye genelinde ingilizce ders, online ingilizce ozel ders, speaking, is ingilizcesi ve sehir bazli birebir programlari tek platformda kesfet.')
+@section('meta_keywords', 'ingilizce ders, ingilizce ozel ders, online ingilizce ozel ders, birebir ingilizce dersi, ingilizce konusma dersi, is ingilizcesi ozel ders')
 @section('canonical_url', route('home'))
 @section('meta_image', $setting->logo ?? $setting->favicon ?? '')
 
@@ -74,32 +74,36 @@
         <div class="container">
             <div class="lf-seo-links__shell">
                 <div class="lf-seo-links__copy">
-                    <span class="eyebrow">{{ __('One cikan sayfalar') }}</span>
-                    <h2 class="lf-seo-links__title">{{ __('Ziyaretcileri en hizli donusen sayfalara yonlendir') }}</h2>
+                    <span class="eyebrow">{{ __('Ogrenme rotalari') }}</span>
+                    <h2 class="lf-seo-links__title">{{ __('Ihtiyacina gore dogru ingilizce ders tipini sec') }}</h2>
                     <p class="lf-seo-links__lead">
-                        {{ __('Programlar, kurumsal cozumler, egitmenler ve seviye testi arasinda guclu bir bag kurarak hem kullanici akislarini hem de site ici SEO sinyallerini guclendiriyoruz.') }}
+                        {{ __('Ingilizce ozel ders, online ders, speaking, is ingilizcesi ve sehir bazli sayfalar arasindan sana uygun rotayi sec. Egitmenleri, seviye tespitini ve program detaylarini tek akista karsilastir.') }}
                     </p>
                 </div>
                 <div class="lf-seo-links__grid">
-                    <a href="{{ route('corporate.index') }}" class="lf-seo-links__item">
-                        <strong>{{ __('Kurumsal Ingilizce Egitimi') }}</strong>
-                        <span>{{ __('Sirketler icin teklif al') }}</span>
+                    <a href="{{ route('english-private-lessons') }}" class="lf-seo-links__item">
+                        <strong>{{ __('Ingilizce Ozel Ders') }}</strong>
+                        <span>{{ __('Tum ozel ders rotalarini karsilastir') }}</span>
                     </a>
-                    <a href="{{ route('all-instructors') }}" class="lf-seo-links__item">
-                        <strong>{{ __('Uzman Egitmenler') }}</strong>
-                        <span>{{ __('Ogretmen profillerini kesfet') }}</span>
+                    <a href="{{ route('english-private-lessons.online') }}" class="lf-seo-links__item">
+                        <strong>{{ __('Online Ingilizce Ozel Ders') }}</strong>
+                        <span>{{ __('Esnek saatli canli ders planini gor') }}</span>
                     </a>
-                    <a href="{{ route('placement-test.show') }}" class="lf-seo-links__item">
-                        <strong>{{ __('Seviye Tespit Sinavi') }}</strong>
-                        <span>{{ __('2 dakikada seviyeni ogren') }}</span>
+                    <a href="{{ route('english-private-lessons.speaking') }}" class="lf-seo-links__item">
+                        <strong>{{ __('Ingilizce Konusma Dersi') }}</strong>
+                        <span>{{ __('Speaking ve akicilik odagini incele') }}</span>
                     </a>
-                    <a href="{{ route('blogs') }}" class="lf-seo-links__item">
-                        <strong>{{ __('Blog Rehberleri') }}</strong>
-                        <span>{{ __('Dil ogrenme ipuclarini oku') }}</span>
+                    <a href="{{ route('english-private-lessons.business') }}" class="lf-seo-links__item">
+                        <strong>{{ __('Is Ingilizcesi Ozel Ders') }}</strong>
+                        <span>{{ __('Toplanti, sunum ve mail dili uzerine calis') }}</span>
                     </a>
-                    <a href="{{ route('contact.index') }}" class="lf-seo-links__item lf-seo-links__item--wide">
-                        <strong>{{ __('Iletisim ve Danismanlik') }}</strong>
-                        <span>{{ __('Ekiple dogrudan baglan') }}</span>
+                    <a href="{{ route('english-private-lessons.istanbul') }}" class="lf-seo-links__item">
+                        <strong>{{ __('Istanbul Ingilizce Ozel Ders') }}</strong>
+                        <span>{{ __('Yogun takvime uygun rota') }}</span>
+                    </a>
+                    <a href="{{ route('english-private-lessons.ankara') }}" class="lf-seo-links__item">
+                        <strong>{{ __('Ankara Ingilizce Ozel Ders') }}</strong>
+                        <span>{{ __('Planli ve hedef odakli ders akisina bak') }}</span>
                     </a>
                 </div>
             </div>
@@ -129,11 +133,11 @@
             '@type' => 'WebPage',
             'name' => $setting->app_name,
             'url' => route('home'),
-            'description' => $seo_setting['home_page']['seo_description'],
+            'description' => 'Turkiye genelinde ingilizce ders, online ozel ders, speaking ve is ingilizcesi programlari.',
             'about' => [
-                ['@type' => 'Thing', 'name' => 'Online dil egitimi'],
-                ['@type' => 'Thing', 'name' => 'Kurumsal ingilizce egitimi'],
-                ['@type' => 'Thing', 'name' => 'Canli birebir dersler'],
+                ['@type' => 'Thing', 'name' => 'Ingilizce ders'],
+                ['@type' => 'Thing', 'name' => 'Ingilizce ozel ders'],
+                ['@type' => 'Thing', 'name' => 'Online ingilizce ozel ders'],
             ],
         ];
         $faqEntities = collect($faqs ?? [])

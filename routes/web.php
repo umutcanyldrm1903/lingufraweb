@@ -60,6 +60,27 @@ Route::group(['middleware' => 'maintenance.mode'], function () {
     Route::get('corporate', [CorporateController::class, 'index'])->name('corporate.index');
     Route::get('corporate-form', [CorporateController::class, 'form'])->name('corporate.form');
     Route::post('corporate-form', [CorporateController::class, 'submit'])->name('corporate.submit');
+    Route::get('ingilizce-ozel-ders', [HomePageController::class, 'englishPrivateLesson'])
+        ->defaults('page', 'hub')
+        ->name('english-private-lessons');
+    Route::get('online-ingilizce-ozel-ders', [HomePageController::class, 'englishPrivateLesson'])
+        ->defaults('page', 'online')
+        ->name('english-private-lessons.online');
+    Route::get('ingilizce-konusma-dersi', [HomePageController::class, 'englishPrivateLesson'])
+        ->defaults('page', 'speaking')
+        ->name('english-private-lessons.speaking');
+    Route::get('is-ingilizcesi-ozel-ders', [HomePageController::class, 'englishPrivateLesson'])
+        ->defaults('page', 'business')
+        ->name('english-private-lessons.business');
+    Route::get('istanbul-ingilizce-ozel-ders', [HomePageController::class, 'englishPrivateLesson'])
+        ->defaults('page', 'istanbul')
+        ->name('english-private-lessons.istanbul');
+    Route::get('ankara-ingilizce-ozel-ders', [HomePageController::class, 'englishPrivateLesson'])
+        ->defaults('page', 'ankara')
+        ->name('english-private-lessons.ankara');
+    Route::get('izmir-ingilizce-ozel-ders', [HomePageController::class, 'englishPrivateLesson'])
+        ->defaults('page', 'izmir')
+        ->name('english-private-lessons.izmir');
 
     Route::get('countries', [HomePageController::class, 'countries'])->name('countries');
     Route::get('states/{country_id}', [HomePageController::class, 'states'])->name('states');

@@ -38,28 +38,28 @@
         <div class="container">
             <div class="lf-corp-links__shell">
                 <div class="lf-corp-links__intro">
-                    <span class="lf-corp-links__eyebrow">{{ __('Growth Paths') }}</span>
-                    <h2 class="lf-corp-links__title">{{ __('Build a stronger internal route structure around corporate demand') }}</h2>
+                    <span class="lf-corp-links__eyebrow">{{ __('Baslangic Noktalari') }}</span>
+                    <h2 class="lf-corp-links__title">{{ __('Ekibin icin dogru dil egitimi yollarini tek yerde topla') }}</h2>
                     <p class="lf-corp-links__lead">
-                        {{ __('Connect corporate visitors with courses, instructors, assessment flows and direct contact points so both users and search engines understand your full training ecosystem.') }}
+                        {{ __('Kurumsal ziyaretciler once ozel ders rotalarini, sonra egitmenleri, seviye tespitini ve teklif formunu kolayca karsilastirabilsin.') }}
                     </p>
                 </div>
                 <div class="lf-corp-links__grid">
-                    <a href="{{ route('courses') }}" class="lf-corp-links__item">
-                        <strong>{{ __('Browse English Courses') }}</strong>
-                        <span>{{ __('Review the active learning programs') }}</span>
+                    <a href="{{ route('english-private-lessons') }}" class="lf-corp-links__item">
+                        <strong>{{ __('Ingilizce Ozel Ders') }}</strong>
+                        <span>{{ __('Tum birebir ders rotalarini incele') }}</span>
                     </a>
                     <a href="{{ route('all-instructors') }}" class="lf-corp-links__item">
-                        <strong>{{ __('Meet Expert Instructors') }}</strong>
-                        <span>{{ __('See who can support your team') }}</span>
+                        <strong>{{ __('Uzman Egitmenler') }}</strong>
+                        <span>{{ __('Ekibine destek olabilecek profilleri gor') }}</span>
                     </a>
                     <a href="{{ route('placement-test.show') }}" class="lf-corp-links__item">
-                        <strong>{{ __('Placement Test') }}</strong>
-                        <span>{{ __('Measure current level before planning') }}</span>
+                        <strong>{{ __('Seviye Tespit Sinavi') }}</strong>
+                        <span>{{ __('Planlama oncesi mevcut seviyeyi gor') }}</span>
                     </a>
                     <a href="{{ route('contact.index') }}" class="lf-corp-links__item">
-                        <strong>{{ __('Talk to the Team') }}</strong>
-                        <span>{{ __('Get direct guidance for your company') }}</span>
+                        <strong>{{ __('Ekiple Iletisime Gec') }}</strong>
+                        <span>{{ __('Sirketin icin dogrudan yonlendirme al') }}</span>
                     </a>
                 </div>
             </div>

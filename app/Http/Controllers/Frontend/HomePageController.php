@@ -143,6 +143,13 @@ class HomePageController extends Controller {
         $staticUrls = collect([
             $this->sitemapEntry(route('home'), now(), 'daily', '1.0'),
             $this->sitemapEntry(route('courses'), now(), 'daily', '0.9'),
+            $this->sitemapEntry(route('english-private-lessons'), now(), 'weekly', '0.95'),
+            $this->sitemapEntry(route('english-private-lessons.online'), now(), 'weekly', '0.85'),
+            $this->sitemapEntry(route('english-private-lessons.speaking'), now(), 'weekly', '0.85'),
+            $this->sitemapEntry(route('english-private-lessons.business'), now(), 'weekly', '0.85'),
+            $this->sitemapEntry(route('english-private-lessons.istanbul'), now(), 'weekly', '0.75'),
+            $this->sitemapEntry(route('english-private-lessons.ankara'), now(), 'weekly', '0.75'),
+            $this->sitemapEntry(route('english-private-lessons.izmir'), now(), 'weekly', '0.75'),
             $this->sitemapEntry(route('corporate.index'), now(), 'weekly', '0.9'),
             $this->sitemapEntry(route('corporate.form'), now(), 'weekly', '0.6'),
             $this->sitemapEntry(route('all-instructors'), now(), 'daily', '0.8'),
@@ -232,6 +239,33 @@ class HomePageController extends Controller {
         ]);
 
         return response($content, 200)->header('Content-Type', 'text/plain; charset=UTF-8');
+    }
+
+    public function englishPrivateLesson(Request $request): View {
+        $page = (string) $request->route('page', 'hub');
+        $pages = $this->englishPrivateLessonPages();
+
+        abort_unless(isset($pages[$page]), 404);
+
+        $pageData = $pages[$page];
+        $relatedPages = collect($pageData['related_pages'] ?? array_diff(array_keys($pages), [$page]))
+            ->map(function (string $relatedPage) use ($pages) {
+                $related = $pages[$relatedPage] ?? null;
+
+                if (!$related) {
+                    return null;
+                }
+
+                return [
+                    'title' => $related['nav_title'] ?? $related['breadcrumb'],
+                    'description' => $related['nav_description'] ?? $related['lead'],
+                    'url' => route($related['route']),
+                ];
+            })
+            ->filter()
+            ->values();
+
+        return view('frontend.pages.english-private-lessons', compact('pageData', 'relatedPages'));
     }
 
     function countries(): JsonResponse {
@@ -573,6 +607,10 @@ class HomePageController extends Controller {
             }
         }
         return redirect('/');
+    }
+
+    private function englishPrivateLessonPages(): array {
+        return (array) config('english_private_lessons.pages', []);
     }
 
     private function sitemapEntry(string $loc, mixed $timestamp = null, string $changefreq = 'weekly', string $priority = '0.7'): array {

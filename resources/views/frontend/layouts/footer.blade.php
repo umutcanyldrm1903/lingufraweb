@@ -38,13 +38,16 @@
                     <p class="lf-footer__text">{{ $footerSetting?->footer_text }}</p>
                 @endif
                 <div class="lf-footer__seo">
-                    <h6 class="lf-footer__title">{{ __('Popular Pages') }}</h6>
+                    <h6 class="lf-footer__title">{{ __('Ogrenme Rotalari') }}</h6>
                     <div class="lf-footer__seo-links">
-                        <a href="{{ route('corporate.index') }}">{{ __('Corporate English Training') }}</a>
-                        <a href="{{ route('all-instructors') }}">{{ __('Expert Instructors') }}</a>
-                        <a href="{{ route('placement-test.show') }}">{{ __('Placement Test') }}</a>
-                        <a href="{{ route('blogs') }}">{{ __('Language Learning Blog') }}</a>
-                        <a href="{{ route('contact.index') }}">{{ __('Contact Team') }}</a>
+                        <a href="{{ route('english-private-lessons') }}">{{ __('Ingilizce Ozel Ders') }}</a>
+                        <a href="{{ route('english-private-lessons.online') }}">{{ __('Online Ingilizce Ozel Ders') }}</a>
+                        <a href="{{ route('english-private-lessons.speaking') }}">{{ __('Ingilizce Konusma Dersi') }}</a>
+                        <a href="{{ route('english-private-lessons.business') }}">{{ __('Is Ingilizcesi Ozel Ders') }}</a>
+                        <a href="{{ route('english-private-lessons.istanbul') }}">{{ __('Istanbul Ingilizce Ozel Ders') }}</a>
+                        <a href="{{ route('english-private-lessons.izmir') }}">{{ __('Izmir Ingilizce Ozel Ders') }}</a>
+                        <a href="{{ route('corporate.index') }}">{{ __('Kurumsal Ingilizce Egitimi') }}</a>
+                        <a href="{{ route('placement-test.show') }}">{{ __('Seviye Tespit Sinavi') }}</a>
                     </div>
                 </div>
             </div>
