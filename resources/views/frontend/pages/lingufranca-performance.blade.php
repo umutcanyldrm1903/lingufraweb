@@ -12,6 +12,10 @@
         $pageData['hero_secondary_visual'] ?? null,
         $pageData['hero_tertiary_visual'] ?? null,
     ]));
+    $generalProgram = $downloads[0] ?? null;
+    $examPrograms = array_slice($downloads, 1);
+    $generalMilestones = $pageData['milestones'][0]['items'] ?? [];
+    $examMilestones = $pageData['milestones'][1]['items'] ?? [];
     $faqEntities = collect($pageData['faq'] ?? [])
         ->map(fn ($faq) => [
             '@type' => 'Question',
@@ -104,6 +108,23 @@
                 @endforeach
             </section>
 
+            <section class="lfps-section" id="sistem" data-lfps-reveal>
+                <div class="lfps-section__head">
+                    <span class="lfps-eyebrow">{{ $pageData['manifesto_eyebrow'] }}</span>
+                    <h2>{{ $pageData['manifesto_title'] }}</h2>
+                    <p>{{ $pageData['manifesto_lead'] }}</p>
+                </div>
+                <div class="lfps-benefits">
+                    @foreach ($pageData['manifesto_points'] as $point)
+                        <article class="lfps-benefit" data-lfps-reveal>
+                            <span class="lfps-benefit__index">{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
+                            <h3>{{ $point['title'] }}</h3>
+                            <p>{{ $point['description'] }}</p>
+                        </article>
+                    @endforeach
+                </div>
+            </section>
+
             <section class="lfps-section" id="programlar" data-lfps-reveal>
                 <div class="lfps-section__head">
                     <span class="lfps-eyebrow">Program Akışları</span>
@@ -140,53 +161,73 @@
                 </div>
             </section>
 
-            <section class="lfps-editorial" id="sistem">
-                <div class="lfps-editorial__sticky" data-lfps-reveal>
-                    <span class="lfps-eyebrow">{{ $pageData['manifesto_eyebrow'] }}</span>
-                    <h2>{{ $pageData['manifesto_title'] }}</h2>
-                    <p>{{ $pageData['manifesto_lead'] }}</p>
-                </div>
-                <div class="lfps-editorial__flow">
-                    @foreach ($pageData['manifesto_points'] as $point)
-                        <article class="lfps-editorial__card" data-lfps-reveal>
-                            <span class="lfps-editorial__index">{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
-                            <h3>{{ $point['title'] }}</h3>
-                            <p>{{ $point['description'] }}</p>
-                        </article>
-                    @endforeach
-                    <article class="lfps-editorial__card lfps-editorial__card--wide" data-lfps-reveal>
-                        <span class="lfps-eyebrow">Sunumlardan çıkan ortak yapı</span>
-                        <div class="lfps-briefs">
-                            <div>
-                                <h3>Kademe kademe ilerleyen sistem</h3>
-                                <p>PDF’lerdeki akış; önce temel yapı, sonra kontrollü geçiş, ardından ölçüm ve optimizasyon. Amaç hız değil, sağlam ve kalıcı gelişim.</p>
-                            </div>
-                            <div>
-                                <h3>Aktif katılım şartı</h3>
-                                <p>“Bu program kısa yol arayanlar için değil” mesajı tüm sunumlarda tekrar ediyor. Disiplin, tekrar, aktif katılım ve yol haritası sistemi taşıyan ana kavramlar.</p>
-                            </div>
+            <section class="lfps-showcase" data-lfps-reveal>
+                <article class="lfps-showcase__row">
+                    <div class="lfps-showcase__copy">
+                        <span class="lfps-eyebrow">Genel İngilizce Akışı</span>
+                        <h2>{{ $pageData['resource_columns'][0]['label'] }}</h2>
+                        <p>{{ $generalProgram['subtitle'] ?? '' }}</p>
+                        <ul class="lfps-showcase__list">
+                            @foreach ($pageData['resource_columns'][0]['items'] as $item)
+                                <li>{{ $item }}</li>
+                            @endforeach
+                        </ul>
+                        <div class="lfps-showcase__chips">
+                            @foreach ($generalMilestones as $item)
+                                <span>{{ $item }}</span>
+                            @endforeach
                         </div>
-                    </article>
-                </div>
-            </section>
-
-            <section class="lfps-section" data-lfps-reveal>
-                <div class="lfps-section__head">
-                    <span class="lfps-eyebrow">{{ $pageData['resource_eyebrow'] }}</span>
-                    <h2>{{ $pageData['resource_title'] }}</h2>
-                </div>
-                <div class="lfps-resource-columns">
-                    @foreach ($pageData['resource_columns'] as $column)
-                        <article class="lfps-resource">
-                            <h3>{{ $column['label'] }}</h3>
-                            <ul>
-                                @foreach ($column['items'] as $item)
-                                    <li>{{ $item }}</li>
-                                @endforeach
-                            </ul>
+                    </div>
+                    <div class="lfps-showcase__visual">
+                        @if (!empty($generalProgram['cover_url']))
+                            <figure class="lfps-showcase__cover">
+                                <img src="{{ $generalProgram['cover_url'] }}" alt="{{ $generalProgram['title'] ?? 'Genel İngilizce' }}">
+                            </figure>
+                        @endif
+                        <article class="lfps-showcase__note">
+                            <span>{{ $generalProgram['meta'] ?? '' }}</span>
+                            <strong>{{ $generalProgram['result'] ?? '' }}</strong>
+                            @if (!empty($generalProgram['file_url']))
+                                <a href="{{ $generalProgram['file_url'] }}" target="_blank" rel="noopener" class="lfps-inline-link">PDF'i Aç</a>
+                            @endif
                         </article>
-                    @endforeach
-                </div>
+                    </div>
+                </article>
+
+                <article class="lfps-showcase__row lfps-showcase__row--reverse">
+                    <div class="lfps-showcase__copy">
+                        <span class="lfps-eyebrow">Sınav Akışları</span>
+                        <h2>{{ $pageData['resource_columns'][1]['label'] }}</h2>
+                        <p>{{ $pageData['proof_lead'] }}</p>
+                        <ul class="lfps-showcase__list">
+                            @foreach ($pageData['resource_columns'][1]['items'] as $item)
+                                <li>{{ $item }}</li>
+                            @endforeach
+                        </ul>
+                        <div class="lfps-showcase__chips">
+                            @foreach ($examMilestones as $item)
+                                <span>{{ $item }}</span>
+                            @endforeach
+                        </div>
+                    </div>
+                    <div class="lfps-showcase__duo">
+                        @foreach ($examPrograms as $download)
+                            <article class="lfps-mini-program">
+                                @if (!empty($download['cover_url']))
+                                    <div class="lfps-mini-program__cover" style="background-image:url('{{ $download['cover_url'] }}')"></div>
+                                @endif
+                                <div class="lfps-mini-program__body">
+                                    <span>{{ $download['label'] }}</span>
+                                    <h3>{{ $download['title'] }}</h3>
+                                    <p>{{ $download['result'] }}</p>
+                                    @if (!empty($download['file_url']))
+                                        <a href="{{ $download['file_url'] }}" target="_blank" rel="noopener" class="lfps-inline-link">PDF'i Aç</a>
+                                    @endif
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                </article>
             </section>
 
             <section class="lfps-section" id="videolar" data-lfps-reveal>
