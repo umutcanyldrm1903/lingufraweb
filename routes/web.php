@@ -56,6 +56,11 @@ Route::group(['middleware' => 'maintenance.mode'], function () {
     Route::get('robots.txt', [HomePageController::class, 'robots'])->name('robots');
     Route::get('sitemap.xml', [HomePageController::class, 'sitemap'])->name('sitemap');
     Route::get('outreach/unsubscribe/{token}', OutreachUnsubscribeController::class)->name('outreach.unsubscribe');
+    Route::get('lingufranca-performans-sistemi', [HomePageController::class, 'linguFrancaPerformance'])
+        ->name('lingufranca-performance');
+    Route::get('lingufranca-performans-sistemi/asset/{asset}', [HomePageController::class, 'linguFrancaPerformanceAsset'])
+        ->where('asset', '[A-Za-z0-9\\-_]+')
+        ->name('lingufranca-performance.asset');
 
     Route::get('corporate', [CorporateController::class, 'index'])->name('corporate.index');
     Route::get('corporate-form', [CorporateController::class, 'form'])->name('corporate.form');

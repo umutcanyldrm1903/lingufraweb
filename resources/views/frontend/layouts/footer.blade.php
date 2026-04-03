@@ -40,6 +40,7 @@
                 <div class="lf-footer__seo">
                     <h6 class="lf-footer__title">{{ __('Ogrenme Rotalari') }}</h6>
                     <div class="lf-footer__seo-links">
+                        <a href="{{ route('lingufranca-performance') }}">{{ __('LinguFranca Performans Sistemi') }}</a>
                         <a href="{{ route('english-private-lessons') }}">{{ __('Ingilizce Ozel Ders') }}</a>
                         <a href="{{ route('english-private-lessons.online') }}">{{ __('Online Ingilizce Ozel Ders') }}</a>
                         <a href="{{ route('english-private-lessons.speaking') }}">{{ __('Ingilizce Konusma Dersi') }}</a>

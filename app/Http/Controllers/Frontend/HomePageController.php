@@ -148,6 +148,7 @@ class HomePageController extends Controller {
         $staticUrls = collect([
             $this->sitemapEntry(route('home'), now(), 'daily', '1.0'),
             $this->sitemapEntry(route('courses'), now(), 'daily', '0.9'),
+            $this->sitemapEntry(route('lingufranca-performance'), now(), 'weekly', '0.95'),
             $this->sitemapEntry(route('english-private-lessons'), now(), 'weekly', '0.95'),
             $this->sitemapEntry(route('english-private-lessons.online'), now(), 'weekly', '0.85'),
             $this->sitemapEntry(route('english-private-lessons.speaking'), now(), 'weekly', '0.85'),
@@ -280,6 +281,53 @@ class HomePageController extends Controller {
             ->values();
 
         return view('frontend.pages.english-private-lessons', compact('pageData', 'relatedPages'));
+    }
+
+    public function linguFrancaPerformance(): View {
+        $pageData = (array) config('lingufranca_performance.page', []);
+
+        $downloads = collect(config('lingufranca_performance.downloads', []))
+            ->map(function (array $item) {
+                $item['cover_url'] = $this->linguFrancaPerformanceAssetUrl($item['cover_asset'] ?? null);
+                $item['file_url'] = $this->linguFrancaPerformanceAssetUrl($item['file_asset'] ?? null);
+                return $item;
+            })
+            ->values()
+            ->all();
+
+        $mediaLibrary = collect(config('lingufranca_performance.media_library', []))
+            ->map(function (array $item) {
+                $item['file_url'] = $this->linguFrancaPerformanceAssetUrl($item['file_asset'] ?? null);
+                return $item;
+            })
+            ->filter(fn(array $item) => filled($item['file_url']))
+            ->values()
+            ->all();
+
+        $pageData['hero_primary_visual'] = $this->linguFrancaPerformanceAssetUrl('general-cover');
+        $pageData['hero_secondary_visual'] = $this->linguFrancaPerformanceAssetUrl('ielts-cover');
+        $pageData['meta_image_url'] = $pageData['hero_primary_visual'] ?: $pageData['hero_secondary_visual'];
+
+        return view('frontend.pages.lingufranca-performance', compact('pageData', 'downloads', 'mediaLibrary'));
+    }
+
+    public function linguFrancaPerformanceAsset(string $asset) {
+        $path = $this->resolveLinguFrancaPerformanceAssetPath($asset);
+        abort_unless($path, 404);
+
+        $extension = Str::lower(pathinfo($path, PATHINFO_EXTENSION));
+        $mime = match ($extension) {
+            'pdf' => 'application/pdf',
+            'png' => 'image/png',
+            'jpg', 'jpeg' => 'image/jpeg',
+            'mp4' => 'video/mp4',
+            default => mime_content_type($path) ?: 'application/octet-stream',
+        };
+
+        return response()->file($path, [
+            'Content-Type' => $mime,
+            'Cache-Control' => 'public, max-age=86400',
+        ]);
     }
 
     function countries(): JsonResponse {
@@ -625,6 +673,50 @@ class HomePageController extends Controller {
 
     private function englishPrivateLessonPages(): array {
         return (array) config('english_private_lessons.pages', []);
+    }
+
+    private function linguFrancaPerformanceAssetUrl(?string $asset): ?string {
+        if (blank($asset) || !$this->resolveLinguFrancaPerformanceAssetPath((string) $asset)) {
+            return null;
+        }
+
+        return route('lingufranca-performance.asset', ['asset' => $asset]);
+    }
+
+    private function resolveLinguFrancaPerformanceAssetPath(string $asset): ?string {
+        $definition = config("lingufranca_performance.assets.{$asset}");
+        if (!is_array($definition)) {
+            return null;
+        }
+
+        $directory = base_path((string) ($definition['directory'] ?? ''));
+        $extension = ltrim((string) ($definition['extension'] ?? ''), '.');
+        $tokens = array_values(array_filter((array) ($definition['tokens'] ?? [])));
+
+        if ($directory === '' || $extension === '' || empty($tokens) || !is_dir($directory)) {
+            return null;
+        }
+
+        $pattern = $directory . DIRECTORY_SEPARATOR . '*.' . $extension;
+        $files = glob($pattern) ?: [];
+
+        foreach ($files as $file) {
+            $normalizedName = Str::of(pathinfo($file, PATHINFO_FILENAME))
+                ->ascii()
+                ->lower()
+                ->value();
+
+            $matchesAllTokens = collect($tokens)->every(function (string $token) use ($normalizedName) {
+                $normalizedToken = Str::of($token)->ascii()->lower()->value();
+                return $normalizedToken !== '' && str_contains($normalizedName, $normalizedToken);
+            });
+
+            if ($matchesAllTokens) {
+                return $file;
+            }
+        }
+
+        return null;
     }
 
     private function sitemapEntry(string $loc, mixed $timestamp = null, string $changefreq = 'weekly', string $priority = '0.7'): array {
