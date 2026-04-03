@@ -298,6 +298,7 @@ class HomePageController extends Controller {
         $mediaLibrary = collect(config('lingufranca_performance.media_library', []))
             ->map(function (array $item) {
                 $item['file_url'] = $this->linguFrancaPerformanceAssetUrl($item['file_asset'] ?? null);
+                $item['poster_url'] = $this->linguFrancaPerformanceAssetUrl($item['poster_asset'] ?? null);
                 return $item;
             })
             ->filter(fn(array $item) => filled($item['file_url']))
@@ -306,6 +307,7 @@ class HomePageController extends Controller {
 
         $pageData['hero_primary_visual'] = $this->linguFrancaPerformanceAssetUrl('general-cover');
         $pageData['hero_secondary_visual'] = $this->linguFrancaPerformanceAssetUrl('ielts-cover');
+        $pageData['hero_tertiary_visual'] = $this->linguFrancaPerformanceAssetUrl('pte-cover');
         $pageData['meta_image_url'] = $pageData['hero_primary_visual'] ?: $pageData['hero_secondary_visual'];
 
         return view('frontend.pages.lingufranca-performance', compact('pageData', 'downloads', 'mediaLibrary'));
