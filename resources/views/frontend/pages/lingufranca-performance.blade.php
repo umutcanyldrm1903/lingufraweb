@@ -6,16 +6,6 @@
     $applyUrl = route('contact.index');
     $testUrl = route('placement-test.show');
     $homeUrl = route('home');
-    $topLinks = $pageData['top_links'] ?? [];
-    $heroVisuals = array_values(array_filter([
-        $pageData['hero_primary_visual'] ?? null,
-        $pageData['hero_secondary_visual'] ?? null,
-        $pageData['hero_tertiary_visual'] ?? null,
-    ]));
-    $generalProgram = $downloads[0] ?? null;
-    $examPrograms = array_slice($downloads, 1);
-    $generalMilestones = $pageData['milestones'][0]['items'] ?? [];
-    $examMilestones = $pageData['milestones'][1]['items'] ?? [];
     $faqEntities = collect($pageData['faq'] ?? [])
         ->map(fn ($faq) => [
             '@type' => 'Question',
@@ -27,6 +17,10 @@
         ])
         ->values()
         ->all();
+    $generalProgram = $downloads[0] ?? null;
+    $examPrograms = array_slice($downloads, 1);
+    $generalMilestones = $pageData['milestones'][0]['items'] ?? [];
+    $examMilestones = $pageData['milestones'][1]['items'] ?? [];
 @endphp
 
 @section('meta_title', $pageData['meta_title'] . ' | ' . $siteName)
@@ -38,360 +32,258 @@
 @section('hide_public_footer', '1')
 
 @section('contents')
-    <section class="lfps-page">
-        <header class="lfps-topbar">
-            <div class="lfps-shell lfps-topbar__inner">
-                <a href="{{ $homeUrl }}" class="lfps-brand" aria-label="{{ $siteName }}">
-                    @if (!empty($setting?->logo))
-                        <img src="{{ asset($setting->logo) }}" alt="{{ $siteName }}">
-                    @endif
-                    <span>{{ $siteName }}</span>
-                </a>
-                @if (!empty($topLinks))
-                    <nav class="lfps-nav" aria-label="Landing navigation">
-                        @foreach ($topLinks as $link)
-                            <a href="{{ $link['href'] }}">{{ $link['label'] }}</a>
-                        @endforeach
-                    </nav>
+    <section class="tw-flex tw-min-h-[100vh] tw-flex-col tw-bg-black tw-text-white">
+        <header
+            class="tw-max-w-lg:tw-px-4 tw-max-w-lg:tw-mr-auto tw-absolute tw-top-0 tw-z-20 tw-flex tw-h-[60px] tw-w-full tw-bg-opacity-0 tw-px-[5%] lg:tw-justify-around">
+            <a class="tw-h-[50px] tw-w-[50px] tw-p-[4px]" href="{{ $homeUrl }}">
+                @if (!empty($setting?->logo))
+                    <img
+                        src="{{ asset($setting->logo) }}"
+                        alt="{{ $siteName }}"
+                        class="tw-object tw-h-full tw-w-full"
+                    />
                 @endif
-                <div class="lfps-topbar__actions">
-                    <a href="{{ $testUrl }}" class="lfps-chip">Seviye Tespiti</a>
-                    <a href="{{ $applyUrl }}" class="lfps-button lfps-button--ghost">Programa Başvur</a>
+            </a>
+            <div class="collapsible-header animated-collapse max-lg:tw-shadow-md" id="collapsed-header-items">
+                <div
+                    class="tw-flex tw-h-full tw-w-max tw-gap-5 tw-text-base max-lg:tw-mt-[30px] max-lg:tw-flex-col max-lg:tw-place-items-end max-lg:tw-gap-5 lg:tw-mx-auto lg:tw-place-items-center">
+                    <a class="header-links" href="#programlar">Programlar</a>
+                    <a class="header-links" href="#videolar">Videolar</a>
+                    <a class="header-links" href="#fiyat">Fiyat</a>
+                    <a class="header-links" href="#sss">SSS</a>
+                </div>
+                <div
+                    class="tw-mx-4 tw-flex tw-place-items-center tw-gap-[20px] tw-text-base max-md:tw-w-full max-md:tw-flex-col max-md:tw-place-content-center">
+                    <a
+                        href="{{ $applyUrl }}"
+                        aria-label="apply"
+                        class="tw-rounded-full tw-bg-white tw-px-3 tw-py-2 tw-text-black tw-transition-transform tw-duration-[0.3s] hover:tw-translate-x-2">
+                        <span>Programa Başvur</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
                 </div>
             </div>
+            <button
+                class="bi bi-list tw-absolute tw-right-3 tw-top-3 tw-z-50 tw-text-3xl tw-text-white lg:tw-hidden"
+                onclick="toggleHeader()"
+                aria-label="menu"
+                id="collapse-btn"></button>
         </header>
 
-        <section class="lfps-hero">
-            <div class="lfps-shell lfps-hero__inner">
-                <div class="lfps-hero__copy" data-lfps-reveal>
-                    <span class="lfps-eyebrow">{{ $pageData['eyebrow'] }}</span>
-                    <h1>{{ $pageData['title'] }}</h1>
-                    <p class="lfps-hero__lead">{{ $pageData['lead'] }}</p>
-                    <div class="lfps-hero__badges">
-                        @foreach ($pageData['hero_badges'] as $badge)
-                            <span>{{ $badge }}</span>
-                        @endforeach
+        <section class="hero-section tw-relative tw-flex tw-min-h-[100vh] tw-w-full tw-flex-col tw-overflow-hidden max-md:tw-mt-[50px]" id="hero-section">
+            <div class="tw-flex tw-h-full tw-min-h-[100vh] tw-w-full tw-flex-col tw-place-content-center tw-gap-6 tw-p-[5%] max-xl:tw-place-items-center max-lg:tw-p-4">
+                <div class="tw-flex tw-flex-col tw-place-content-center tw-items-center">
+                    <div class="reveal-up gradient-text tw-text-center tw-text-6xl tw-font-semibold tw-uppercase tw-leading-[80px] max-lg:tw-text-4xl max-md:tw-leading-snug">
+                        <span>{{ $pageData['eyebrow'] }}</span>
+                        <br />
+                        <span>{{ $pageData['title'] }}</span>
                     </div>
-                    <div class="lfps-hero__actions">
-                        <a href="{{ $applyUrl }}" class="lfps-button">Programa Başvur</a>
-                        <a href="{{ $testUrl }}" class="lfps-button lfps-button--ghost">Ön Değerlendirme Başlat</a>
+                    <div class="reveal-up tw-mt-10 tw-max-w-[520px] tw-p-2 tw-text-center tw-text-gray-300 max-lg:tw-max-w-full">
+                        {{ $pageData['lead'] }}
                     </div>
-                    <div class="lfps-hero__stats">
-                        @foreach ($pageData['hero_stats'] as $stat)
-                            <article>
-                                <strong>{{ $stat['value'] }}</strong>
-                                <span>{{ $stat['label'] }}</span>
-                            </article>
-                        @endforeach
+                    <div class="reveal-up tw-mt-10 tw-flex tw-place-items-center tw-gap-4">
+                        <a class="btn tw-bg-[#6059f7] tw-shadow-lg tw-shadow-primary tw-transition-transform tw-duration-[0.3s] hover:tw-scale-x-[1.03]" href="{{ $applyUrl }}">
+                            Programa Başvur
+                        </a>
+                        <a class="btn tw-flex tw-gap-2 !tw-bg-black !tw-text-white tw-transition-colors tw-duration-[0.3s] hover:!tw-bg-white hover:!tw-text-black" href="{{ $testUrl }}">
+                            <i class="bi bi-play-circle-fill"></i>
+                            <span>Seviye Tespiti</span>
+                        </a>
                     </div>
                 </div>
-                <div class="lfps-hero__visual" data-lfps-reveal>
-                    <div class="lfps-stack">
-                        @foreach ($heroVisuals as $visual)
-                            <figure class="lfps-stack__card lfps-stack__card--{{ $loop->iteration }}">
-                                <img src="{{ $visual }}" alt="LinguFranca program kapağı {{ $loop->iteration }}">
-                            </figure>
-                        @endforeach
+
+                <div class="reveal-up tw-relative tw-mt-8 tw-flex tw-w-full tw-place-content-center tw-place-items-center" id="dashboard-container">
+                    <div class="tw-relative tw-max-w-[80%] tw-overflow-hidden tw-rounded-xl tw-bg-transparent max-md:tw-max-w-full" id="dashboard">
+                        @if (!empty($pageData['hero_primary_visual']))
+                            <img
+                                src="{{ $pageData['hero_primary_visual'] }}"
+                                alt="LinguFranca performans görseli"
+                                class="tw-h-full tw-w-full tw-object-cover tw-opacity-90 max-lg:tw-object-contain"
+                            />
+                        @endif
                     </div>
-                    <article class="lfps-hero__quote">
-                        <span>{{ $pageData['hero_quote_title'] }}</span>
-                        <p>{{ $pageData['hero_quote'] }}</p>
-                    </article>
+                    <div class="hero-img-bg-grad tw-absolute tw-left-[20%] tw-top-5 tw-h-[200px] tw-w-[200px]"></div>
                 </div>
             </div>
         </section>
 
-        <div class="lfps-shell">
-            <section class="lfps-marquee" data-lfps-reveal>
-                @foreach ($pageData['press_badges'] as $badge)
-                    <span>{{ $badge }}</span>
-                @endforeach
-            </section>
-
-            <section class="lfps-section" id="sistem" data-lfps-reveal>
-                <div class="lfps-section__head">
-                    <span class="lfps-eyebrow">{{ $pageData['manifesto_eyebrow'] }}</span>
-                    <h2>{{ $pageData['manifesto_title'] }}</h2>
-                    <p>{{ $pageData['manifesto_lead'] }}</p>
+        <section class="tw-relative tw-flex tw-w-full tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-hidden tw-p-8">
+            <h2 class="reveal-up tw-text-3xl max-md:tw-text-xl">Basında ve öğrenci videolarında görünen sistem</h2>
+            <div class="reveal-up carousel-container">
+                <div class="carousel tw-mt-6 tw-flex tw-w-full tw-gap-5 max-md:tw-gap-2">
+                    @foreach ($pageData['press_badges'] as $badge)
+                        <div class="carousel-img tw-h-[30px] tw-w-[180px] tw-text-center tw-text-sm tw-text-gray-300">{{ $badge }}</div>
+                    @endforeach
                 </div>
-                <div class="lfps-benefits">
+            </div>
+        </section>
+
+        <section class="tw-relative tw-flex tw-w-full tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-hidden tw-p-6" id="programlar">
+            <div class="tw-mt-8 tw-flex tw-flex-col tw-place-items-center tw-gap-5">
+                <div class="reveal-up tw-mt-5 tw-flex tw-flex-col tw-gap-3 tw-text-center">
+                    <h2 class="tw-text-4xl tw-font-medium tw-text-gray-200 max-md:tw-text-3xl">Sistemin omurgası</h2>
+                    <p class="tw-max-w-[680px] tw-text-gray-300">{{ $pageData['manifesto_lead'] }}</p>
+                </div>
+                <div class="tw-mt-6 tw-flex tw-max-w-[90%] tw-flex-wrap tw-place-content-center tw-gap-8 max-lg:tw-flex-col">
                     @foreach ($pageData['manifesto_points'] as $point)
-                        <article class="lfps-benefit" data-lfps-reveal>
-                            <span class="lfps-benefit__index">{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
-                            <h3>{{ $point['title'] }}</h3>
-                            <p>{{ $point['description'] }}</p>
-                        </article>
-                    @endforeach
-                </div>
-            </section>
-
-            <section class="lfps-section" id="programlar" data-lfps-reveal>
-                <div class="lfps-section__head">
-                    <span class="lfps-eyebrow">Program Akışları</span>
-                    <h2>Zip içindeki PDF’leri doğrudan üç programa ayırdık</h2>
-                    <p>Her kart gerçek PDF dosyasını açar. Metinlerin omurgası doğrudan sunumlardaki amaç, süreç ve vaatlerden kuruldu.</p>
-                </div>
-                <div class="lfps-programs">
-                    @foreach ($downloads as $download)
-                        <article class="lfps-program">
-                            <div class="lfps-program__cover" @if (!empty($download['cover_url'])) style="background-image:url('{{ $download['cover_url'] }}')" @endif>
-                                <div class="lfps-program__cover-meta">
-                                    <span>{{ $download['label'] }}</span>
-                                    <strong>{{ $download['meta'] }}</strong>
+                        <div class="reveal-up tw-flex tw-h-[380px] tw-w-[450px] tw-flex-col tw-gap-3 tw-text-center max-md:tw-w-[320px]">
+                            <div class="border-gradient tw-h-[200px] tw-w-full tw-overflow-hidden max-md:tw-h-[150px]">
+                                <div class="tw-flex tw-h-full tw-w-full tw-place-content-center tw-place-items-end tw-p-2">
+                                    <i class="bi bi-stars tw-text-7xl tw-text-gray-200 max-md:tw-text-5xl"></i>
                                 </div>
                             </div>
-                            <div class="lfps-program__body">
-                                <p class="lfps-program__result">{{ $download['result'] }}</p>
-                                <h3>{{ $download['title'] }}</h3>
-                                <p>{{ $download['subtitle'] }}</p>
-                                <ul>
-                                    @foreach ($download['bullets'] as $bullet)
-                                        <li>{{ $bullet }}</li>
-                                    @endforeach
-                                </ul>
+                            <div class="tw-flex tw-flex-col tw-gap-4 tw-p-2">
+                                <h3 class="tw-mt-4 tw-text-2xl tw-font-normal max-md:tw-text-xl">{{ $point['title'] }}</h3>
+                                <div class="tw-text-gray-300">{{ $point['description'] }}</div>
                             </div>
-                            <div class="lfps-program__actions">
-                                @if (!empty($download['file_url']))
-                                    <a href="{{ $download['file_url'] }}" target="_blank" rel="noopener" class="lfps-button">PDF’i Aç</a>
-                                @endif
-                                <a href="{{ $applyUrl }}" class="lfps-inline-link">Bilgi Al</a>
-                            </div>
-                        </article>
+                        </div>
                     @endforeach
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <section class="lfps-showcase" data-lfps-reveal>
-                <article class="lfps-showcase__row">
-                    <div class="lfps-showcase__copy">
-                        <span class="lfps-eyebrow">Genel İngilizce Akışı</span>
-                        <h2>{{ $pageData['resource_columns'][0]['label'] }}</h2>
-                        <p>{{ $generalProgram['subtitle'] ?? '' }}</p>
-                        <ul class="lfps-showcase__list">
-                            @foreach ($pageData['resource_columns'][0]['items'] as $item)
-                                <li>{{ $item }}</li>
-                            @endforeach
-                        </ul>
-                        <div class="lfps-showcase__chips">
-                            @foreach ($generalMilestones as $item)
-                                <span>{{ $item }}</span>
-                            @endforeach
+        <section class="tw-relative tw-flex tw-min-h-[80vh] tw-w-full tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-hidden tw-p-6">
+            <div class="tw-mt-8 tw-flex tw-flex-col tw-place-items-center tw-gap-5">
+                <div class="reveal-up tw-mt-5 tw-flex tw-flex-col tw-gap-3 tw-text-center">
+                    <h2 class="tw-text-4xl tw-font-medium tw-text-gray-200 max-md:tw-text-2xl">Program içerikleri</h2>
+                </div>
+                <div class="tw-mt-6 tw-flex tw-max-w-[90%] tw-flex-wrap tw-place-content-center tw-gap-8 max-lg:tw-flex-col">
+                    @foreach ($pageData['resource_columns'] as $column)
+                        <div class="reveal-up tw-flex tw-h-[220px] tw-w-[450px] tw-gap-8 tw-rounded-xl tw-border-[1px] tw-border-outlineColor tw-bg-secondary tw-p-8 max-md:tw-w-[320px]">
+                            <div class="tw-text-4xl max-md:tw-text-2xl"><i class="bi bi-check2-circle"></i></div>
+                            <div class="tw-flex tw-flex-col tw-gap-4">
+                                <h3 class="tw-text-2xl max-md:tw-text-xl">{{ $column['label'] }}</h3>
+                                <p class="tw-text-gray-300 max-md:tw-text-sm">{{ implode(' · ', $column['items']) }}</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="lfps-showcase__visual">
+                    @endforeach
+                </div>
+            </div>
+        </section>
+
+        <section class="tw-relative tw-flex tw-min-h-[80vh] tw-w-full tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-hidden tw-p-6">
+            <div class="reveal-up tw-flex tw-min-h-[60vh] tw-place-content-center tw-place-items-center tw-gap-[10%] max-lg:tw-flex-col max-lg:tw-gap-10">
+                <div class="tw-flex">
+                    <div class="tw-max-h-[650px] tw-max-w-[850px] tw-overflow-hidden tw-rounded-lg tw-shadow-lg tw-shadow-[rgba(96,89,247,0.45)]">
                         @if (!empty($generalProgram['cover_url']))
-                            <figure class="lfps-showcase__cover">
-                                <img src="{{ $generalProgram['cover_url'] }}" alt="{{ $generalProgram['title'] ?? 'Genel İngilizce' }}">
-                            </figure>
+                            <img
+                                src="{{ $generalProgram['cover_url'] }}"
+                                alt="{{ $generalProgram['title'] ?? 'Genel İngilizce' }}"
+                                class="tw-h-full tw-w-full tw-object-cover"
+                            />
                         @endif
-                        <article class="lfps-showcase__note">
-                            <span>{{ $generalProgram['meta'] ?? '' }}</span>
-                            <strong>{{ $generalProgram['result'] ?? '' }}</strong>
-                            @if (!empty($generalProgram['file_url']))
-                                <a href="{{ $generalProgram['file_url'] }}" target="_blank" rel="noopener" class="lfps-inline-link">PDF'i Aç</a>
-                            @endif
-                        </article>
                     </div>
-                </article>
-
-                <article class="lfps-showcase__row lfps-showcase__row--reverse">
-                    <div class="lfps-showcase__copy">
-                        <span class="lfps-eyebrow">Sınav Akışları</span>
-                        <h2>{{ $pageData['resource_columns'][1]['label'] }}</h2>
-                        <p>{{ $pageData['proof_lead'] }}</p>
-                        <ul class="lfps-showcase__list">
-                            @foreach ($pageData['resource_columns'][1]['items'] as $item)
-                                <li>{{ $item }}</li>
-                            @endforeach
-                        </ul>
-                        <div class="lfps-showcase__chips">
-                            @foreach ($examMilestones as $item)
-                                <span>{{ $item }}</span>
-                            @endforeach
-                        </div>
-                    </div>
-                    <div class="lfps-showcase__duo">
-                        @foreach ($examPrograms as $download)
-                            <article class="lfps-mini-program">
-                                @if (!empty($download['cover_url']))
-                                    <div class="lfps-mini-program__cover" style="background-image:url('{{ $download['cover_url'] }}')"></div>
-                                @endif
-                                <div class="lfps-mini-program__body">
-                                    <span>{{ $download['label'] }}</span>
-                                    <h3>{{ $download['title'] }}</h3>
-                                    <p>{{ $download['result'] }}</p>
-                                    @if (!empty($download['file_url']))
-                                        <a href="{{ $download['file_url'] }}" target="_blank" rel="noopener" class="lfps-inline-link">PDF'i Aç</a>
-                                    @endif
-                                </div>
-                            </article>
-                        @endforeach
-                    </div>
-                </article>
-            </section>
-
-            <section class="lfps-section" id="videolar" data-lfps-reveal>
-                <div class="lfps-section__head">
-                    <span class="lfps-eyebrow">{{ $pageData['proof_eyebrow'] }}</span>
-                    <h2>{{ $pageData['proof_title'] }}</h2>
-                    <p>{{ $pageData['proof_lead'] }}</p>
                 </div>
-                <div class="lfps-media-grid">
+                <div class="tw-mt-6 tw-flex tw-max-w-[450px] tw-flex-col tw-gap-4">
+                    <h3 class="tw-text-4xl tw-font-medium max-md:tw-text-2xl">{{ $generalProgram['title'] ?? 'Genel İngilizce' }}</h3>
+                    <div class="tw-mt-4 tw-flex tw-flex-col tw-gap-3">
+                        @foreach ($generalMilestones as $item)
+                            <h4 class="tw-text-xl tw-font-medium">
+                                <i class="bi bi-check-all !tw-text-2xl"></i>
+                                {{ $item }}
+                            </h4>
+                        @endforeach
+                        <span class="tw-text-lg tw-text-gray-300 max-md:tw-text-base">{{ $generalProgram['result'] ?? '' }}</span>
+                        @if (!empty($generalProgram['file_url']))
+                            <a href="{{ $generalProgram['file_url'] }}" target="_blank" rel="noopener" class="btn tw-mt-4">PDF'i Aç</a>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="tw-relative tw-flex tw-min-h-[80vh] tw-w-full tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-hidden tw-p-6" id="videolar">
+            <div class="tw-mt-8 tw-flex tw-flex-col tw-place-items-center tw-gap-5">
+                <div class="reveal-up tw-mt-5 tw-flex tw-flex-col tw-gap-3 tw-text-center">
+                    <h2 class="tw-text-4xl tw-font-medium tw-text-gray-200 max-md:tw-text-3xl">Video kanıtları</h2>
+                    <p class="tw-max-w-[680px] tw-text-gray-300">{{ $pageData['proof_lead'] }}</p>
+                </div>
+                <div class="tw-mt-6 tw-flex tw-max-w-[90%] tw-flex-wrap tw-place-content-center tw-gap-8 max-lg:tw-flex-col">
                     @foreach ($mediaLibrary as $item)
-                        <article class="lfps-media-card">
-                            <div class="lfps-media-card__poster" @if (!empty($item['poster_url'])) style="background-image:url('{{ $item['poster_url'] }}')" @endif>
-                                <div class="lfps-media-card__poster-meta">
-                                    <span>{{ $item['category'] }}</span>
-                                    <strong>{{ $item['duration'] }}</strong>
-                                </div>
-                                <button type="button"
-                                    class="lfps-media-card__play lfps-video-trigger"
+                        <div class="reveal-up tw-flex tw-h-[320px] tw-w-[360px] tw-flex-col tw-overflow-hidden tw-rounded-xl tw-border-[1px] tw-border-outlineColor tw-bg-secondary">
+                            <div class="tw-relative tw-h-[180px] tw-w-full tw-bg-black">
+                                @if (!empty($item['poster_url']))
+                                    <img src="{{ $item['poster_url'] }}" alt="{{ $item['title'] }}" class="tw-h-full tw-w-full tw-object-cover">
+                                @endif
+                                <button
+                                    type="button"
+                                    class="btn tw-absolute tw-bottom-3 tw-left-3"
                                     data-video-url="{{ $item['file_url'] }}"
                                     data-video-title="{{ $item['title'] }}"
-                                    data-video-poster="{{ $item['poster_url'] ?? '' }}">
+                                    data-video-poster="{{ $item['poster_url'] ?? '' }}"
+                                    onclick="openVideoModal(this)">
                                     Videoyu Aç
                                 </button>
                             </div>
-                            <div class="lfps-media-card__body">
-                                <h3>{{ $item['title'] }}</h3>
-                                <p>{{ $item['description'] }}</p>
+                            <div class="tw-flex tw-flex-col tw-gap-2 tw-p-4">
+                                <strong class="tw-text-sm tw-text-gray-400">{{ $item['category'] }} · {{ $item['duration'] }}</strong>
+                                <h3 class="tw-text-lg">{{ $item['title'] }}</h3>
+                                <p class="tw-text-sm tw-text-gray-300">{{ $item['description'] }}</p>
                             </div>
-                        </article>
+                        </div>
                     @endforeach
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <section class="lfps-fit" id="kimler">
-                <article class="lfps-fit__panel" data-lfps-reveal>
-                    <span class="lfps-eyebrow">{{ $pageData['fit_eyebrow'] }}</span>
-                    <h2>{{ $pageData['fit_title'] }}</h2>
-                    <p>{{ $pageData['fit_lead'] }}</p>
-                    <h3>Kimler İçin Uygun?</h3>
-                    <ul>
-                        @foreach ($pageData['fit_for'] as $item)
-                            <li>{{ $item }}</li>
-                        @endforeach
-                    </ul>
-                </article>
-                <article class="lfps-fit__panel lfps-fit__panel--muted" data-lfps-reveal>
-                    <span class="lfps-eyebrow">Sınır Çizgisi</span>
-                    <h2>Kimler İçin Uygun Değil?</h2>
-                    <p>Programın dili net: zahmetsiz sonuç beklentisi olan, sisteme katılım göstermeyecek ya da sabit müfredat isteyen profiller için kurgulanmadı.</p>
-                    <ul>
-                        @foreach ($pageData['fit_not_for'] as $item)
-                            <li>{{ $item }}</li>
-                        @endforeach
-                    </ul>
-                </article>
-            </section>
+        <section class="tw-relative tw-flex tw-min-h-[80vh] tw-w-full tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-hidden tw-p-6" id="fiyat">
+            <div class="tw-mt-8 tw-flex tw-flex-col tw-place-items-center tw-gap-5">
+                <div class="reveal-up tw-mt-5 tw-flex tw-flex-col tw-gap-3 tw-text-center">
+                    <h2 class="tw-text-4xl tw-font-medium tw-text-gray-200 max-md:tw-text-3xl">{{ $pageData['pricing_title'] }}</h2>
+                    <p class="tw-max-w-[680px] tw-text-gray-300">{{ $pageData['pricing_lead'] }}</p>
+                </div>
+                <div class="tw-mt-6 tw-flex tw-max-w-[90%] tw-flex-wrap tw-place-content-center tw-gap-8 max-lg:tw-flex-col">
+                    @foreach ($pageData['packages'] as $package)
+                        <div class="reveal-up tw-flex tw-h-[280px] tw-w-[320px] tw-flex-col tw-gap-3 tw-rounded-xl tw-border-[1px] tw-border-outlineColor tw-bg-secondary tw-p-6">
+                            <strong class="tw-text-lg">{{ $package['name'] }}</strong>
+                            <span class="tw-text-3xl tw-font-semibold">{{ $package['price'] }}</span>
+                            <span class="tw-text-sm tw-text-gray-400">{{ $package['unit'] }}</span>
+                            <p class="tw-text-sm tw-text-gray-300">{{ $package['note'] }}</p>
+                            <a class="btn tw-mt-auto" href="{{ $applyUrl }}">Başvur</a>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
 
-            <section class="lfps-section" id="surec">
-                <div class="lfps-section__head" data-lfps-reveal>
-                    <span class="lfps-eyebrow">{{ $pageData['process_eyebrow'] }}</span>
-                    <h2>{{ $pageData['process_title'] }}</h2>
+        <section class="tw-relative tw-flex tw-w-full tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-hidden tw-p-6" id="sss">
+            <div class="tw-mt-8 tw-flex tw-flex-col tw-place-items-center tw-gap-5">
+                <div class="reveal-up tw-mt-5 tw-flex tw-flex-col tw-gap-3 tw-text-center">
+                    <h2 class="tw-text-4xl tw-font-medium tw-text-gray-200 max-md:tw-text-2xl">SSS</h2>
                 </div>
-                <div class="lfps-process">
-                    <div class="lfps-steps">
-                        @foreach ($pageData['steps'] as $step)
-                            <article class="lfps-step" data-lfps-reveal>
-                                <strong>{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}</strong>
-                                <h3>{{ $step['title'] }}</h3>
-                                <p>{{ $step['description'] }}</p>
-                            </article>
-                        @endforeach
-                    </div>
-                    <aside class="lfps-process__aside">
-                        <article class="lfps-sidecard" data-lfps-reveal>
-                            <span class="lfps-eyebrow">{{ $pageData['milestones_eyebrow'] }}</span>
-                            @foreach ($pageData['milestones'] as $milestone)
-                                <h3>{{ $milestone['label'] }}</h3>
-                                <div class="lfps-goalwords">
-                                    @foreach ($milestone['items'] as $word)
-                                        <span>{{ $word }}</span>
-                                    @endforeach
-                                </div>
-                            @endforeach
-                        </article>
-                        <article class="lfps-sidecard" data-lfps-reveal>
-                            <span class="lfps-eyebrow">{{ $pageData['reasons_eyebrow'] }}</span>
-                            <h3>{{ $pageData['reasons_title'] }}</h3>
-                            <ul class="lfps-reasons">
-                                @foreach ($pageData['reasons'] as $reason)
-                                    <li>{{ $reason }}</li>
-                                @endforeach
-                            </ul>
-                        </article>
-                    </aside>
-                </div>
-            </section>
-
-            <section class="lfps-section" id="fiyat" data-lfps-reveal>
-                <div class="lfps-section__head">
-                    <span class="lfps-eyebrow">{{ $pageData['pricing_eyebrow'] }}</span>
-                    <h2>{{ $pageData['pricing_title'] }}</h2>
-                    <p>{{ $pageData['pricing_lead'] }}</p>
-                </div>
-                <div class="lfps-pricing">
-                    <div class="lfps-pricing__plans">
-                        @foreach ($pageData['packages'] as $package)
-                            <article class="lfps-plan @if (!empty($package['featured'])) lfps-plan--featured @endif">
-                                @if (!empty($package['featured']))
-                                    <span class="lfps-plan__badge">Önerilen</span>
-                                @endif
-                                <h3>{{ $package['name'] }}</h3>
-                                <strong>{{ $package['price'] }}</strong>
-                                <p>{{ $package['unit'] }}</p>
-                                <small>{{ $package['note'] }}</small>
-                            </article>
-                        @endforeach
-                    </div>
-                    <aside class="lfps-pricing__notes">
-                        <h3>Planlama ve Ödeme Notları</h3>
-                        <ul>
-                            @foreach ($pageData['pricing_notes'] as $note)
-                                <li>{{ $note }}</li>
-                            @endforeach
-                        </ul>
-                    </aside>
-                </div>
-            </section>
-
-            <section class="lfps-section" id="sss" data-lfps-reveal>
-                <div class="lfps-section__head">
-                    <span class="lfps-eyebrow">SSS</span>
-                    <h2>Merak edebileceğiniz noktalar</h2>
-                </div>
-                <div class="lfps-faq">
+                <div class="faq tw-mt-6 tw-flex tw-w-full tw-max-w-[800px] tw-flex-col tw-gap-3">
                     @foreach ($pageData['faq'] as $faq)
-                        <details class="lfps-faq__item">
-                            <summary>{{ $faq['question'] }}</summary>
-                            <p>{{ $faq['answer'] }}</p>
-                        </details>
+                        <div class="reveal-up tw-rounded-lg tw-border-[1px] tw-border-outlineColor tw-bg-secondary">
+                            <button class="faq-accordion tw-flex tw-w-full tw-items-center tw-justify-between">
+                                <span>{{ $faq['question'] }}</span>
+                                <i class="bi bi-chevron-down"></i>
+                            </button>
+                            <div class="content">
+                                <p>{{ $faq['answer'] }}</p>
+                            </div>
+                        </div>
                     @endforeach
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <section class="lfps-final" data-lfps-reveal>
-                <div>
-                    <span class="lfps-eyebrow">Hazır Başlangıç</span>
-                    <h2>{{ $pageData['cta_title'] }}</h2>
-                    <p>{{ $pageData['cta_text'] }}</p>
+        <section class="tw-relative tw-flex tw-w-full tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-hidden tw-p-10">
+            <div class="reveal-up tw-flex tw-flex-col tw-place-items-center tw-gap-4 tw-text-center">
+                <h2 class="tw-text-3xl tw-font-medium">{{ $pageData['cta_title'] }}</h2>
+                <p class="tw-max-w-[600px] tw-text-gray-300">{{ $pageData['cta_text'] }}</p>
+                <div class="tw-flex tw-gap-4">
+                    <a class="btn" href="{{ $applyUrl }}">Programa Başvur</a>
+                    <a class="btn !tw-bg-black !tw-text-white" href="{{ $testUrl }}">Seviye Tespiti</a>
                 </div>
-                <div class="lfps-final__actions">
-                    <a href="{{ $applyUrl }}" class="lfps-button">Programa Başvur</a>
-                    <a href="{{ $testUrl }}" class="lfps-button lfps-button--ghost">Seviye Tespiti Yap</a>
-                </div>
-            </section>
-        </div>
+            </div>
+        </section>
 
-        <footer class="lfps-footer">
-            <div class="lfps-shell lfps-footer__inner">
-                <p>{{ $siteName }} · LinguFranca Performans Sistemi</p>
-                <div>
-                    <a href="{{ $homeUrl }}">Ana Sayfa</a>
-                    <a href="{{ $applyUrl }}">İletişim</a>
-                    <a href="{{ route('mobile-app-privacy-policy') }}">Gizlilik</a>
-                </div>
+        <footer class="tw-flex tw-w-full tw-flex-col tw-place-items-center tw-gap-4 tw-p-8 tw-text-sm tw-text-gray-400">
+            <div>{{ $siteName }} · LinguFranca Performans Sistemi</div>
+            <div class="tw-flex tw-gap-4">
+                <a class="footer-link" href="{{ $homeUrl }}">Ana Sayfa</a>
+                <a class="footer-link" href="{{ $applyUrl }}">İletişim</a>
+                <a class="footer-link" href="{{ route('mobile-app-privacy-policy') }}">Gizlilik</a>
             </div>
         </footer>
 
@@ -454,9 +346,45 @@
 @endpush
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('frontend/css/lingufranca-performance.css') }}">
+    <link rel="stylesheet" href="{{ asset('frontend/css/saasy-dark-tailwind.css') }}">
+    <link rel="stylesheet" href="{{ asset('frontend/css/saasy-dark.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 @endpush
 
 @push('scripts')
-    <script src="{{ asset('frontend/js/lingufranca-performance.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-3m9E7OrJcFAR2bE6a4s2U6fsPty2SlpxQekT2sJb0gwR0By/QLoM4E2eZpQU4yAZc9G5hvDXMd1q1vJx0o5s4A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha512-3P9QKf7GzO9bK5W7oMG0MzY6mFhVSG9s0cmef8Wwyq1y9wqQMRk1Cax4Ry0Y2h4xTn2u1blw2lW8XyS71W4YIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="{{ asset('frontend/js/saasy-dark.js') }}"></script>
+    <script>
+        const modal = document.getElementById('lfpsVideoModal');
+        const modalTitle = document.getElementById('lfpsVideoTitle');
+        const player = document.getElementById('lfpsVideoPlayer');
+        const closeModal = () => {
+            modal.classList.remove('is-open');
+            modal.setAttribute('aria-hidden', 'true');
+            player.pause();
+            player.removeAttribute('src');
+            player.removeAttribute('poster');
+            player.load();
+            document.body.style.overflow = '';
+        };
+        const openVideoModal = (btn) => {
+            const url = btn.getAttribute('data-video-url');
+            const title = btn.getAttribute('data-video-title') || 'Video';
+            const poster = btn.getAttribute('data-video-poster') || '';
+            if (!url) return;
+            modalTitle.textContent = title;
+            player.src = url;
+            if (poster) player.poster = poster;
+            modal.classList.add('is-open');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+            player.play().catch(() => {});
+        };
+        window.openVideoModal = openVideoModal;
+        modal.querySelectorAll('[data-video-close]').forEach((el) => el.addEventListener('click', closeModal));
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+        });
+    </script>
 @endpush
