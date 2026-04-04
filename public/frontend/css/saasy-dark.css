@@ -65,6 +65,29 @@ header > .collapsible-header{
     -webkit-text-fill-color: transparent;
 }
 
+.lfps-performance-shell{
+    background: #050b1c;
+    color: #f5f7ff;
+}
+
+.lfps-performance-shell .tw-text-gray-200{
+    color: #f4f7ff !important;
+}
+
+.lfps-performance-shell .tw-text-gray-300,
+.lfps-performance-shell .tw-text-gray-400{
+    color: #d6def4 !important;
+}
+
+.lfps-performance-shell .tw-text-gray-500{
+    color: #aab4ca !important;
+}
+
+.lfps-performance-shell .header-links,
+.lfps-performance-shell .footer-link{
+    color: #eaf0ff;
+}
+
 .hero-section{
     /* background-image: url("../assets/images/background/dots.svg"); */
     background-position: center; /* Center the image */

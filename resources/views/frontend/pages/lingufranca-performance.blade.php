@@ -31,7 +31,7 @@
 @section('hide_public_footer', '1')
 
 @section('contents')
-    <section class="tw-flex tw-min-h-[100vh] tw-flex-col tw-bg-[#050b1c] tw-text-white">
+    <section class="lfps-performance-shell tw-flex tw-min-h-[100vh] tw-flex-col tw-text-white" style="background:#050b1c;">
         <header class="tw-max-w-lg:tw-px-4 tw-max-w-lg:tw-mr-auto tw-absolute tw-top-0 tw-z-20 tw-flex tw-h-[60px] tw-w-full tw-bg-opacity-0 tw-px-[5%] lg:tw-justify-around">
             <a class="tw-h-[50px] tw-w-[50px] tw-p-[4px]" href="{{ $homeUrl }}">
                 @if (!empty($setting?->logo))
@@ -63,7 +63,7 @@
                         <br />
                         <span>{{ $pageData['title'] }}</span>
                     </div>
-                    <div class="reveal-up tw-mt-10 tw-max-w-[620px] tw-p-2 tw-text-center tw-text-gray-300 max-lg:tw-max-w-full">
+                    <div class="reveal-up tw-mt-10 tw-max-w-[620px] tw-p-2 tw-text-center tw-text-gray-200 max-lg:tw-max-w-full">
                         {{ $pageData['lead'] }}
                     </div>
                     <div class="reveal-up tw-mt-10 tw-flex tw-place-items-center tw-gap-4">
@@ -93,7 +93,7 @@
             <div class="reveal-up carousel-container">
                 <div class="carousel tw-mt-6 tw-flex tw-w-full tw-gap-5 max-md:tw-gap-2">
                     @foreach ($pageData['press_badges'] as $badge)
-                        <div class="carousel-img tw-h-[30px] tw-w-[180px] tw-text-center tw-text-sm tw-text-gray-300">{{ $badge }}</div>
+                        <div class="carousel-img tw-h-[30px] tw-w-[180px] tw-text-center tw-text-sm tw-text-gray-200">{{ $badge }}</div>
                     @endforeach
                 </div>
             </div>
@@ -103,7 +103,7 @@
             <div class="tw-mt-8 tw-flex tw-flex-col tw-place-items-center tw-gap-5">
                 <div class="reveal-up tw-mt-5 tw-flex tw-flex-col tw-gap-3 tw-text-center">
                     <h2 class="tw-text-4xl tw-font-medium tw-text-gray-200 max-md:tw-text-3xl">Sistemin omurgasi</h2>
-                    <p class="tw-max-w-[680px] tw-text-gray-300">{{ $pageData['manifesto_lead'] }}</p>
+                    <p class="tw-max-w-[680px] tw-text-gray-200">{{ $pageData['manifesto_lead'] }}</p>
                 </div>
                 <div class="tw-mt-6 tw-flex tw-max-w-[90%] tw-flex-wrap tw-place-content-center tw-gap-8 max-lg:tw-flex-col">
                     @foreach ($pageData['manifesto_points'] as $point)
@@ -115,7 +115,7 @@
                             </div>
                             <div class="tw-flex tw-flex-col tw-gap-4 tw-p-2">
                                 <h3 class="tw-mt-4 tw-text-2xl tw-font-normal max-md:tw-text-xl">{{ $point['title'] }}</h3>
-                                <div class="tw-text-gray-300">{{ $point['description'] }}</div>
+                                <div class="tw-text-gray-200">{{ $point['description'] }}</div>
                             </div>
                         </div>
                     @endforeach
@@ -134,7 +134,7 @@
                             <div class="tw-text-4xl max-md:tw-text-2xl"><i class="bi bi-check2-circle"></i></div>
                             <div class="tw-flex tw-flex-col tw-gap-4">
                                 <h3 class="tw-text-2xl max-md:tw-text-xl">{{ $column['label'] }}</h3>
-                                <p class="tw-text-gray-300 max-md:tw-text-sm">{{ implode(' - ', $column['items']) }}</p>
+                                <p class="tw-text-gray-200 max-md:tw-text-sm">{{ implode(' - ', $column['items']) }}</p>
                             </div>
                         </div>
                     @endforeach
@@ -153,7 +153,7 @@
                 </div>
                 <div class="tw-mt-6 tw-flex tw-max-w-[450px] tw-flex-col tw-gap-4">
                     <h3 class="tw-text-4xl tw-font-medium max-md:tw-text-2xl">{{ $generalProgram['title'] ?? 'Genel Ingilizce' }}</h3>
-                    <p class="tw-text-gray-300">{{ $generalProgram['subtitle'] ?? '' }}</p>
+                    <p class="tw-text-gray-200">{{ $generalProgram['subtitle'] ?? '' }}</p>
                     <div class="tw-mt-4 tw-flex tw-flex-col tw-gap-3">
                         @foreach ($generalMilestones as $item)
                             <h4 class="tw-text-xl tw-font-medium">
@@ -161,7 +161,7 @@
                                 {{ $item }}
                             </h4>
                         @endforeach
-                        <span class="tw-text-lg tw-text-gray-300 max-md:tw-text-base">{{ $generalProgram['result'] ?? '' }}</span>
+                        <span class="tw-text-lg tw-text-gray-200 max-md:tw-text-base">{{ $generalProgram['result'] ?? '' }}</span>
                         @if (!empty($generalProgram['file_url']))
                             <a href="{{ $generalProgram['file_url'] }}" target="_blank" rel="noopener" class="btn tw-mt-4">Program Detayi</a>
                         @endif
@@ -175,7 +175,7 @@
                 <div class="tw-mt-8 tw-flex tw-flex-col tw-place-items-center tw-gap-5">
                     <div class="reveal-up tw-mt-5 tw-flex tw-flex-col tw-gap-3 tw-text-center">
                         <h2 class="tw-text-4xl tw-font-medium tw-text-gray-200 max-md:tw-text-2xl">Sinav programlari</h2>
-                        <p class="tw-max-w-[700px] tw-text-gray-300">IELTS ve PTE tarafini ayri kartlarla acik gosterdim. Sonuc vaadi ve calisma basliklari burada.</p>
+                        <p class="tw-max-w-[700px] tw-text-gray-200">IELTS ve PTE tarafini ayri kartlarla acik gosterdim. Sonuc vaadi ve calisma basliklari burada.</p>
                     </div>
                     <div class="lfps-program-grid tw-mt-6">
                         @foreach ($examPrograms as $program)
@@ -186,8 +186,8 @@
                                 <div class="lfps-program-card__body">
                                     <span class="lfps-program-card__label">{{ $program['label'] }}</span>
                                     <h3 class="tw-text-2xl">{{ $program['title'] }}</h3>
-                                    <p class="tw-mt-3 tw-text-gray-300">{{ $program['subtitle'] }}</p>
-                                    <p class="tw-mt-3 tw-text-sm tw-text-indigo-200">{{ $program['result'] }}</p>
+                                    <p class="tw-mt-3 tw-text-gray-200">{{ $program['subtitle'] }}</p>
+                                    <p class="tw-mt-3 tw-text-sm tw-text-indigo-100">{{ $program['result'] }}</p>
                                     <ul>
                                         @foreach ($program['bullets'] as $bullet)
                                             <li>{{ $bullet }}</li>
@@ -208,7 +208,7 @@
             <div class="tw-mt-8 tw-flex tw-flex-col tw-place-items-center tw-gap-5">
                 <div class="reveal-up tw-mt-5 tw-flex tw-flex-col tw-gap-3 tw-text-center">
                     <h2 class="tw-text-4xl tw-font-medium tw-text-gray-200 max-md:tw-text-3xl">Video kanitlari</h2>
-                    <p class="tw-max-w-[680px] tw-text-gray-300">{{ $pageData['proof_lead'] }}</p>
+                    <p class="tw-max-w-[680px] tw-text-gray-200">{{ $pageData['proof_lead'] }}</p>
                 </div>
                 <div class="lfps-video-grid tw-mt-6">
                     @foreach ($mediaLibrary as $item)
@@ -220,13 +220,13 @@
                             <div class="lfps-video-card__body">
                                 <span class="lfps-video-card__meta">{{ $item['category'] }} · {{ $item['duration'] }}</span>
                                 <h3 class="tw-text-lg">{{ $item['title'] }}</h3>
-                                <p class="tw-text-sm tw-text-gray-300">{{ $item['description'] }}</p>
+                                <p class="tw-text-sm tw-text-gray-200">{{ $item['description'] }}</p>
                             </div>
                         </article>
                     @endforeach
                     @if (empty($mediaLibrary))
-                        <div class="reveal-up tw-col-span-full tw-rounded-xl tw-border tw-border-outlineColor tw-bg-secondary tw-p-6 tw-text-center tw-text-gray-300">
-                            Video icerikleri yuklenirken sorun olustu. Lutfen sayfayi yenileyin.
+                        <div class="reveal-up tw-col-span-full tw-rounded-xl tw-border tw-border-outlineColor tw-bg-secondary tw-p-6 tw-text-center tw-text-gray-200">
+                            Video kayitlari gecici olarak yuklenemedi.
                         </div>
                     @endif
                 </div>
@@ -237,15 +237,15 @@
             <div class="tw-mt-8 tw-flex tw-flex-col tw-place-items-center tw-gap-5">
                 <div class="reveal-up tw-mt-5 tw-flex tw-flex-col tw-gap-3 tw-text-center">
                     <h2 class="tw-text-4xl tw-font-medium tw-text-gray-200 max-md:tw-text-3xl">{{ $pageData['pricing_title'] }}</h2>
-                    <p class="tw-max-w-[680px] tw-text-gray-300">{{ $pageData['pricing_lead'] }}</p>
+                    <p class="tw-max-w-[680px] tw-text-gray-200">{{ $pageData['pricing_lead'] }}</p>
                 </div>
                 <div class="tw-mt-6 tw-flex tw-max-w-[90%] tw-flex-wrap tw-place-content-center tw-gap-8 max-lg:tw-flex-col">
                     @foreach ($pageData['packages'] as $package)
                         <div class="reveal-up tw-flex tw-h-[280px] tw-w-[320px] tw-flex-col tw-gap-3 tw-rounded-xl tw-border-[1px] tw-border-outlineColor tw-bg-secondary tw-p-6">
                             <strong class="tw-text-lg">{{ $package['name'] }}</strong>
                             <span class="tw-text-3xl tw-font-semibold">{{ $package['price'] }}</span>
-                            <span class="tw-text-sm tw-text-gray-400">{{ $package['unit'] }}</span>
-                            <p class="tw-text-sm tw-text-gray-300">{{ $package['note'] }}</p>
+                            <span class="tw-text-sm tw-text-gray-300">{{ $package['unit'] }}</span>
+                            <p class="tw-text-sm tw-text-gray-200">{{ $package['note'] }}</p>
                             <a class="btn tw-mt-auto" href="{{ $applyUrl }}">Basvur</a>
                         </div>
                     @endforeach
@@ -274,7 +274,7 @@
         <section class="tw-relative tw-flex tw-w-full tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-hidden tw-p-10">
             <div class="reveal-up tw-flex tw-flex-col tw-place-items-center tw-gap-4 tw-text-center">
                 <h2 class="tw-text-3xl tw-font-medium">{{ $pageData['cta_title'] }}</h2>
-                <p class="tw-max-w-[600px] tw-text-gray-300">{{ $pageData['cta_text'] }}</p>
+                <p class="tw-max-w-[600px] tw-text-gray-200">{{ $pageData['cta_text'] }}</p>
                 <div class="tw-flex tw-gap-4">
                     <a class="btn" href="{{ $applyUrl }}">Programa Basvur</a>
                     <a class="btn !tw-bg-black !tw-text-white" href="{{ $testUrl }}">Seviye Tespiti</a>
@@ -282,8 +282,8 @@
             </div>
         </section>
 
-        <footer class="tw-flex tw-w-full tw-flex-col tw-place-items-center tw-gap-4 tw-p-8 tw-text-sm tw-text-gray-400">
-            <div>{{ $siteName }} · LinguFranca Performans Sistemi</div>
+        <footer class="tw-flex tw-w-full tw-flex-col tw-place-items-center tw-gap-4 tw-p-8 tw-text-sm tw-text-gray-300">
+            <div>{{ $siteName }} | LinguFranca Performans Sistemi</div>
             <div class="tw-flex tw-gap-4">
                 <a class="footer-link" href="{{ $homeUrl }}">Ana Sayfa</a>
                 <a class="footer-link" href="{{ $applyUrl }}">Iletisim</a>

@@ -679,11 +679,53 @@ class HomePageController extends Controller {
     }
 
     private function linguFrancaPerformanceAssetUrl(?string $asset): ?string {
-        if (blank($asset) || !$this->resolveLinguFrancaPerformanceAssetPath((string) $asset)) {
+        if (blank($asset)) {
             return null;
         }
 
+        $path = $this->resolveLinguFrancaPerformanceAssetPath((string) $asset);
+        if (!$path) {
+            $fallbackPath = $this->linguFrancaPerformanceFallbackAssetPath((string) $asset);
+            if ($fallbackPath) {
+                return asset($fallbackPath);
+            }
+
+            return null;
+        }
+
+        $normalizedPath = str_replace('\\', '/', $path);
+        $publicRoot = rtrim(str_replace('\\', '/', public_path()), '/') . '/';
+
+        if (str_starts_with($normalizedPath, $publicRoot)) {
+            return asset(Str::after($normalizedPath, $publicRoot));
+        }
+
         return route('lingufranca-performance.asset', ['asset' => $asset]);
+    }
+
+    private function linguFrancaPerformanceFallbackAssetPath(string $asset): ?string {
+        $map = [
+            'general-pdf' => 'uploads/lingufranca-performance/pdfs/general-english.pdf',
+            'ielts-pdf' => 'uploads/lingufranca-performance/pdfs/ielts-exam.pdf',
+            'pte-pdf' => 'uploads/lingufranca-performance/pdfs/pte-exam.pdf',
+            'general-cover' => 'uploads/lingufranca-performance/covers/general-cover.png',
+            'ielts-cover' => 'uploads/lingufranca-performance/covers/ielts-cover.png',
+            'pte-cover' => 'uploads/lingufranca-performance/covers/pte-cover.png',
+            'beyaz-tv-video' => 'uploads/lingufranca-performance/videos/beyaz-tv-preview.mp4',
+            'tv8-video' => 'uploads/lingufranca-performance/videos/tv8-preview.mp4',
+            'cnn-video' => 'uploads/lingufranca-performance/videos/cnn-turk-preview.mp4',
+            'ezgi-video' => 'uploads/lingufranca-performance/videos/ezgi-aze-preview.mp4',
+            'furkan-video' => 'uploads/lingufranca-performance/videos/furkan-kanadmis-preview.mp4',
+            'gizem-video' => 'uploads/lingufranca-performance/videos/gizem-preview.mp4',
+            'beyaz-tv-poster' => 'uploads/lingufranca-performance/posters/beyaz-tv-poster.jpg',
+            'tv8-poster' => 'uploads/lingufranca-performance/posters/tv8-poster.jpg',
+            'cnn-turk-poster' => 'uploads/lingufranca-performance/posters/cnn-turk-poster.jpg',
+            'ezgi-aze-poster' => 'uploads/lingufranca-performance/posters/ezgi-aze-poster.jpg',
+            'furkan-kanadmis-poster' => 'uploads/lingufranca-performance/posters/furkan-kanadmis-poster.jpg',
+            'gizem-poster' => 'uploads/lingufranca-performance/posters/gizem-poster.jpg',
+        ];
+
+        return $map[$asset] ?? null;
     }
 
     private function resolveLinguFrancaPerformanceAssetPath(string $asset): ?string {
