@@ -31,7 +31,7 @@
 @section('hide_public_footer', '1')
 
 @section('contents')
-    <section class="tw-flex tw-min-h-[100vh] tw-flex-col tw-bg-black tw-text-white">
+    <section class="tw-flex tw-min-h-[100vh] tw-flex-col tw-bg-[#050b1c] tw-text-white">
         <header class="tw-max-w-lg:tw-px-4 tw-max-w-lg:tw-mr-auto tw-absolute tw-top-0 tw-z-20 tw-flex tw-h-[60px] tw-w-full tw-bg-opacity-0 tw-px-[5%] lg:tw-justify-around">
             <a class="tw-h-[50px] tw-w-[50px] tw-p-[4px]" href="{{ $homeUrl }}">
                 @if (!empty($setting?->logo))
