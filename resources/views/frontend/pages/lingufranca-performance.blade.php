@@ -163,7 +163,7 @@
                         @endforeach
                         <span class="tw-text-lg tw-text-gray-300 max-md:tw-text-base">{{ $generalProgram['result'] ?? '' }}</span>
                         @if (!empty($generalProgram['file_url']))
-                            <a href="{{ $generalProgram['file_url'] }}" target="_blank" rel="noopener" class="btn tw-mt-4">PDF'i Ac</a>
+                            <a href="{{ $generalProgram['file_url'] }}" target="_blank" rel="noopener" class="btn tw-mt-4">Program Detayi</a>
                         @endif
                     </div>
                 </div>
@@ -175,7 +175,7 @@
                 <div class="tw-mt-8 tw-flex tw-flex-col tw-place-items-center tw-gap-5">
                     <div class="reveal-up tw-mt-5 tw-flex tw-flex-col tw-gap-3 tw-text-center">
                         <h2 class="tw-text-4xl tw-font-medium tw-text-gray-200 max-md:tw-text-2xl">Sinav programlari</h2>
-                        <p class="tw-max-w-[700px] tw-text-gray-300">IELTS ve PTE tarafini ayri kartlarla acik gosterdim. PDF, sonuc vaadi ve calisma basliklari burada.</p>
+                        <p class="tw-max-w-[700px] tw-text-gray-300">IELTS ve PTE tarafini ayri kartlarla acik gosterdim. Sonuc vaadi ve calisma basliklari burada.</p>
                     </div>
                     <div class="lfps-program-grid tw-mt-6">
                         @foreach ($examPrograms as $program)
@@ -194,7 +194,7 @@
                                         @endforeach
                                     </ul>
                                     @if (!empty($program['file_url']))
-                                        <a href="{{ $program['file_url'] }}" target="_blank" rel="noopener" class="btn tw-mt-5">PDF'i Ac</a>
+                                        <a href="{{ $program['file_url'] }}" target="_blank" rel="noopener" class="btn tw-mt-5">Program Detayi</a>
                                     @endif
                                 </div>
                             </article>
@@ -215,6 +215,7 @@
                         <article class="lfps-video-card reveal-up">
                             <video controls preload="metadata" poster="{{ $item['poster_url'] ?? '' }}">
                                 <source src="{{ $item['file_url'] }}" type="video/mp4">
+                                Tarayiciniz video etiketini desteklemiyor.
                             </video>
                             <div class="lfps-video-card__body">
                                 <span class="lfps-video-card__meta">{{ $item['category'] }} · {{ $item['duration'] }}</span>
@@ -223,6 +224,11 @@
                             </div>
                         </article>
                     @endforeach
+                    @if (empty($mediaLibrary))
+                        <div class="reveal-up tw-col-span-full tw-rounded-xl tw-border tw-border-outlineColor tw-bg-secondary tw-p-6 tw-text-center tw-text-gray-300">
+                            Video icerikleri yuklenirken sorun olustu. Lutfen sayfayi yenileyin.
+                        </div>
+                    @endif
                 </div>
             </div>
         </section>

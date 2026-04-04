@@ -284,9 +284,10 @@ class HomePageController extends Controller {
     }
 
     public function linguFrancaPerformance(): View {
-        $pageData = (array) config('lingufranca_performance.page', []);
+        $performanceConfig = $this->loadLinguFrancaPerformanceConfig();
+        $pageData = (array) data_get($performanceConfig, 'page', []);
 
-        $downloads = collect(config('lingufranca_performance.downloads', []))
+        $downloads = collect(data_get($performanceConfig, 'downloads', []))
             ->map(function (array $item) {
                 $item['cover_url'] = $this->linguFrancaPerformanceAssetUrl($item['cover_asset'] ?? null);
                 $item['file_url'] = $this->linguFrancaPerformanceAssetUrl($item['file_asset'] ?? null);
@@ -295,7 +296,7 @@ class HomePageController extends Controller {
             ->values()
             ->all();
 
-        $mediaLibrary = collect(config('lingufranca_performance.media_library', []))
+        $mediaLibrary = collect(data_get($performanceConfig, 'media_library', []))
             ->map(function (array $item) {
                 $item['file_url'] = $this->linguFrancaPerformanceAssetUrl($item['file_asset'] ?? null);
                 $item['poster_url'] = $this->linguFrancaPerformanceAssetUrl($item['poster_asset'] ?? null);
@@ -686,7 +687,7 @@ class HomePageController extends Controller {
     }
 
     private function resolveLinguFrancaPerformanceAssetPath(string $asset): ?string {
-        $definition = config("lingufranca_performance.assets.{$asset}");
+        $definition = data_get($this->loadLinguFrancaPerformanceConfig(), "assets.{$asset}");
         if (!is_array($definition)) {
             return null;
         }
@@ -719,6 +720,19 @@ class HomePageController extends Controller {
         }
 
         return null;
+    }
+
+    private function loadLinguFrancaPerformanceConfig(): array {
+        $configPath = config_path('lingufranca_performance.php');
+
+        if (is_file($configPath)) {
+            $config = require $configPath;
+            if (is_array($config)) {
+                return $config;
+            }
+        }
+
+        return (array) config('lingufranca_performance', []);
     }
 
     private function sitemapEntry(string $loc, mixed $timestamp = null, string $changefreq = 'weekly', string $priority = '0.7'): array {

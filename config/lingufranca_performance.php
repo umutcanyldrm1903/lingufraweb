@@ -7,7 +7,7 @@ return [
         'meta_keywords' => 'lingufranca performans sistemi, genel ingilizce, ielts hazırlık, pte hazırlık, birebir online ingilizce, dil koçluğu',
         'eyebrow' => 'Kişiye özel dil koçluğu',
         'title' => 'Akıcı konuşma ya da hedef skor için dağınık dersler değil, performans sistemi',
-        'lead' => 'Zip içindeki üç PDF’in ortak omurgası net: önce analiz, sonra kişisel plan, ardından disiplinli takip. Bu sayfa; Genel İngilizce, IELTS ve PTE akışlarını aynı yapı içinde, gerçek medya kayıtları ve PDF dosyalarıyla birlikte gösterir.',
+        'lead' => 'Genel İngilizce, IELTS ve PTE için ortak omurga net: önce analiz, sonra kişisel plan, ardından disiplinli takip. Bu sayfa, tüm akışları tek yapıda ve gerçek medya kayıtlarıyla gösterir.',
         'hero_badges' => [
             '1-1 Türk & Native uzman eğitmen',
             '7/24 WhatsApp destek',
@@ -36,8 +36,8 @@ return [
             'Gerçek öğrenci memnuniyeti videoları',
         ],
         'manifesto_eyebrow' => 'Sistemin omurgası',
-        'manifesto_title' => 'Bu sayfadaki her blok zip içindeki sunumlardan kuruldu',
-        'manifesto_lead' => 'Genel İngilizce, IELTS ve PTE PDF’lerinde tekrar eden ana yapı; rastgele içerik değil, kişisel analiz, özel destek grubu, aktif üretim, düzenli geri bildirim ve sürdürülebilir ilerleme.',
+        'manifesto_title' => 'Bu sayfadaki her blok gerçek program omurgasına dayanır',
+        'manifesto_lead' => 'Genel İngilizce, IELTS ve PTE akışlarında tekrar eden ana yapı; rastgele içerik değil, kişisel analiz, özel destek grubu, aktif üretim, düzenli geri bildirim ve sürdürülebilir ilerleme.',
         'manifesto_points' => [
             [
                 'title' => 'Programın amacı',
@@ -144,11 +144,11 @@ return [
             '%80 istikrarlı uygulama = %100 sonuç',
         ],
         'proof_eyebrow' => 'Basın ve öğrenci videoları',
-        'proof_title' => 'Zip içindeki videolar artık bu sayfanın içinde',
-        'proof_lead' => 'TV röportajları ve öğrenci memnuniyeti kayıtları posterli medya blokları halinde yer alıyor. Karttan videoyu açabilir, dosyaları aynı akış içinde izleyebilirsiniz.',
+        'proof_title' => 'Basın ve öğrenci videoları bu sayfanın içinde',
+        'proof_lead' => 'TV röportajları ve öğrenci memnuniyeti kayıtları posterli medya blokları halinde yer alıyor. Karttan videoyu açıp aynı akış içinde izleyebilirsiniz.',
         'pricing_eyebrow' => 'Paketler ve ödeme',
         'pricing_title' => 'Şeffaf fiyat yapısı',
-        'pricing_lead' => 'PDF’lerde yer alan paket mantığı korunarak aktarıldı. Fiyatlar +KDV şeklindedir ve ödeme yapısı iyzico üzerinden 12 taksite kadar planlanabilir.',
+        'pricing_lead' => 'Paket mantığı korunarak aktarıldı. Fiyatlar +KDV şeklindedir ve ödeme yapısı iyzico üzerinden 12 taksite kadar planlanabilir.',
         'packages' => [
             [
                 'name' => '16 Ders Paketi',
