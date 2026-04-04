@@ -20,7 +20,6 @@
     $generalProgram = $downloads[0] ?? null;
     $examPrograms = array_slice($downloads, 1);
     $generalMilestones = $pageData['milestones'][0]['items'] ?? [];
-    $examMilestones = $pageData['milestones'][1]['items'] ?? [];
 @endphp
 
 @section('meta_title', $pageData['meta_title'] . ' | ' . $siteName)
@@ -33,41 +32,27 @@
 
 @section('contents')
     <section class="tw-flex tw-min-h-[100vh] tw-flex-col tw-bg-black tw-text-white">
-        <header
-            class="tw-max-w-lg:tw-px-4 tw-max-w-lg:tw-mr-auto tw-absolute tw-top-0 tw-z-20 tw-flex tw-h-[60px] tw-w-full tw-bg-opacity-0 tw-px-[5%] lg:tw-justify-around">
+        <header class="tw-max-w-lg:tw-px-4 tw-max-w-lg:tw-mr-auto tw-absolute tw-top-0 tw-z-20 tw-flex tw-h-[60px] tw-w-full tw-bg-opacity-0 tw-px-[5%] lg:tw-justify-around">
             <a class="tw-h-[50px] tw-w-[50px] tw-p-[4px]" href="{{ $homeUrl }}">
                 @if (!empty($setting?->logo))
-                    <img
-                        src="{{ asset($setting->logo) }}"
-                        alt="{{ $siteName }}"
-                        class="tw-object tw-h-full tw-w-full"
-                    />
+                    <img src="{{ asset($setting->logo) }}" alt="{{ $siteName }}" class="tw-object tw-h-full tw-w-full" />
                 @endif
             </a>
             <div class="collapsible-header animated-collapse max-lg:tw-shadow-md" id="collapsed-header-items">
-                <div
-                    class="tw-flex tw-h-full tw-w-max tw-gap-5 tw-text-base max-lg:tw-mt-[30px] max-lg:tw-flex-col max-lg:tw-place-items-end max-lg:tw-gap-5 lg:tw-mx-auto lg:tw-place-items-center">
+                <div class="tw-flex tw-h-full tw-w-max tw-gap-5 tw-text-base max-lg:tw-mt-[30px] max-lg:tw-flex-col max-lg:tw-place-items-end max-lg:tw-gap-5 lg:tw-mx-auto lg:tw-place-items-center">
                     <a class="header-links" href="#programlar">Programlar</a>
                     <a class="header-links" href="#videolar">Videolar</a>
                     <a class="header-links" href="#fiyat">Fiyat</a>
                     <a class="header-links" href="#sss">SSS</a>
                 </div>
-                <div
-                    class="tw-mx-4 tw-flex tw-place-items-center tw-gap-[20px] tw-text-base max-md:tw-w-full max-md:tw-flex-col max-md:tw-place-content-center">
-                    <a
-                        href="{{ $applyUrl }}"
-                        aria-label="apply"
-                        class="tw-rounded-full tw-bg-white tw-px-3 tw-py-2 tw-text-black tw-transition-transform tw-duration-[0.3s] hover:tw-translate-x-2">
-                        <span>Programa Başvur</span>
+                <div class="tw-mx-4 tw-flex tw-place-items-center tw-gap-[20px] tw-text-base max-md:tw-w-full max-md:tw-flex-col max-md:tw-place-content-center">
+                    <a href="{{ $applyUrl }}" aria-label="apply" class="tw-rounded-full tw-bg-white tw-px-3 tw-py-2 tw-text-black tw-transition-transform tw-duration-[0.3s] hover:tw-translate-x-2">
+                        <span>Programa Basvur</span>
                         <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
             </div>
-            <button
-                class="bi bi-list tw-absolute tw-right-3 tw-top-3 tw-z-50 tw-text-3xl tw-text-white lg:tw-hidden"
-                onclick="toggleHeader()"
-                aria-label="menu"
-                id="collapse-btn"></button>
+            <button class="bi bi-list tw-absolute tw-right-3 tw-top-3 tw-z-50 tw-text-3xl tw-text-white lg:tw-hidden" onclick="toggleHeader()" aria-label="menu" id="collapse-btn"></button>
         </header>
 
         <section class="hero-section tw-relative tw-flex tw-min-h-[100vh] tw-w-full tw-flex-col tw-overflow-hidden max-md:tw-mt-[50px]" id="hero-section">
@@ -78,12 +63,12 @@
                         <br />
                         <span>{{ $pageData['title'] }}</span>
                     </div>
-                    <div class="reveal-up tw-mt-10 tw-max-w-[520px] tw-p-2 tw-text-center tw-text-gray-300 max-lg:tw-max-w-full">
+                    <div class="reveal-up tw-mt-10 tw-max-w-[620px] tw-p-2 tw-text-center tw-text-gray-300 max-lg:tw-max-w-full">
                         {{ $pageData['lead'] }}
                     </div>
                     <div class="reveal-up tw-mt-10 tw-flex tw-place-items-center tw-gap-4">
                         <a class="btn tw-bg-[#6059f7] tw-shadow-lg tw-shadow-primary tw-transition-transform tw-duration-[0.3s] hover:tw-scale-x-[1.03]" href="{{ $applyUrl }}">
-                            Programa Başvur
+                            Programa Basvur
                         </a>
                         <a class="btn tw-flex tw-gap-2 !tw-bg-black !tw-text-white tw-transition-colors tw-duration-[0.3s] hover:!tw-bg-white hover:!tw-text-black" href="{{ $testUrl }}">
                             <i class="bi bi-play-circle-fill"></i>
@@ -95,11 +80,7 @@
                 <div class="reveal-up tw-relative tw-mt-8 tw-flex tw-w-full tw-place-content-center tw-place-items-center" id="dashboard-container">
                     <div class="tw-relative tw-max-w-[80%] tw-overflow-hidden tw-rounded-xl tw-bg-transparent max-md:tw-max-w-full" id="dashboard">
                         @if (!empty($pageData['hero_primary_visual']))
-                            <img
-                                src="{{ $pageData['hero_primary_visual'] }}"
-                                alt="LinguFranca performans görseli"
-                                class="tw-h-full tw-w-full tw-object-cover tw-opacity-90 max-lg:tw-object-contain"
-                            />
+                            <img src="{{ $pageData['hero_primary_visual'] }}" alt="LinguFranca performans gorseli" class="tw-h-full tw-w-full tw-object-cover tw-opacity-90 max-lg:tw-object-contain" />
                         @endif
                     </div>
                     <div class="hero-img-bg-grad tw-absolute tw-left-[20%] tw-top-5 tw-h-[200px] tw-w-[200px]"></div>
@@ -108,7 +89,7 @@
         </section>
 
         <section class="tw-relative tw-flex tw-w-full tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-hidden tw-p-8">
-            <h2 class="reveal-up tw-text-3xl max-md:tw-text-xl">Basında ve öğrenci videolarında görünen sistem</h2>
+            <h2 class="reveal-up tw-text-3xl max-md:tw-text-xl">Basinda ve ogrenci videolarinda gorunen sistem</h2>
             <div class="reveal-up carousel-container">
                 <div class="carousel tw-mt-6 tw-flex tw-w-full tw-gap-5 max-md:tw-gap-2">
                     @foreach ($pageData['press_badges'] as $badge)
@@ -121,7 +102,7 @@
         <section class="tw-relative tw-flex tw-w-full tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-hidden tw-p-6" id="programlar">
             <div class="tw-mt-8 tw-flex tw-flex-col tw-place-items-center tw-gap-5">
                 <div class="reveal-up tw-mt-5 tw-flex tw-flex-col tw-gap-3 tw-text-center">
-                    <h2 class="tw-text-4xl tw-font-medium tw-text-gray-200 max-md:tw-text-3xl">Sistemin omurgası</h2>
+                    <h2 class="tw-text-4xl tw-font-medium tw-text-gray-200 max-md:tw-text-3xl">Sistemin omurgasi</h2>
                     <p class="tw-max-w-[680px] tw-text-gray-300">{{ $pageData['manifesto_lead'] }}</p>
                 </div>
                 <div class="tw-mt-6 tw-flex tw-max-w-[90%] tw-flex-wrap tw-place-content-center tw-gap-8 max-lg:tw-flex-col">
@@ -145,7 +126,7 @@
         <section class="tw-relative tw-flex tw-min-h-[80vh] tw-w-full tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-hidden tw-p-6">
             <div class="tw-mt-8 tw-flex tw-flex-col tw-place-items-center tw-gap-5">
                 <div class="reveal-up tw-mt-5 tw-flex tw-flex-col tw-gap-3 tw-text-center">
-                    <h2 class="tw-text-4xl tw-font-medium tw-text-gray-200 max-md:tw-text-2xl">Program içerikleri</h2>
+                    <h2 class="tw-text-4xl tw-font-medium tw-text-gray-200 max-md:tw-text-2xl">Program icerikleri</h2>
                 </div>
                 <div class="tw-mt-6 tw-flex tw-max-w-[90%] tw-flex-wrap tw-place-content-center tw-gap-8 max-lg:tw-flex-col">
                     @foreach ($pageData['resource_columns'] as $column)
@@ -153,7 +134,7 @@
                             <div class="tw-text-4xl max-md:tw-text-2xl"><i class="bi bi-check2-circle"></i></div>
                             <div class="tw-flex tw-flex-col tw-gap-4">
                                 <h3 class="tw-text-2xl max-md:tw-text-xl">{{ $column['label'] }}</h3>
-                                <p class="tw-text-gray-300 max-md:tw-text-sm">{{ implode(' · ', $column['items']) }}</p>
+                                <p class="tw-text-gray-300 max-md:tw-text-sm">{{ implode(' - ', $column['items']) }}</p>
                             </div>
                         </div>
                     @endforeach
@@ -166,16 +147,13 @@
                 <div class="tw-flex">
                     <div class="tw-max-h-[650px] tw-max-w-[850px] tw-overflow-hidden tw-rounded-lg tw-shadow-lg tw-shadow-[rgba(96,89,247,0.45)]">
                         @if (!empty($generalProgram['cover_url']))
-                            <img
-                                src="{{ $generalProgram['cover_url'] }}"
-                                alt="{{ $generalProgram['title'] ?? 'Genel İngilizce' }}"
-                                class="tw-h-full tw-w-full tw-object-cover"
-                            />
+                            <img src="{{ $generalProgram['cover_url'] }}" alt="{{ $generalProgram['title'] ?? 'Genel Ingilizce' }}" class="tw-h-full tw-w-full tw-object-cover" />
                         @endif
                     </div>
                 </div>
                 <div class="tw-mt-6 tw-flex tw-max-w-[450px] tw-flex-col tw-gap-4">
-                    <h3 class="tw-text-4xl tw-font-medium max-md:tw-text-2xl">{{ $generalProgram['title'] ?? 'Genel İngilizce' }}</h3>
+                    <h3 class="tw-text-4xl tw-font-medium max-md:tw-text-2xl">{{ $generalProgram['title'] ?? 'Genel Ingilizce' }}</h3>
+                    <p class="tw-text-gray-300">{{ $generalProgram['subtitle'] ?? '' }}</p>
                     <div class="tw-mt-4 tw-flex tw-flex-col tw-gap-3">
                         @foreach ($generalMilestones as $item)
                             <h4 class="tw-text-xl tw-font-medium">
@@ -185,42 +163,65 @@
                         @endforeach
                         <span class="tw-text-lg tw-text-gray-300 max-md:tw-text-base">{{ $generalProgram['result'] ?? '' }}</span>
                         @if (!empty($generalProgram['file_url']))
-                            <a href="{{ $generalProgram['file_url'] }}" target="_blank" rel="noopener" class="btn tw-mt-4">PDF'i Aç</a>
+                            <a href="{{ $generalProgram['file_url'] }}" target="_blank" rel="noopener" class="btn tw-mt-4">PDF'i Ac</a>
                         @endif
                     </div>
                 </div>
             </div>
         </section>
 
+        @if (!empty($examPrograms))
+            <section class="tw-relative tw-flex tw-w-full tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-hidden tw-p-6">
+                <div class="tw-mt-8 tw-flex tw-flex-col tw-place-items-center tw-gap-5">
+                    <div class="reveal-up tw-mt-5 tw-flex tw-flex-col tw-gap-3 tw-text-center">
+                        <h2 class="tw-text-4xl tw-font-medium tw-text-gray-200 max-md:tw-text-2xl">Sinav programlari</h2>
+                        <p class="tw-max-w-[700px] tw-text-gray-300">IELTS ve PTE tarafini ayri kartlarla acik gosterdim. PDF, sonuc vaadi ve calisma basliklari burada.</p>
+                    </div>
+                    <div class="lfps-program-grid tw-mt-6">
+                        @foreach ($examPrograms as $program)
+                            <article class="lfps-program-card reveal-up">
+                                @if (!empty($program['cover_url']))
+                                    <div class="lfps-program-card__cover" style="background-image:url('{{ $program['cover_url'] }}')"></div>
+                                @endif
+                                <div class="lfps-program-card__body">
+                                    <span class="lfps-program-card__label">{{ $program['label'] }}</span>
+                                    <h3 class="tw-text-2xl">{{ $program['title'] }}</h3>
+                                    <p class="tw-mt-3 tw-text-gray-300">{{ $program['subtitle'] }}</p>
+                                    <p class="tw-mt-3 tw-text-sm tw-text-indigo-200">{{ $program['result'] }}</p>
+                                    <ul>
+                                        @foreach ($program['bullets'] as $bullet)
+                                            <li>{{ $bullet }}</li>
+                                        @endforeach
+                                    </ul>
+                                    @if (!empty($program['file_url']))
+                                        <a href="{{ $program['file_url'] }}" target="_blank" rel="noopener" class="btn tw-mt-5">PDF'i Ac</a>
+                                    @endif
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                </div>
+            </section>
+        @endif
+
         <section class="tw-relative tw-flex tw-min-h-[80vh] tw-w-full tw-flex-col tw-place-content-center tw-place-items-center tw-overflow-hidden tw-p-6" id="videolar">
             <div class="tw-mt-8 tw-flex tw-flex-col tw-place-items-center tw-gap-5">
                 <div class="reveal-up tw-mt-5 tw-flex tw-flex-col tw-gap-3 tw-text-center">
-                    <h2 class="tw-text-4xl tw-font-medium tw-text-gray-200 max-md:tw-text-3xl">Video kanıtları</h2>
+                    <h2 class="tw-text-4xl tw-font-medium tw-text-gray-200 max-md:tw-text-3xl">Video kanitlari</h2>
                     <p class="tw-max-w-[680px] tw-text-gray-300">{{ $pageData['proof_lead'] }}</p>
                 </div>
-                <div class="tw-mt-6 tw-flex tw-max-w-[90%] tw-flex-wrap tw-place-content-center tw-gap-8 max-lg:tw-flex-col">
+                <div class="lfps-video-grid tw-mt-6">
                     @foreach ($mediaLibrary as $item)
-                        <div class="reveal-up tw-flex tw-h-[320px] tw-w-[360px] tw-flex-col tw-overflow-hidden tw-rounded-xl tw-border-[1px] tw-border-outlineColor tw-bg-secondary">
-                            <div class="tw-relative tw-h-[180px] tw-w-full tw-bg-black">
-                                @if (!empty($item['poster_url']))
-                                    <img src="{{ $item['poster_url'] }}" alt="{{ $item['title'] }}" class="tw-h-full tw-w-full tw-object-cover">
-                                @endif
-                                <button
-                                    type="button"
-                                    class="btn tw-absolute tw-bottom-3 tw-left-3"
-                                    data-video-url="{{ $item['file_url'] }}"
-                                    data-video-title="{{ $item['title'] }}"
-                                    data-video-poster="{{ $item['poster_url'] ?? '' }}"
-                                    onclick="openVideoModal(this)">
-                                    Videoyu Aç
-                                </button>
-                            </div>
-                            <div class="tw-flex tw-flex-col tw-gap-2 tw-p-4">
-                                <strong class="tw-text-sm tw-text-gray-400">{{ $item['category'] }} · {{ $item['duration'] }}</strong>
+                        <article class="lfps-video-card reveal-up">
+                            <video controls preload="metadata" poster="{{ $item['poster_url'] ?? '' }}">
+                                <source src="{{ $item['file_url'] }}" type="video/mp4">
+                            </video>
+                            <div class="lfps-video-card__body">
+                                <span class="lfps-video-card__meta">{{ $item['category'] }} · {{ $item['duration'] }}</span>
                                 <h3 class="tw-text-lg">{{ $item['title'] }}</h3>
                                 <p class="tw-text-sm tw-text-gray-300">{{ $item['description'] }}</p>
                             </div>
-                        </div>
+                        </article>
                     @endforeach
                 </div>
             </div>
@@ -239,7 +240,7 @@
                             <span class="tw-text-3xl tw-font-semibold">{{ $package['price'] }}</span>
                             <span class="tw-text-sm tw-text-gray-400">{{ $package['unit'] }}</span>
                             <p class="tw-text-sm tw-text-gray-300">{{ $package['note'] }}</p>
-                            <a class="btn tw-mt-auto" href="{{ $applyUrl }}">Başvur</a>
+                            <a class="btn tw-mt-auto" href="{{ $applyUrl }}">Basvur</a>
                         </div>
                     @endforeach
                 </div>
@@ -251,17 +252,14 @@
                 <div class="reveal-up tw-mt-5 tw-flex tw-flex-col tw-gap-3 tw-text-center">
                     <h2 class="tw-text-4xl tw-font-medium tw-text-gray-200 max-md:tw-text-2xl">SSS</h2>
                 </div>
-                <div class="faq tw-mt-6 tw-flex tw-w-full tw-max-w-[800px] tw-flex-col tw-gap-3">
+                <div class="lfps-faq-list tw-mt-6">
                     @foreach ($pageData['faq'] as $faq)
-                        <div class="reveal-up tw-rounded-lg tw-border-[1px] tw-border-outlineColor tw-bg-secondary">
-                            <button class="faq-accordion tw-flex tw-w-full tw-items-center tw-justify-between">
-                                <span>{{ $faq['question'] }}</span>
-                                <i class="bi bi-chevron-down"></i>
-                            </button>
-                            <div class="content">
+                        <details class="lfps-faq-item reveal-up">
+                            <summary>{{ $faq['question'] }}</summary>
+                            <div>
                                 <p>{{ $faq['answer'] }}</p>
                             </div>
-                        </div>
+                        </details>
                     @endforeach
                 </div>
             </div>
@@ -272,7 +270,7 @@
                 <h2 class="tw-text-3xl tw-font-medium">{{ $pageData['cta_title'] }}</h2>
                 <p class="tw-max-w-[600px] tw-text-gray-300">{{ $pageData['cta_text'] }}</p>
                 <div class="tw-flex tw-gap-4">
-                    <a class="btn" href="{{ $applyUrl }}">Programa Başvur</a>
+                    <a class="btn" href="{{ $applyUrl }}">Programa Basvur</a>
                     <a class="btn !tw-bg-black !tw-text-white" href="{{ $testUrl }}">Seviye Tespiti</a>
                 </div>
             </div>
@@ -282,22 +280,10 @@
             <div>{{ $siteName }} · LinguFranca Performans Sistemi</div>
             <div class="tw-flex tw-gap-4">
                 <a class="footer-link" href="{{ $homeUrl }}">Ana Sayfa</a>
-                <a class="footer-link" href="{{ $applyUrl }}">İletişim</a>
+                <a class="footer-link" href="{{ $applyUrl }}">Iletisim</a>
                 <a class="footer-link" href="{{ route('mobile-app-privacy-policy') }}">Gizlilik</a>
             </div>
         </footer>
-
-        <div class="lfps-video-modal" id="lfpsVideoModal" aria-hidden="true">
-            <div class="lfps-video-modal__backdrop" data-video-close></div>
-            <div class="lfps-video-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="lfpsVideoTitle">
-                <button type="button" class="lfps-video-modal__close" data-video-close aria-label="Kapat">×</button>
-                <div class="lfps-video-modal__head">
-                    <span class="lfps-eyebrow">Video Arşivi</span>
-                    <h3 id="lfpsVideoTitle">Video</h3>
-                </div>
-                <video id="lfpsVideoPlayer" controls playsinline preload="metadata"></video>
-            </div>
-        </div>
     </section>
 @endsection
 
@@ -352,39 +338,5 @@
 @endpush
 
 @push('scripts')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-3m9E7OrJcFAR2bE6a4s2U6fsPty2SlpxQekT2sJb0gwR0By/QLoM4E2eZpQU4yAZc9G5hvDXMd1q1vJx0o5s4A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha512-3P9QKf7GzO9bK5W7oMG0MzY6mFhVSG9s0cmef8Wwyq1y9wqQMRk1Cax4Ry0Y2h4xTn2u1blw2lW8XyS71W4YIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="{{ asset('frontend/js/saasy-dark.js') }}"></script>
-    <script>
-        const modal = document.getElementById('lfpsVideoModal');
-        const modalTitle = document.getElementById('lfpsVideoTitle');
-        const player = document.getElementById('lfpsVideoPlayer');
-        const closeModal = () => {
-            modal.classList.remove('is-open');
-            modal.setAttribute('aria-hidden', 'true');
-            player.pause();
-            player.removeAttribute('src');
-            player.removeAttribute('poster');
-            player.load();
-            document.body.style.overflow = '';
-        };
-        const openVideoModal = (btn) => {
-            const url = btn.getAttribute('data-video-url');
-            const title = btn.getAttribute('data-video-title') || 'Video';
-            const poster = btn.getAttribute('data-video-poster') || '';
-            if (!url) return;
-            modalTitle.textContent = title;
-            player.src = url;
-            if (poster) player.poster = poster;
-            modal.classList.add('is-open');
-            modal.setAttribute('aria-hidden', 'false');
-            document.body.style.overflow = 'hidden';
-            player.play().catch(() => {});
-        };
-        window.openVideoModal = openVideoModal;
-        modal.querySelectorAll('[data-video-close]').forEach((el) => el.addEventListener('click', closeModal));
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
-        });
-    </script>
 @endpush

@@ -103,6 +103,11 @@ header > .collapsible-header{
     opacity: 100 !important;
 }
 
+.reveal-up{
+    opacity: 1;
+    transform: none;
+}
+
 .btn{
     padding: 10px 15px;
     width: max-content;
@@ -262,6 +267,119 @@ header > .collapsible-header{
     background: #000;
 }
 
+.lfps-video-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.lfps-video-card {
+    overflow: hidden;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #0b1221;
+}
+
+.lfps-video-card video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    background: #000;
+}
+
+.lfps-video-card__body {
+    padding: 16px;
+}
+
+.lfps-video-card__meta {
+    display: block;
+    margin-bottom: 8px;
+    color: #9ca3af;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.lfps-program-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    width: 100%;
+    max-width: 1000px;
+}
+
+.lfps-program-card {
+    overflow: hidden;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #0b1221;
+}
+
+.lfps-program-card__cover {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    background-size: cover;
+    background-position: center;
+}
+
+.lfps-program-card__body {
+    padding: 20px;
+}
+
+.lfps-program-card__label {
+    display: inline-flex;
+    margin-bottom: 10px;
+    color: #c7d2fe;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.lfps-program-card__body ul {
+    margin: 14px 0 0;
+    padding-left: 18px;
+    color: #d1d5db;
+}
+
+.lfps-program-card__body li + li {
+    margin-top: 8px;
+}
+
+.lfps-faq-list {
+    width: 100%;
+    max-width: 900px;
+    display: grid;
+    gap: 14px;
+}
+
+.lfps-faq-item {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    background: #0b1221;
+    overflow: hidden;
+}
+
+.lfps-faq-item summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 18px 20px;
+    color: #fff;
+    font-weight: 600;
+}
+
+.lfps-faq-item summary::-webkit-details-marker {
+    display: none;
+}
+
+.lfps-faq-item p {
+    margin: 0;
+    padding: 0 20px 20px;
+    color: #d1d5db;
+    line-height: 1.7;
+}
+
 .faq-accordion .active,
 .faq-accordion:hover {
     /* background-color: #2e2c2c; */
@@ -291,5 +409,11 @@ header > .collapsible-header{
     .header-links{
         color: rgb(255, 255, 255);
     }
-    
+}
+
+@media (max-width: 1023px) {
+    .lfps-video-grid,
+    .lfps-program-grid {
+        grid-template-columns: 1fr;
+    }
 }
