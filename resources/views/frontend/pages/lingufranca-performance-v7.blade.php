@@ -58,6 +58,7 @@
     $faqTitleShort = 'Karar oncesi en cok sorulanlar';
     $ctaTitleShort = 'Planini netlestir.';
     $ctaTextShort = 'Dogru akisi sec, seviye tespitiyle basla.';
+    $deckGalleries = $deckGalleries ?? [];
 @endphp
 
 @section('meta_title', ($pageData['meta_title'] ?? 'LinguFranca') . ' | ' . $siteName)
@@ -256,6 +257,31 @@
                         </article>
                     @endforeach
                 </div>
+
+                @if (!empty($deckGalleries))
+                    <div class="dbp-deck-stack">
+                        @foreach ($deckGalleries as $deck)
+                            <section class="dbp-deck-showcase dbp-reveal">
+                                <div class="dbp-deck-showcase__head">
+                                    <div class="dbp-deck-showcase__copy">
+                                        <span class="dbp-kicker">{{ $deck['eyebrow'] }}</span>
+                                        <h3>{{ $deck['title'] }}</h3>
+                                        <p>{{ $deck['lead'] }}</p>
+                                    </div>
+                                    <span class="dbp-deck-showcase__count">{{ $deck['page_count'] }} sayfa</span>
+                                </div>
+
+                                <div class="dbp-deck-pages">
+                                    @foreach ($deck['pages'] as $pageUrl)
+                                        <figure class="dbp-deck-page">
+                                            <img loading="lazy" decoding="async" src="{{ $pageUrl }}" alt="{{ $deck['title'] }} sayfa {{ $loop->iteration }}" />
+                                        </figure>
+                                    @endforeach
+                                </div>
+                            </section>
+                        @endforeach
+                    </div>
+                @endif
             </section>
 
             <section class="dbp-section" id="surec">
@@ -818,6 +844,83 @@
             gap: 22px;
         }
 
+        .dbp-deck-stack {
+            display: grid;
+            gap: 32px;
+            margin-top: 16px;
+        }
+
+        .dbp-deck-showcase {
+            display: grid;
+            gap: 24px;
+            padding: 26px;
+            border-radius: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: linear-gradient(180deg, rgba(10, 29, 68, 0.96) 0%, rgba(6, 20, 47, 0.96) 100%);
+            box-shadow: 0 28px 80px rgba(1, 9, 24, 0.28);
+        }
+
+        .dbp-deck-showcase__head {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 18px;
+        }
+
+        .dbp-deck-showcase__copy {
+            display: grid;
+            gap: 10px;
+            max-width: 56ch;
+        }
+
+        .dbp-deck-showcase__copy h3 {
+            margin: 0;
+            font-family: "Sora", sans-serif;
+            color: #ffffff;
+            font-size: clamp(28px, 2.8vw, 40px);
+            line-height: 1.06;
+        }
+
+        .dbp-deck-showcase__copy p {
+            margin: 0;
+            color: rgba(226, 235, 255, 0.74);
+            line-height: 1.68;
+        }
+
+        .dbp-deck-showcase__count {
+            display: inline-flex;
+            align-items: center;
+            min-height: 38px;
+            padding: 0 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .dbp-deck-pages {
+            columns: 2 320px;
+            column-gap: 18px;
+        }
+
+        .dbp-deck-page {
+            margin: 0 0 18px;
+            break-inside: avoid;
+            border-radius: 24px;
+            overflow: hidden;
+            background: #ffffff;
+            box-shadow: 0 18px 50px rgba(1, 9, 24, 0.24);
+        }
+
+        .dbp-deck-page img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
         .dbp-program-grid,
         .dbp-step-grid,
         .dbp-note-grid,
@@ -1224,6 +1327,11 @@
             .dbp-media-feature__media {
                 min-height: 360px;
             }
+
+            .dbp-deck-showcase__head {
+                flex-direction: column;
+                align-items: start;
+            }
         }
 
         @media (max-width: 760px) {
@@ -1247,6 +1355,10 @@
 
             .dbp-section {
                 padding-top: 72px;
+            }
+
+            .dbp-deck-pages {
+                columns: 1;
             }
         }
     </style>

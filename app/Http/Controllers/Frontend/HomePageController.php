@@ -310,8 +310,9 @@ class HomePageController extends Controller {
         $pageData['hero_secondary_visual'] = $this->linguFrancaPerformanceAssetUrl('ielts-cover');
         $pageData['hero_tertiary_visual'] = $this->linguFrancaPerformanceAssetUrl('pte-cover');
         $pageData['meta_image_url'] = $pageData['hero_primary_visual'] ?: $pageData['hero_secondary_visual'];
+        $deckGalleries = $this->linguFrancaPerformanceDeckGalleries($downloads);
 
-        return view('frontend.pages.lingufranca-performance-v7', compact('pageData', 'downloads', 'mediaLibrary'));
+        return view('frontend.pages.lingufranca-performance-v7', compact('pageData', 'downloads', 'mediaLibrary', 'deckGalleries'));
     }
 
     public function linguFrancaPerformanceAsset(string $asset) {
@@ -331,6 +332,52 @@ class HomePageController extends Controller {
             'Content-Type' => $mime,
             'Cache-Control' => 'public, max-age=86400',
         ]);
+    }
+
+    private function linguFrancaPerformanceDeckGalleries(array $downloads): array {
+        $galleryMap = [
+            [
+                'slug' => 'general-english',
+                'eyebrow' => 'Genel İngilizce Akışı',
+                'title' => data_get($downloads, '0.title', 'LinguFranca Genel İngilizce'),
+                'lead' => 'Program davetinden süreç tasarımına kadar tüm akış burada.',
+            ],
+            [
+                'slug' => 'ielts-exam',
+                'eyebrow' => 'IELTS / TOEFL / YDS Akışı',
+                'title' => data_get($downloads, '1.title', 'LinguFranca Sınav Programı'),
+                'lead' => 'Sınav sisteminin tüm anlatımı sayfa sayfa burada.',
+            ],
+            [
+                'slug' => 'pte-academic',
+                'eyebrow' => 'PTE Academic Akışı',
+                'title' => data_get($downloads, '2.title', 'PTE Academic Programı'),
+                'lead' => 'PTE tarafındaki tam sunum akışı görselleriyle burada.',
+            ],
+        ];
+
+        return collect($galleryMap)
+            ->map(function (array $deck) {
+                $files = glob(public_path('uploads/lingufranca-performance/decks/' . $deck['slug'] . '/page-*.png')) ?: [];
+                sort($files, SORT_NATURAL);
+
+                $publicBase = str_replace('\\', '/', public_path()) . '/';
+                $pages = collect($files)
+                    ->map(function (string $path) use ($publicBase) {
+                        $normalized = str_replace('\\', '/', $path);
+                        return asset(Str::after($normalized, $publicBase));
+                    })
+                    ->values()
+                    ->all();
+
+                $deck['page_count'] = count($pages);
+                $deck['pages'] = $pages;
+
+                return $deck;
+            })
+            ->filter(fn(array $deck) => ! empty($deck['pages']))
+            ->values()
+            ->all();
     }
 
     function countries(): JsonResponse {
