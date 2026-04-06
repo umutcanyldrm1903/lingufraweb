@@ -6,50 +6,28 @@
     $applyUrl = route('contact.index');
     $testUrl = route('placement-test.show');
     $homeUrl = route('home');
-    $coverVisual = $pageData['hero_primary_visual'] ?? null;
 
-    $topLinks = [
-        ['label' => 'Overview', 'href' => '#overview'],
-        ['label' => 'Sections', 'href' => '#sections'],
-        ['label' => 'Structure', 'href' => '#structure'],
-        ['label' => 'Results', 'href' => '#results'],
-        ['label' => 'CTA', 'href' => '#cta'],
-    ];
+    $topLinks = $pageData['top_links'] ?? [];
+    $heroBadges = $pageData['hero_badges'] ?? [];
+    $heroStats = $pageData['hero_stats'] ?? [];
+    $manifestoPoints = $pageData['manifesto_points'] ?? [];
+    $steps = $pageData['steps'] ?? [];
+    $fitFor = $pageData['fit_for'] ?? [];
+    $fitNotFor = $pageData['fit_not_for'] ?? [];
+    $packages = $pageData['packages'] ?? [];
+    $pricingNotes = $pageData['pricing_notes'] ?? [];
+    $pressBadges = $pageData['press_badges'] ?? [];
+    $faqs = $pageData['faq'] ?? [];
+    $primaryProgram = $downloads[0] ?? null;
+    $programs = $downloads ?? [];
+    $featuredMedia = $mediaLibrary[0] ?? null;
+    $secondaryMedia = array_slice($mediaLibrary ?? [], 1, 5);
 
-    $featureCards = [
-        [
-            'eyebrow' => 'Section 01',
-            'title' => 'Hero yeniden kurulacak',
-            'copy' => 'Ana mesaj, alt aciklama ve tek odakli gorsel bu alana yerlestirilecek.',
-        ],
-        [
-            'eyebrow' => 'Section 02',
-            'title' => 'Program bloklari yeniden kurulacak',
-            'copy' => 'Eski kartlar yerine daha net, daha premium landing bloklari eklenecek.',
-        ],
-        [
-            'eyebrow' => 'Section 03',
-            'title' => 'Video ve proof katmani eklenecek',
-            'copy' => 'Featured medya ve alt proof kartlari bu template akisina gore dizilecek.',
-        ],
-    ];
-
-    $workflowCards = [
-        ['title' => 'Hero / Intro', 'copy' => 'Open template benzeri merkezi acilis alani.'],
-        ['title' => 'Features / Programlar', 'copy' => '3 kolonlu section ve ana destek bloklari.'],
-        ['title' => 'Proof / CTA', 'copy' => 'Alt tarafta referans, sonuc ve donusum alani.'],
-    ];
-
-    $resultCards = [
-        ['title' => 'Result Block 01', 'copy' => 'Burasi sonra testimonial, video ya da proof alanina donusecek.'],
-        ['title' => 'Result Block 02', 'copy' => 'Burasi sonra testimonial, video ya da proof alanina donusecek.'],
-        ['title' => 'Result Block 03', 'copy' => 'Burasi sonra testimonial, video ya da proof alanina donusecek.'],
-    ];
-
-    $metricCards = [
-        ['value' => '01', 'label' => 'Yeni shell aktif'],
-        ['value' => '02', 'label' => 'Icerik sifirlandi'],
-        ['value' => '03', 'label' => 'Beraber doldurulacak'],
+    $teamRoles = [
+        'Kurucu & Dil Kocu',
+        'Ana Egitmen (Native / Turk)',
+        'Mufredat Sorumlusu',
+        'Rehber Mentor',
     ];
 @endphp
 
@@ -89,107 +67,271 @@
 
             <section class="openp-hero" id="overview">
                 <div class="openp-hero__copy openp-reveal">
-                    <span class="openp-kicker">Open-style shell</span>
-                    <h1>Bu sayfa artik yeni template iskeletiyle aciliyor</h1>
-                    <p>Eski performans sayfasi icerigi ve onceki dizilim geri plana cekildi. Simdi burada Open React template mantiginda yeniden kurulmus temiz bir landing shell aktif.</p>
+                    <span class="openp-kicker">{{ $pageData['eyebrow'] ?? 'LinguFranca' }}</span>
+                    <h1>{{ $pageData['title'] ?? '' }}</h1>
+                    <p>{{ $pageData['lead'] ?? '' }}</p>
+
+                    @if (!empty($heroBadges))
+                        <div class="openp-chip-row">
+                            @foreach ($heroBadges as $badge)
+                                <span class="openp-chip">{{ $badge }}</span>
+                            @endforeach
+                        </div>
+                    @endif
 
                     <div class="openp-hero__actions">
-                        <a class="openp-button" href="#sections">Sectionlari Incele</a>
-                        <a class="openp-button openp-button--ghost" href="#cta">Birlikte Dolduralim</a>
+                        <a class="openp-button" href="#programlar">Programlari Incele</a>
+                        <a class="openp-button openp-button--ghost" href="#videolar">Video Kayitlarini Incele</a>
                     </div>
                 </div>
 
                 <div class="openp-hero__visual openp-reveal">
-                    <div class="openp-visual-card">
+                    <article class="openp-visual-card">
                         <div class="openp-visual-card__media">
-                            @if (!empty($coverVisual))
-                                <img src="{{ $coverVisual }}" alt="{{ $siteName }}" />
+                            @if (!empty($primaryProgram['cover_url']))
+                                <img src="{{ $primaryProgram['cover_url'] }}" alt="{{ $primaryProgram['title'] }}" />
+                            @elseif (!empty($pageData['hero_primary_visual']))
+                                <img src="{{ $pageData['hero_primary_visual'] }}" alt="{{ $siteName }}" />
                             @else
                                 <div class="openp-visual-card__fallback">{{ strtoupper(substr($siteName, 0, 2)) }}</div>
                             @endif
                         </div>
                         <div class="openp-visual-card__body">
-                            <span class="openp-chip">Landing shell</span>
-                            <strong>Hero preview alani</strong>
-                            <p>Burasi sonra ana video, ana gorsel ya da featured panel olabilir.</p>
+                            <span class="openp-chip">{{ $primaryProgram['label'] ?? 'Program' }}</span>
+                            <strong>{{ $primaryProgram['title'] ?? $siteName }}</strong>
+                            <p>{{ $primaryProgram['subtitle'] ?? ($pageData['hero_quote'] ?? '') }}</p>
+                            <div class="openp-visual-card__meta">
+                                @if (!empty($primaryProgram['meta']))
+                                    <span>{{ $primaryProgram['meta'] }}</span>
+                                @endif
+                                @if (!empty($primaryProgram['result']))
+                                    <span>{{ $primaryProgram['result'] }}</span>
+                                @endif
+                            </div>
                         </div>
-                    </div>
+                    </article>
                 </div>
             </section>
 
-            <section class="openp-metrics openp-reveal">
-                @foreach ($metricCards as $metric)
-                    <article class="openp-metric">
-                        <strong>{{ $metric['value'] }}</strong>
-                        <span>{{ $metric['label'] }}</span>
-                    </article>
-                @endforeach
-            </section>
+            @if (!empty($pressBadges))
+                <section class="openp-strip openp-reveal">
+                    @foreach ($pressBadges as $badge)
+                        <span>{{ $badge }}</span>
+                    @endforeach
+                </section>
+            @endif
 
-            <section class="openp-section" id="sections">
+            @if (!empty($heroStats))
+                <section class="openp-metrics openp-reveal">
+                    @foreach ($heroStats as $metric)
+                        <article class="openp-metric">
+                            <strong>{{ $metric['value'] }}</strong>
+                            <span>{{ $metric['label'] }}</span>
+                        </article>
+                    @endforeach
+                </section>
+            @endif
+
+            <section class="openp-section" id="sistem">
                 <div class="openp-section__head openp-reveal">
-                    <span class="openp-kicker">Sections</span>
-                    <h2>Open template dizilimi bu sayfaya tasindi</h2>
-                    <p>Hero, features, workflows, proof ve CTA sirasiyla doldurulacak temiz iskelet hazirlandi.</p>
+                    <span class="openp-kicker">{{ $pageData['manifesto_eyebrow'] ?? 'Sistem' }}</span>
+                    <h2>{{ $pageData['manifesto_title'] ?? '' }}</h2>
+                    <p>{{ $pageData['manifesto_lead'] ?? '' }}</p>
                 </div>
 
                 <div class="openp-feature-grid">
-                    @foreach ($featureCards as $card)
+                    @foreach ($manifestoPoints as $point)
                         <article class="openp-feature-card openp-reveal">
-                            <span class="openp-chip">{{ $card['eyebrow'] }}</span>
-                            <h3>{{ $card['title'] }}</h3>
-                            <p>{{ $card['copy'] }}</p>
+                            <span class="openp-chip">0{{ $loop->iteration }}</span>
+                            <h3>{{ $point['title'] }}</h3>
+                            <p>{{ $point['description'] }}</p>
                         </article>
                     @endforeach
                 </div>
             </section>
 
-            <section class="openp-section openp-section--split" id="structure">
+            <section class="openp-section" id="programlar">
                 <div class="openp-section__head openp-reveal">
-                    <span class="openp-kicker">Structure</span>
-                    <h2>Workflow kartlari burada sekillenecek</h2>
-                    <p>Bu alan Open template’in spotlight/workflow mantigini aliyor. Sonraki turda her kutu gercek icerige donecek.</p>
+                    <span class="openp-kicker">{{ $pageData['resource_eyebrow'] ?? 'Programlar' }}</span>
+                    <h2>{{ $pageData['resource_title'] ?? '' }}</h2>
+                    <p>{{ $pageData['hero_quote'] ?? '' }}</p>
                 </div>
 
-                <div class="openp-workflow-grid">
-                    @foreach ($workflowCards as $card)
-                        <article class="openp-workflow-card openp-reveal">
-                            <div class="openp-workflow-card__media"></div>
-                            <div class="openp-workflow-card__body">
-                                <span class="openp-chip">Draft block</span>
-                                <h3>{{ $card['title'] }}</h3>
-                                <p>{{ $card['copy'] }}</p>
+                <div class="openp-program-grid">
+                    @foreach ($programs as $program)
+                        <article class="openp-program-card openp-reveal">
+                            <div class="openp-program-card__media">
+                                @if (!empty($program['cover_url']))
+                                    <img src="{{ $program['cover_url'] }}" alt="{{ $program['title'] }}" />
+                                @endif
+                            </div>
+                            <div class="openp-program-card__body">
+                                <span class="openp-chip">{{ $program['label'] }}</span>
+                                <h3>{{ $program['title'] }}</h3>
+                                <p>{{ $program['subtitle'] }}</p>
+                                @if (!empty($program['bullets']))
+                                    <ul class="openp-list">
+                                        @foreach ($program['bullets'] as $bullet)
+                                            <li>{{ $bullet }}</li>
+                                        @endforeach
+                                    </ul>
+                                @endif
+                                <div class="openp-program-card__meta">
+                                    @if (!empty($program['meta']))
+                                        <span>{{ $program['meta'] }}</span>
+                                    @endif
+                                    @if (!empty($program['result']))
+                                        <strong class="openp-emphasis">{{ $program['result'] }}</strong>
+                                    @endif
+                                </div>
                             </div>
                         </article>
                     @endforeach
                 </div>
             </section>
 
-            <section class="openp-section" id="results">
+            <section class="openp-section" id="structure">
                 <div class="openp-section__head openp-reveal">
-                    <span class="openp-kicker">Results</span>
-                    <h2>Alt proof alanlari bos placeholder olarak birakildi</h2>
-                    <p>Burasi sonra testimonial, video proof ya da sonuc kartlarina donecek.</p>
+                    <span class="openp-kicker">{{ $pageData['process_eyebrow'] ?? 'Surec' }}</span>
+                    <h2>{{ $pageData['process_title'] ?? '' }}</h2>
+                    <p>PDF akisinin ortak omurgasi: once analiz, sonra kisisel plan, ardindan surekli iletisim ve duzenli performans takibi.</p>
                 </div>
 
-                <div class="openp-result-grid">
-                    @foreach ($resultCards as $card)
-                        <article class="openp-result-card openp-reveal">
-                            <div class="openp-result-card__mark"></div>
-                            <h3>{{ $card['title'] }}</h3>
-                            <p>{{ $card['copy'] }}</p>
+                <div class="openp-process-grid">
+                    @foreach ($steps as $step)
+                        <article class="openp-process-card openp-reveal">
+                            <div class="openp-process-card__index">0{{ $loop->iteration }}</div>
+                            <h3>{{ $step['title'] }}</h3>
+                            <p>{{ $step['description'] }}</p>
+                        </article>
+                    @endforeach
+                </div>
+
+                <div class="openp-fit-grid">
+                    <article class="openp-fit-card openp-reveal">
+                        <span class="openp-chip">Kimler icin uygun</span>
+                        <ul class="openp-list">
+                            @foreach ($fitFor as $item)
+                                <li>{{ $item }}</li>
+                            @endforeach
+                        </ul>
+                    </article>
+
+                    <article class="openp-fit-card openp-reveal">
+                        <span class="openp-chip">Kimler icin uygun degil</span>
+                        <ul class="openp-list">
+                            @foreach ($fitNotFor as $item)
+                                <li>{{ $item }}</li>
+                            @endforeach
+                        </ul>
+                    </article>
+                </div>
+
+                <article class="openp-team-card openp-reveal">
+                    <span class="openp-kicker">Performans ekibi</span>
+                    <div class="openp-team-grid">
+                        @foreach ($teamRoles as $role)
+                            <span>{{ $role }}</span>
+                        @endforeach
+                    </div>
+                </article>
+            </section>
+
+            <section class="openp-section" id="videolar">
+                <div class="openp-section__head openp-reveal">
+                    <span class="openp-kicker">{{ $pageData['proof_eyebrow'] ?? 'Videolar' }}</span>
+                    <h2>{{ $pageData['proof_title'] ?? '' }}</h2>
+                    <p>{{ $pageData['proof_lead'] ?? '' }}</p>
+                </div>
+
+                @if (!empty($featuredMedia))
+                    <article class="openp-media-feature openp-reveal">
+                        <div class="openp-media-feature__media">
+                            <video controls preload="metadata" playsinline @if (!empty($featuredMedia['poster_url'])) poster="{{ $featuredMedia['poster_url'] }}" @endif>
+                                <source src="{{ $featuredMedia['file_url'] }}" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="openp-media-feature__body">
+                            <span class="openp-chip">{{ $featuredMedia['category'] }}</span>
+                            <h3>{{ $featuredMedia['title'] }}</h3>
+                            <p>{{ $featuredMedia['description'] }}</p>
+                            <strong class="openp-emphasis">{{ $featuredMedia['duration'] }}</strong>
+                        </div>
+                    </article>
+                @endif
+
+                <div class="openp-media-grid">
+                    @foreach ($secondaryMedia as $media)
+                        <article class="openp-media-card openp-reveal">
+                            <div class="openp-media-card__mark"></div>
+                            <span class="openp-chip">{{ $media['category'] }}</span>
+                            <h3>{{ $media['title'] }}</h3>
+                            <p>{{ $media['description'] }}</p>
+                            <a class="openp-inline-link" href="{{ $media['file_url'] }}" target="_blank" rel="noopener">Videoyu ac</a>
                         </article>
                     @endforeach
                 </div>
             </section>
 
-            <section class="openp-cta openp-reveal" id="cta">
+            <section class="openp-cta openp-reveal" id="fiyat">
                 <div class="openp-cta__inner">
-                    <span class="openp-kicker">CTA</span>
-                    <h2>Template giydirildi. Simdi icerigi birlikte doldurabiliriz.</h2>
+                    <span class="openp-kicker">{{ $pageData['pricing_eyebrow'] ?? 'Fiyat' }}</span>
+                    <h2>{{ $pageData['pricing_title'] ?? '' }}</h2>
+                    <p>{{ $pageData['pricing_lead'] ?? '' }}</p>
+
+                    <div class="openp-price-grid">
+                        @foreach ($packages as $package)
+                            <article class="openp-price-card">
+                                <span class="openp-chip">{{ $package['name'] }}</span>
+                                <h3>{{ $package['price'] }}</h3>
+                                <p>{{ $package['unit'] }}</p>
+                                <strong class="openp-emphasis">{{ $package['note'] }}</strong>
+                            </article>
+                        @endforeach
+                    </div>
+
+                    @if (!empty($pricingNotes))
+                        <ul class="openp-list openp-list--notes">
+                            @foreach ($pricingNotes as $note)
+                                <li>{{ $note }}</li>
+                            @endforeach
+                        </ul>
+                    @endif
+
                     <div class="openp-hero__actions">
-                        <a class="openp-button" href="{{ $applyUrl }}">Hazirla</a>
-                        <a class="openp-button openp-button--ghost" href="{{ $testUrl }}">Akisi Planla</a>
+                        <a class="openp-button" href="{{ $applyUrl }}">Programa Basvur</a>
+                        <a class="openp-button openp-button--ghost" href="{{ $testUrl }}">Seviye Tespiti</a>
+                    </div>
+                </div>
+            </section>
+
+            @if (!empty($faqs))
+                <section class="openp-section" id="sss">
+                    <div class="openp-section__head openp-reveal">
+                        <span class="openp-kicker">SSS</span>
+                        <h2>Karar oncesi en cok sorulanlar</h2>
+                    </div>
+
+                    <div class="openp-faq-grid">
+                        @foreach ($faqs as $faq)
+                            <details class="openp-faq-item openp-reveal">
+                                <summary>{{ $faq['question'] }}</summary>
+                                <p>{{ $faq['answer'] }}</p>
+                            </details>
+                        @endforeach
+                    </div>
+                </section>
+            @endif
+
+            <section class="openp-cta openp-reveal">
+                <div class="openp-cta__inner">
+                    <span class="openp-kicker">Son adim</span>
+                    <h2>{{ $pageData['cta_title'] ?? '' }}</h2>
+                    <p>{{ $pageData['cta_text'] ?? '' }}</p>
+
+                    <div class="openp-hero__actions">
+                        <a class="openp-button" href="{{ $applyUrl }}">Programa Basvur</a>
+                        <a class="openp-button openp-button--ghost" href="{{ $testUrl }}">Seviye Tespiti</a>
                     </div>
                 </div>
             </section>
@@ -236,15 +378,20 @@
         }
 
         .openp-topbar,
+        .openp-strip,
         .openp-metrics,
         .openp-feature-card,
-        .openp-workflow-card,
-        .openp-result-card,
+        .openp-program-card,
+        .openp-process-card,
+        .openp-fit-card,
+        .openp-team-card,
+        .openp-media-feature,
+        .openp-media-card,
         .openp-cta,
-        .openp-visual-card {
+        .openp-visual-card,
+        .openp-price-card {
             border: 1px solid rgba(255, 255, 255, 0.08);
-            background:
-                linear-gradient(180deg, rgba(17, 24, 39, 0.88) 0%, rgba(9, 14, 24, 0.92) 100%);
+            background: linear-gradient(180deg, rgba(17, 24, 39, 0.88) 0%, rgba(9, 14, 24, 0.92) 100%);
             box-shadow: 0 30px 80px rgba(0, 0, 0, 0.28);
             backdrop-filter: blur(14px);
         }
@@ -273,15 +420,17 @@
 
         .openp-nav,
         .openp-actions,
-        .openp-hero__actions {
+        .openp-hero__actions,
+        .openp-chip-row {
             display: flex;
             align-items: center;
             gap: 12px;
             flex-wrap: wrap;
         }
 
-        .openp-nav a {
-            color: rgba(237, 242, 255, 0.78);
+        .openp-nav a,
+        .openp-inline-link {
+            color: rgba(237, 242, 255, 0.82);
             font-size: 14px;
             font-weight: 600;
         }
@@ -298,12 +447,13 @@
             font-size: 14px;
             font-weight: 700;
             border: 1px solid transparent;
-            transition: transform 180ms ease, box-shadow 180ms ease, background-size 180ms ease;
+            transition: transform 180ms ease, box-shadow 180ms ease;
             box-shadow: 0 18px 40px rgba(79, 70, 229, 0.28);
         }
 
         .openp-button:hover,
-        .openp-button:focus-visible {
+        .openp-button:focus-visible,
+        .openp-inline-link:hover {
             transform: translateY(-1px);
         }
 
@@ -312,14 +462,6 @@
             border-color: rgba(255, 255, 255, 0.1);
             box-shadow: none;
             color: #eef2ff;
-        }
-
-        .openp-hero {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) minmax(320px, 0.92fr);
-            gap: 28px;
-            align-items: center;
-            padding: 72px 0 48px;
         }
 
         .openp-kicker,
@@ -339,11 +481,39 @@
             text-transform: uppercase;
         }
 
+        .openp-hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(320px, 0.92fr);
+            gap: 28px;
+            align-items: center;
+            padding: 72px 0 36px;
+        }
+
+        .openp-hero__copy,
+        .openp-visual-card__body,
+        .openp-section__head,
+        .openp-feature-card,
+        .openp-program-card__body,
+        .openp-process-card,
+        .openp-fit-card,
+        .openp-team-card,
+        .openp-media-feature__body,
+        .openp-media-card,
+        .openp-price-card,
+        .openp-cta__inner {
+            display: grid;
+            gap: 14px;
+        }
+
         .openp-hero h1,
         .openp-section__head h2,
         .openp-feature-card h3,
-        .openp-workflow-card h3,
-        .openp-result-card h3,
+        .openp-program-card__body h3,
+        .openp-process-card h3,
+        .openp-fit-card h3,
+        .openp-media-feature__body h3,
+        .openp-media-card h3,
+        .openp-price-card h3,
         .openp-cta h2,
         .openp-visual-card__body strong {
             margin: 0;
@@ -353,7 +523,7 @@
         }
 
         .openp-hero h1 {
-            margin-top: 16px;
+            margin-top: 4px;
             font-size: clamp(40px, 5vw, 66px);
             line-height: 1;
             letter-spacing: -0.06em;
@@ -366,18 +536,19 @@
         .openp-hero p,
         .openp-section__head p,
         .openp-feature-card p,
-        .openp-workflow-card p,
-        .openp-result-card p,
-        .openp-visual-card__body p {
+        .openp-program-card__body p,
+        .openp-process-card p,
+        .openp-media-feature__body p,
+        .openp-media-card p,
+        .openp-price-card p,
+        .openp-visual-card__body p,
+        .openp-list li,
+        .openp-strip span,
+        .openp-team-grid span,
+        .openp-visual-card__meta span {
             margin: 0;
-            color: rgba(199, 210, 254, 0.68);
+            color: rgba(199, 210, 254, 0.72);
             line-height: 1.75;
-        }
-
-        .openp-hero__copy {
-            display: grid;
-            gap: 18px;
-            max-width: 640px;
         }
 
         .openp-visual-card {
@@ -387,12 +558,12 @@
 
         .openp-visual-card__media {
             aspect-ratio: 16 / 10;
-            background:
-                radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.2), transparent 30%),
-                linear-gradient(145deg, rgba(22, 29, 49, 0.96), rgba(9, 14, 24, 1));
+            background: radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.2), transparent 30%), linear-gradient(145deg, rgba(22, 29, 49, 0.96), rgba(9, 14, 24, 1));
         }
 
-        .openp-visual-card__media img {
+        .openp-visual-card__media img,
+        .openp-program-card__media img,
+        .openp-media-feature__media video {
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -410,28 +581,50 @@
             color: #ffffff;
         }
 
-        .openp-visual-card__body {
+        .openp-visual-card__body,
+        .openp-program-card__body,
+        .openp-media-feature__body,
+        .openp-price-card {
             padding: 22px;
-            display: grid;
-            gap: 10px;
+        }
+
+        .openp-visual-card__meta,
+        .openp-program-card__meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .openp-strip {
+            margin-top: 12px;
+            padding: 16px 18px;
+            border-radius: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 18px;
         }
 
         .openp-metrics,
         .openp-feature-grid,
-        .openp-workflow-grid,
-        .openp-result-grid {
+        .openp-program-grid,
+        .openp-process-grid,
+        .openp-fit-grid,
+        .openp-media-grid,
+        .openp-price-grid,
+        .openp-faq-grid {
             display: grid;
             gap: 18px;
         }
 
         .openp-metrics {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             padding: 18px;
             border-radius: 22px;
+            margin-top: 18px;
         }
 
         .openp-metric {
-            min-height: 120px;
+            min-height: 110px;
             border-radius: 18px;
             padding: 18px;
             background: rgba(255, 255, 255, 0.03);
@@ -440,70 +633,97 @@
             gap: 8px;
         }
 
-        .openp-metric strong {
+        .openp-metric strong,
+        .openp-process-card__index {
             font-family: "Sora", sans-serif;
             color: #ffffff;
             font-size: 30px;
         }
 
-        .openp-metric span {
-            color: rgba(199, 210, 254, 0.68);
-            font-size: 14px;
-            font-weight: 600;
-        }
-
         .openp-section {
-            padding-top: 96px;
+            padding-top: 92px;
             display: grid;
-            gap: 28px;
+            gap: 26px;
         }
 
-        .openp-section__head {
-            max-width: 760px;
-            display: grid;
-            gap: 12px;
+        .openp-feature-grid,
+        .openp-process-grid,
+        .openp-fit-grid,
+        .openp-media-grid,
+        .openp-price-grid,
+        .openp-faq-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
-        .openp-feature-grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+        .openp-program-grid {
+            grid-template-columns: 1fr;
         }
 
         .openp-feature-card,
-        .openp-result-card {
-            min-height: 230px;
+        .openp-process-card,
+        .openp-fit-card,
+        .openp-team-card,
+        .openp-media-card,
+        .openp-price-card,
+        .openp-faq-item {
+            min-height: 100%;
             border-radius: 24px;
             padding: 24px;
+        }
+
+        .openp-program-card {
+            overflow: hidden;
+            border-radius: 24px;
             display: grid;
-            align-content: start;
+            grid-template-columns: minmax(260px, 0.82fr) minmax(0, 1.18fr);
+        }
+
+        .openp-program-card__media {
+            min-height: 240px;
+            background: linear-gradient(145deg, rgba(28, 41, 69, 0.96), rgba(13, 20, 32, 1));
+        }
+
+        .openp-list {
+            margin: 0;
+            padding-left: 18px;
+            display: grid;
+            gap: 8px;
+        }
+
+        .openp-emphasis {
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .openp-team-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 12px;
         }
 
-        .openp-workflow-grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+        .openp-team-grid span {
+            display: inline-flex;
+            align-items: center;
+            min-height: 46px;
+            padding: 0 14px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.04);
         }
 
-        .openp-workflow-card {
+        .openp-media-feature {
             overflow: hidden;
             border-radius: 24px;
-        }
-
-        .openp-workflow-card__media {
-            aspect-ratio: 7 / 5;
-            background:
-                radial-gradient(circle at 25% 30%, rgba(99, 102, 241, 0.35), transparent 24%),
-                linear-gradient(145deg, rgba(30, 41, 59, 0.96), rgba(15, 23, 42, 1));
-        }
-
-        .openp-workflow-card__body {
-            padding: 22px;
             display: grid;
-            gap: 10px;
+            grid-template-columns: minmax(0, 1.12fr) minmax(300px, 0.88fr);
         }
 
-        .openp-result-grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+        .openp-media-feature__media {
+            min-height: 360px;
+            background: #0d1524;
         }
 
+        .openp-media-card__mark,
         .openp-result-card__mark {
             width: 42px;
             height: 42px;
@@ -518,10 +738,22 @@
             padding: 32px;
         }
 
-        .openp-cta__inner {
-            max-width: 760px;
-            display: grid;
-            gap: 16px;
+        .openp-list--notes {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px 18px;
+        }
+
+        .openp-faq-item summary {
+            cursor: pointer;
+            color: #ffffff;
+            font-family: "Sora", sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            list-style: none;
+        }
+
+        .openp-faq-item summary::-webkit-details-marker {
+            display: none;
         }
 
         .openp-reveal {
@@ -537,14 +769,20 @@
 
         @media (max-width: 960px) {
             .openp-hero,
+            .openp-program-card,
+            .openp-media-feature,
             .openp-feature-grid,
-            .openp-workflow-grid,
-            .openp-result-grid {
+            .openp-process-grid,
+            .openp-fit-grid,
+            .openp-media-grid,
+            .openp-price-grid,
+            .openp-faq-grid,
+            .openp-list--notes {
                 grid-template-columns: 1fr;
             }
 
             .openp-metrics {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
         }
 
@@ -567,7 +805,8 @@
                 padding: 48px 0 24px;
             }
 
-            .openp-metrics {
+            .openp-metrics,
+            .openp-team-grid {
                 grid-template-columns: 1fr;
             }
 
