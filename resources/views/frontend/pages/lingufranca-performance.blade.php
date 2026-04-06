@@ -450,7 +450,7 @@
 @push('styles')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         .lfps-performance-shell {
             --lfps-navy: #06235b;
@@ -1519,6 +1519,329 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Final portfolio landing override */
+        .lfps-performance-shell {
+            --lfps-surface: rgba(17, 25, 46, 0.82);
+            --lfps-surface-strong: rgba(15, 22, 40, 0.96);
+            --lfps-border-soft: rgba(255, 255, 255, 0.08);
+            --lfps-text-main: #f5f7fe;
+            --lfps-text-soft: #b7c2da;
+            --lfps-text-dim: #7f8dad;
+            font-family: "Manrope", sans-serif;
+            background:
+                radial-gradient(circle at 16% 8%, rgba(96, 89, 247, 0.25), transparent 22%),
+                radial-gradient(circle at 84% 4%, rgba(82, 151, 255, 0.12), transparent 18%),
+                linear-gradient(180deg, #060b16 0%, #091227 25%, #08101e 100%);
+        }
+
+        .lfps-performance-shell h1,
+        .lfps-performance-shell h2,
+        .lfps-performance-shell h3,
+        .lfps-performance-shell summary,
+        .lfps-performance-shell strong {
+            font-family: "Sora", sans-serif;
+        }
+
+        .lfps-page {
+            width: min(1220px, calc(100% - 40px));
+        }
+
+        .lfps-topbar,
+        .lfps-proof-strip,
+        .lfps-quote-card,
+        .lfps-mini-program,
+        .lfps-hero-program,
+        .lfps-price-card,
+        .lfps-cta-band {
+            border: 1px solid var(--lfps-border-soft);
+            background: var(--lfps-surface);
+            box-shadow: 0 32px 80px rgba(0, 0, 0, 0.24);
+            backdrop-filter: blur(14px);
+        }
+
+        .lfps-topbar__nav a,
+        .lfps-footer__links a {
+            color: rgba(255, 255, 255, 0.88) !important;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .lfps-button {
+            min-height: 48px;
+            padding: 0 20px;
+            background: linear-gradient(135deg, #6059f7 0%, #8d89ff 100%) !important;
+            box-shadow: 0 18px 40px rgba(96, 89, 247, 0.3) !important;
+        }
+
+        .lfps-button--ghost {
+            border-color: rgba(255, 255, 255, 0.14) !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+            box-shadow: none !important;
+        }
+
+        .lfps-hero {
+            gap: 42px;
+            align-items: center;
+            min-height: 88vh;
+            padding: 92px 0 64px;
+        }
+
+        .lfps-hero h1 {
+            max-width: 700px;
+            font-size: clamp(40px, 5.4vw, 74px);
+            line-height: 0.98;
+            letter-spacing: -0.05em;
+            text-wrap: balance;
+        }
+
+        .lfps-lead,
+        .lfps-quote-card p,
+        .lfps-mini-program p,
+        .lfps-hero-program__body p,
+        .lfps-hero-program__meta span,
+        .lfps-section-head p,
+        .lfps-split-block__intro p,
+        .lfps-insight-card p,
+        .lfps-cta-band p,
+        .lfps-value-card p,
+        .lfps-fit-card li,
+        .lfps-resource-card li,
+        .lfps-step-card p,
+        .lfps-program-panel__body p,
+        .lfps-program-panel__body li,
+        .lfps-video-card p,
+        .lfps-price-card p,
+        .lfps-price-card span,
+        .lfps-faq-item p,
+        .lfps-note-card,
+        .lfps-mini-card li {
+            color: var(--lfps-text-soft) !important;
+            overflow-wrap: anywhere;
+        }
+
+        .lfps-chip {
+            color: #d7dff2 !important;
+            font-weight: 700;
+        }
+
+        .lfps-stat-card span {
+            color: var(--lfps-text-dim) !important;
+        }
+
+        .lfps-hero-program {
+            grid-template-columns: minmax(250px, 0.9fr) minmax(0, 1.1fr);
+            min-height: 360px;
+            overflow: hidden;
+        }
+
+        .lfps-hero-program__media {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(234, 239, 255, 0.9) 100%);
+        }
+
+        .lfps-hero-program__media img,
+        .lfps-program-panel__media img {
+            object-fit: cover;
+        }
+
+        .lfps-hero-side-grid {
+            grid-template-columns: minmax(0, 1.2fr) repeat(2, minmax(0, 1fr));
+        }
+
+        .lfps-quote-card,
+        .lfps-mini-program {
+            min-height: 190px;
+            height: 100%;
+        }
+
+        .lfps-mini-program h3,
+        .lfps-program-panel__body h3,
+        .lfps-video-card h3,
+        .lfps-price-card h3,
+        .lfps-section-head h2,
+        .lfps-split-block__intro h2,
+        .lfps-insight-card h2,
+        .lfps-cta-band h2 {
+            text-wrap: balance;
+        }
+
+        .lfps-proof-strip {
+            margin-top: 8px;
+            padding: 22px 24px;
+        }
+
+        .lfps-proof-strip > span,
+        .lfps-proof-strip__items span {
+            color: #d9e2ff !important;
+        }
+
+        .lfps-section {
+            padding-top: 112px;
+        }
+
+        .lfps-section-head {
+            max-width: 820px;
+            margin-bottom: 38px;
+        }
+
+        .lfps-value-grid {
+            gap: 22px;
+        }
+
+        .lfps-value-card,
+        .lfps-fit-card,
+        .lfps-resource-card,
+        .lfps-step-card,
+        .lfps-insight-card,
+        .lfps-program-panel,
+        .lfps-video-card,
+        .lfps-note-card,
+        .lfps-faq-item {
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: var(--lfps-surface-strong);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+        }
+
+        .lfps-value-card__index,
+        .lfps-step-card__index {
+            color: #908cff !important;
+        }
+
+        .lfps-fit-card--muted,
+        .lfps-price-card,
+        .lfps-cta-band {
+            background:
+                radial-gradient(circle at top right, rgba(96, 89, 247, 0.22), transparent 24%),
+                linear-gradient(135deg, #0c1d44 0%, #0a1a36 100%) !important;
+        }
+
+        .lfps-fit-card--muted li,
+        .lfps-price-card strong,
+        .lfps-price-card h3,
+        .lfps-price-card p,
+        .lfps-price-card span,
+        .lfps-cta-band h2,
+        .lfps-cta-band p,
+        .lfps-cta-band .lfps-section-tag {
+            color: #ffffff !important;
+        }
+
+        .lfps-program-panel {
+            grid-template-columns: minmax(280px, 0.82fr) minmax(0, 1.18fr);
+            min-height: 330px;
+            overflow: hidden;
+        }
+
+        .lfps-program-panel__body {
+            padding: 34px;
+            gap: 14px;
+        }
+
+        .lfps-program-panel__footer {
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            color: #ffffff !important;
+            font-weight: 800;
+        }
+
+        .lfps-inline-link {
+            color: #9c99ff !important;
+        }
+
+        .lfps-step-grid {
+            gap: 20px;
+        }
+
+        .lfps-step-card::before {
+            background: linear-gradient(90deg, #6059f7 0%, #8d89ff 100%);
+        }
+
+        .lfps-video-card--feature {
+            grid-template-columns: minmax(0, 1.16fr) minmax(320px, 0.84fr);
+            min-height: 420px;
+            overflow: hidden;
+            background: var(--lfps-surface-strong);
+        }
+
+        .lfps-video-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .lfps-video-card {
+            overflow: hidden;
+        }
+
+        .lfps-video-card:not(.lfps-video-card--feature) .lfps-video-card__media video {
+            aspect-ratio: 10 / 14;
+        }
+
+        .lfps-price-card--featured {
+            background:
+                radial-gradient(circle at top right, rgba(255, 255, 255, 0.14), transparent 22%),
+                linear-gradient(135deg, #6059f7 0%, #3d5be6 100%) !important;
+        }
+
+        .lfps-note-grid {
+            gap: 18px;
+        }
+
+        .lfps-reveal {
+            will-change: transform, opacity;
+            transition:
+                opacity 0.7s ease var(--delay, 0ms),
+                transform 0.7s cubic-bezier(0.22, 1, 0.36, 1) var(--delay, 0ms);
+        }
+
+        @media (max-width: 1180px) {
+            .lfps-hero,
+            .lfps-hero-program,
+            .lfps-hero-side-grid,
+            .lfps-split-block,
+            .lfps-program-panel,
+            .lfps-video-card--feature,
+            .lfps-pricing-grid,
+            .lfps-fit-grid,
+            .lfps-resource-grid,
+            .lfps-insight-grid,
+            .lfps-note-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .lfps-value-grid,
+            .lfps-step-grid,
+            .lfps-video-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 760px) {
+            .lfps-page {
+                width: min(100% - 20px, 1220px);
+            }
+
+            .lfps-hero {
+                min-height: auto;
+                padding: 54px 0 46px;
+            }
+
+            .lfps-hero h1 {
+                font-size: 38px;
+            }
+
+            .lfps-stat-grid,
+            .lfps-value-grid,
+            .lfps-step-grid,
+            .lfps-video-grid,
+            .lfps-mini-grid,
+            .lfps-note-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .lfps-section {
+                padding-top: 74px;
+            }
+        }
     </style>
 @endpush
 
@@ -1526,7 +1849,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var targets = document.querySelectorAll(
-                '.lfps-hero__copy, .lfps-hero__visual, .lfps-proof-strip, .lfps-section-head, .lfps-value-card, .lfps-fit-card, .lfps-resource-card, .lfps-program-panel, .lfps-step-card, .lfps-insight-card, .lfps-video-card, .lfps-price-card, .lfps-note-card, .lfps-faq-item, .lfps-cta-band'
+                '.lfps-topbar, .lfps-hero__copy, .lfps-hero-program, .lfps-quote-card, .lfps-mini-program, .lfps-proof-strip, .lfps-section-head, .lfps-value-card, .lfps-fit-card, .lfps-resource-card, .lfps-program-panel, .lfps-step-card, .lfps-insight-card, .lfps-video-card, .lfps-price-card, .lfps-note-card, .lfps-faq-item, .lfps-cta-band, .lfps-footer'
             );
 
             if (!targets.length) {
