@@ -11,13 +11,14 @@
     $heroBadges = $pageData['hero_badges'] ?? [];
     $heroStats = $pageData['hero_stats'] ?? [];
     $manifestoPoints = $pageData['manifesto_points'] ?? [];
-    $steps = $pageData['steps'] ?? [];
+    $resourceColumns = $pageData['resource_columns'] ?? [];
     $fitFor = $pageData['fit_for'] ?? [];
     $fitNotFor = $pageData['fit_not_for'] ?? [];
+    $steps = $pageData['steps'] ?? [];
     $packages = $pageData['packages'] ?? [];
     $pricingNotes = $pageData['pricing_notes'] ?? [];
-    $pressBadges = $pageData['press_badges'] ?? [];
     $faqs = $pageData['faq'] ?? [];
+    $pressBadges = $pageData['press_badges'] ?? [];
     $primaryProgram = $downloads[0] ?? null;
     $programs = $downloads ?? [];
     $featuredMedia = $mediaLibrary[0] ?? null;
@@ -40,12 +41,10 @@
 @section('hide_public_footer', '1')
 
 @section('contents')
-    <section class="openp-shell">
-        <div class="openp-noise"></div>
-
-        <div class="openp-container">
-            <header class="openp-topbar openp-reveal">
-                <a class="openp-brand" href="{{ $homeUrl }}">
+    <section class="dbp-shell">
+        <div class="dbp-page">
+            <header class="dbp-topbar dbp-reveal">
+                <a class="dbp-brand" href="{{ $homeUrl }}">
                     @if (!empty($setting?->logo))
                         <img src="{{ asset($setting->logo) }}" alt="{{ $siteName }}" />
                     @else
@@ -53,54 +52,59 @@
                     @endif
                 </a>
 
-                <nav class="openp-nav" aria-label="Bolumler">
+                <nav class="dbp-nav" aria-label="Bolumler">
                     @foreach ($topLinks as $link)
                         <a href="{{ $link['href'] }}">{{ $link['label'] }}</a>
                     @endforeach
                 </nav>
 
-                <div class="openp-actions">
-                    <a class="openp-button openp-button--ghost" href="{{ $testUrl }}">Seviye Tespiti</a>
-                    <a class="openp-button" href="{{ $applyUrl }}">Programa Basvur</a>
+                <div class="dbp-actions">
+                    <a class="dbp-button dbp-button--ghost" href="{{ $testUrl }}">Seviye Tespiti</a>
+                    <a class="dbp-button" href="{{ $applyUrl }}">Programa Basvur</a>
                 </div>
             </header>
 
-            <section class="openp-hero" id="overview">
-                <div class="openp-hero__copy openp-reveal">
-                    <span class="openp-kicker">{{ $pageData['eyebrow'] ?? 'LinguFranca' }}</span>
+            <section class="dbp-hero" id="overview">
+                <div class="dbp-hero__copy dbp-reveal">
+                    @if (!empty($heroStats[3]['label']))
+                        <span class="dbp-overline">{{ $heroStats[3]['value'] }} {{ $heroStats[3]['label'] }}</span>
+                    @else
+                        <span class="dbp-overline">{{ $pageData['eyebrow'] ?? 'LinguFranca' }}</span>
+                    @endif
+
                     <h1>{{ $pageData['title'] ?? '' }}</h1>
                     <p>{{ $pageData['lead'] ?? '' }}</p>
 
+                    <div class="dbp-actions">
+                        <a class="dbp-button" href="{{ $applyUrl }}">Programa Basvur</a>
+                        <a class="dbp-button dbp-button--ghost" href="#videolar">Video Kayitlarini Incele</a>
+                    </div>
+
                     @if (!empty($heroBadges))
-                        <div class="openp-chip-row">
+                        <div class="dbp-chip-row">
                             @foreach ($heroBadges as $badge)
-                                <span class="openp-chip">{{ $badge }}</span>
+                                <span class="dbp-chip">{{ $badge }}</span>
                             @endforeach
                         </div>
                     @endif
-
-                    <div class="openp-hero__actions">
-                        <a class="openp-button" href="#programlar">Programlari Incele</a>
-                        <a class="openp-button openp-button--ghost" href="#videolar">Video Kayitlarini Incele</a>
-                    </div>
                 </div>
 
-                <div class="openp-hero__visual openp-reveal">
-                    <article class="openp-visual-card">
-                        <div class="openp-visual-card__media">
+                <div class="dbp-hero__media dbp-reveal">
+                    <article class="dbp-hero-panel">
+                        <div class="dbp-hero-panel__media">
                             @if (!empty($primaryProgram['cover_url']))
                                 <img src="{{ $primaryProgram['cover_url'] }}" alt="{{ $primaryProgram['title'] }}" />
                             @elseif (!empty($pageData['hero_primary_visual']))
                                 <img src="{{ $pageData['hero_primary_visual'] }}" alt="{{ $siteName }}" />
-                            @else
-                                <div class="openp-visual-card__fallback">{{ strtoupper(substr($siteName, 0, 2)) }}</div>
                             @endif
                         </div>
-                        <div class="openp-visual-card__body">
-                            <span class="openp-chip">{{ $primaryProgram['label'] ?? 'Program' }}</span>
-                            <strong>{{ $primaryProgram['title'] ?? $siteName }}</strong>
+
+                        <div class="dbp-hero-panel__body">
+                            <span class="dbp-kicker">{{ $primaryProgram['label'] ?? 'Program' }}</span>
+                            <h2>{{ $primaryProgram['title'] ?? $siteName }}</h2>
                             <p>{{ $primaryProgram['subtitle'] ?? ($pageData['hero_quote'] ?? '') }}</p>
-                            <div class="openp-visual-card__meta">
+
+                            <div class="dbp-hero-panel__meta">
                                 @if (!empty($primaryProgram['meta']))
                                     <span>{{ $primaryProgram['meta'] }}</span>
                                 @endif
@@ -114,35 +118,24 @@
             </section>
 
             @if (!empty($pressBadges))
-                <section class="openp-strip openp-reveal">
+                <section class="dbp-strip dbp-reveal">
                     @foreach ($pressBadges as $badge)
                         <span>{{ $badge }}</span>
                     @endforeach
                 </section>
             @endif
 
-            @if (!empty($heroStats))
-                <section class="openp-metrics openp-reveal">
-                    @foreach ($heroStats as $metric)
-                        <article class="openp-metric">
-                            <strong>{{ $metric['value'] }}</strong>
-                            <span>{{ $metric['label'] }}</span>
-                        </article>
-                    @endforeach
-                </section>
-            @endif
-
-            <section class="openp-section" id="sistem">
-                <div class="openp-section__head openp-reveal">
-                    <span class="openp-kicker">{{ $pageData['manifesto_eyebrow'] ?? 'Sistem' }}</span>
+            <section class="dbp-section" id="sistem">
+                <div class="dbp-section__head dbp-reveal">
+                    <span class="dbp-kicker">Degerlerimiz</span>
                     <h2>{{ $pageData['manifesto_title'] ?? '' }}</h2>
                     <p>{{ $pageData['manifesto_lead'] ?? '' }}</p>
                 </div>
 
-                <div class="openp-feature-grid">
+                <div class="dbp-value-grid">
                     @foreach ($manifestoPoints as $point)
-                        <article class="openp-feature-card openp-reveal">
-                            <span class="openp-chip">0{{ $loop->iteration }}</span>
+                        <article class="dbp-value-card dbp-reveal">
+                            <span class="dbp-value-card__label">Deger {{ $loop->iteration }}</span>
                             <h3>{{ $point['title'] }}</h3>
                             <p>{{ $point['description'] }}</p>
                         </article>
@@ -150,38 +143,77 @@
                 </div>
             </section>
 
-            <section class="openp-section" id="programlar">
-                <div class="openp-section__head openp-reveal">
-                    <span class="openp-kicker">{{ $pageData['resource_eyebrow'] ?? 'Programlar' }}</span>
+            <section class="dbp-section" id="uygunluk">
+                <div class="dbp-section__head dbp-reveal">
+                    <span class="dbp-kicker">Bu senin icin mi?</span>
+                    <h2>{{ $pageData['fit_title'] ?? '' }}</h2>
+                    <p>{{ $pageData['fit_lead'] ?? '' }}</p>
+                </div>
+
+                <div class="dbp-fit-layout">
+                    <article class="dbp-fit-card dbp-reveal">
+                        <span class="dbp-fit-card__title">Kimin icin degil</span>
+                        <ul>
+                            @foreach ($fitNotFor as $item)
+                                <li>{{ $item }}</li>
+                            @endforeach
+                        </ul>
+                    </article>
+
+                    <article class="dbp-fit-card dbp-fit-card--positive dbp-reveal">
+                        <span class="dbp-fit-card__title">Kimin icin</span>
+                        <ul>
+                            @foreach ($fitFor as $item)
+                                <li>{{ $item }}</li>
+                            @endforeach
+                        </ul>
+                    </article>
+                </div>
+            </section>
+
+            <section class="dbp-section" id="programlar">
+                <div class="dbp-section__head dbp-reveal">
+                    <span class="dbp-kicker">Nelere eriseceksin?</span>
                     <h2>{{ $pageData['resource_title'] ?? '' }}</h2>
                     <p>{{ $pageData['hero_quote'] ?? '' }}</p>
                 </div>
 
-                <div class="openp-program-grid">
+                <div class="dbp-resource-grid">
+                    @foreach ($resourceColumns as $column)
+                        <article class="dbp-resource-card dbp-reveal">
+                            <h3>{{ $column['label'] }}</h3>
+                            <ul>
+                                @foreach ($column['items'] as $item)
+                                    <li>{{ $item }}</li>
+                                @endforeach
+                            </ul>
+                        </article>
+                    @endforeach
+                </div>
+
+                <div class="dbp-program-grid">
                     @foreach ($programs as $program)
-                        <article class="openp-program-card openp-reveal">
-                            <div class="openp-program-card__media">
+                        <article class="dbp-program-card dbp-reveal">
+                            <div class="dbp-program-card__media">
                                 @if (!empty($program['cover_url']))
                                     <img src="{{ $program['cover_url'] }}" alt="{{ $program['title'] }}" />
                                 @endif
                             </div>
-                            <div class="openp-program-card__body">
-                                <span class="openp-chip">{{ $program['label'] }}</span>
+                            <div class="dbp-program-card__body">
+                                <span class="dbp-kicker">{{ $program['label'] }}</span>
                                 <h3>{{ $program['title'] }}</h3>
                                 <p>{{ $program['subtitle'] }}</p>
-                                @if (!empty($program['bullets']))
-                                    <ul class="openp-list">
-                                        @foreach ($program['bullets'] as $bullet)
-                                            <li>{{ $bullet }}</li>
-                                        @endforeach
-                                    </ul>
-                                @endif
-                                <div class="openp-program-card__meta">
+                                <ul>
+                                    @foreach ($program['bullets'] as $bullet)
+                                        <li>{{ $bullet }}</li>
+                                    @endforeach
+                                </ul>
+                                <div class="dbp-program-card__meta">
                                     @if (!empty($program['meta']))
                                         <span>{{ $program['meta'] }}</span>
                                     @endif
                                     @if (!empty($program['result']))
-                                        <strong class="openp-emphasis">{{ $program['result'] }}</strong>
+                                        <strong>{{ $program['result'] }}</strong>
                                     @endif
                                 </div>
                             </div>
@@ -190,46 +222,27 @@
                 </div>
             </section>
 
-            <section class="openp-section" id="structure">
-                <div class="openp-section__head openp-reveal">
-                    <span class="openp-kicker">{{ $pageData['process_eyebrow'] ?? 'Surec' }}</span>
+            <section class="dbp-section" id="surec">
+                <div class="dbp-section__head dbp-reveal">
+                    <span class="dbp-kicker">Surec</span>
                     <h2>{{ $pageData['process_title'] ?? '' }}</h2>
-                    <p>PDF akisinin ortak omurgasi: once analiz, sonra kisisel plan, ardindan surekli iletisim ve duzenli performans takibi.</p>
+                    <p>Tekerlegi yeniden icat etmene gerek yok. PDF'lerde anlatilan ortak omurga burada 4 net adima ayrildi.</p>
                 </div>
 
-                <div class="openp-process-grid">
+                <div class="dbp-step-grid">
                     @foreach ($steps as $step)
-                        <article class="openp-process-card openp-reveal">
-                            <div class="openp-process-card__index">0{{ $loop->iteration }}</div>
+                        <article class="dbp-step-card dbp-reveal">
+                            <div class="dbp-step-card__index">0{{ $loop->iteration }}</div>
+                            <span class="dbp-step-card__label">{{ $loop->iteration }}. adim</span>
                             <h3>{{ $step['title'] }}</h3>
                             <p>{{ $step['description'] }}</p>
                         </article>
                     @endforeach
                 </div>
 
-                <div class="openp-fit-grid">
-                    <article class="openp-fit-card openp-reveal">
-                        <span class="openp-chip">Kimler icin uygun</span>
-                        <ul class="openp-list">
-                            @foreach ($fitFor as $item)
-                                <li>{{ $item }}</li>
-                            @endforeach
-                        </ul>
-                    </article>
-
-                    <article class="openp-fit-card openp-reveal">
-                        <span class="openp-chip">Kimler icin uygun degil</span>
-                        <ul class="openp-list">
-                            @foreach ($fitNotFor as $item)
-                                <li>{{ $item }}</li>
-                            @endforeach
-                        </ul>
-                    </article>
-                </div>
-
-                <article class="openp-team-card openp-reveal">
-                    <span class="openp-kicker">Performans ekibi</span>
-                    <div class="openp-team-grid">
+                <article class="dbp-team-card dbp-reveal">
+                    <span class="dbp-kicker">Performans ekibi</span>
+                    <div class="dbp-team-grid">
                         @foreach ($teamRoles as $role)
                             <span>{{ $role }}</span>
                         @endforeach
@@ -237,84 +250,78 @@
                 </article>
             </section>
 
-            <section class="openp-section" id="videolar">
-                <div class="openp-section__head openp-reveal">
-                    <span class="openp-kicker">{{ $pageData['proof_eyebrow'] ?? 'Videolar' }}</span>
+            <section class="dbp-section" id="videolar">
+                <div class="dbp-section__head dbp-reveal">
+                    <span class="dbp-kicker">{{ $pageData['proof_eyebrow'] ?? 'Basin ve ogrenci videolari' }}</span>
                     <h2>{{ $pageData['proof_title'] ?? '' }}</h2>
                     <p>{{ $pageData['proof_lead'] ?? '' }}</p>
                 </div>
 
                 @if (!empty($featuredMedia))
-                    <article class="openp-media-feature openp-reveal">
-                        <div class="openp-media-feature__media">
+                    <article class="dbp-media-feature dbp-reveal">
+                        <div class="dbp-media-feature__media">
                             <video controls preload="metadata" playsinline @if (!empty($featuredMedia['poster_url'])) poster="{{ $featuredMedia['poster_url'] }}" @endif>
                                 <source src="{{ $featuredMedia['file_url'] }}" type="video/mp4">
                             </video>
                         </div>
-                        <div class="openp-media-feature__body">
-                            <span class="openp-chip">{{ $featuredMedia['category'] }}</span>
+                        <div class="dbp-media-feature__body">
+                            <span class="dbp-kicker">{{ $featuredMedia['category'] }}</span>
                             <h3>{{ $featuredMedia['title'] }}</h3>
                             <p>{{ $featuredMedia['description'] }}</p>
-                            <strong class="openp-emphasis">{{ $featuredMedia['duration'] }}</strong>
+                            <strong>{{ $featuredMedia['duration'] }}</strong>
                         </div>
                     </article>
                 @endif
 
-                <div class="openp-media-grid">
+                <div class="dbp-media-grid">
                     @foreach ($secondaryMedia as $media)
-                        <article class="openp-media-card openp-reveal">
-                            <div class="openp-media-card__mark"></div>
-                            <span class="openp-chip">{{ $media['category'] }}</span>
+                        <article class="dbp-media-card dbp-reveal">
+                            <span class="dbp-kicker">{{ $media['category'] }}</span>
                             <h3>{{ $media['title'] }}</h3>
                             <p>{{ $media['description'] }}</p>
-                            <a class="openp-inline-link" href="{{ $media['file_url'] }}" target="_blank" rel="noopener">Videoyu ac</a>
+                            <a href="{{ $media['file_url'] }}" target="_blank" rel="noopener">Videoyu ac</a>
                         </article>
                     @endforeach
                 </div>
             </section>
 
-            <section class="openp-cta openp-reveal" id="fiyat">
-                <div class="openp-cta__inner">
-                    <span class="openp-kicker">{{ $pageData['pricing_eyebrow'] ?? 'Fiyat' }}</span>
+            <section class="dbp-section" id="fiyat">
+                <div class="dbp-section__head dbp-reveal">
+                    <span class="dbp-kicker">{{ $pageData['pricing_eyebrow'] ?? 'Fiyat' }}</span>
                     <h2>{{ $pageData['pricing_title'] ?? '' }}</h2>
                     <p>{{ $pageData['pricing_lead'] ?? '' }}</p>
+                </div>
 
-                    <div class="openp-price-grid">
-                        @foreach ($packages as $package)
-                            <article class="openp-price-card">
-                                <span class="openp-chip">{{ $package['name'] }}</span>
-                                <h3>{{ $package['price'] }}</h3>
-                                <p>{{ $package['unit'] }}</p>
-                                <strong class="openp-emphasis">{{ $package['note'] }}</strong>
-                            </article>
+                <div class="dbp-price-grid">
+                    @foreach ($packages as $package)
+                        <article class="dbp-price-card dbp-reveal @if(!empty($package['featured'])) dbp-price-card--featured @endif">
+                            <span class="dbp-kicker">{{ $package['name'] }}</span>
+                            <h3>{{ $package['price'] }}</h3>
+                            <p>{{ $package['unit'] }}</p>
+                            <strong>{{ $package['note'] }}</strong>
+                        </article>
+                    @endforeach
+                </div>
+
+                @if (!empty($pricingNotes))
+                    <div class="dbp-note-grid">
+                        @foreach ($pricingNotes as $note)
+                            <div class="dbp-note-card dbp-reveal">{{ $note }}</div>
                         @endforeach
                     </div>
-
-                    @if (!empty($pricingNotes))
-                        <ul class="openp-list openp-list--notes">
-                            @foreach ($pricingNotes as $note)
-                                <li>{{ $note }}</li>
-                            @endforeach
-                        </ul>
-                    @endif
-
-                    <div class="openp-hero__actions">
-                        <a class="openp-button" href="{{ $applyUrl }}">Programa Basvur</a>
-                        <a class="openp-button openp-button--ghost" href="{{ $testUrl }}">Seviye Tespiti</a>
-                    </div>
-                </div>
+                @endif
             </section>
 
             @if (!empty($faqs))
-                <section class="openp-section" id="sss">
-                    <div class="openp-section__head openp-reveal">
-                        <span class="openp-kicker">SSS</span>
+                <section class="dbp-section" id="sss">
+                    <div class="dbp-section__head dbp-reveal">
+                        <span class="dbp-kicker">SSS</span>
                         <h2>Karar oncesi en cok sorulanlar</h2>
                     </div>
 
-                    <div class="openp-faq-grid">
+                    <div class="dbp-faq-grid">
                         @foreach ($faqs as $faq)
-                            <details class="openp-faq-item openp-reveal">
+                            <details class="dbp-faq-item dbp-reveal">
                                 <summary>{{ $faq['question'] }}</summary>
                                 <p>{{ $faq['answer'] }}</p>
                             </details>
@@ -323,16 +330,13 @@
                 </section>
             @endif
 
-            <section class="openp-cta openp-reveal">
-                <div class="openp-cta__inner">
-                    <span class="openp-kicker">Son adim</span>
-                    <h2>{{ $pageData['cta_title'] ?? '' }}</h2>
-                    <p>{{ $pageData['cta_text'] ?? '' }}</p>
-
-                    <div class="openp-hero__actions">
-                        <a class="openp-button" href="{{ $applyUrl }}">Programa Basvur</a>
-                        <a class="openp-button openp-button--ghost" href="{{ $testUrl }}">Seviye Tespiti</a>
-                    </div>
+            <section class="dbp-final-cta dbp-reveal">
+                <span class="dbp-kicker">Son adim</span>
+                <h2>{{ $pageData['cta_title'] ?? '' }}</h2>
+                <p>{{ $pageData['cta_text'] ?? '' }}</p>
+                <div class="dbp-actions">
+                    <a class="dbp-button" href="{{ $applyUrl }}">Programa Basvur</a>
+                    <a class="dbp-button dbp-button--ghost" href="{{ $testUrl }}">Seviye Tespiti</a>
                 </div>
             </section>
         </div>
@@ -342,261 +346,230 @@
 @push('styles')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        .openp-shell {
-            position: relative;
+        .dbp-shell {
             min-height: 100vh;
-            overflow: hidden;
-            padding: 24px 20px 80px;
+            padding: 22px 18px 80px;
             background:
-                radial-gradient(circle at 20% 0%, rgba(99, 102, 241, 0.22), transparent 24%),
-                radial-gradient(circle at 80% 10%, rgba(56, 189, 248, 0.12), transparent 18%),
-                linear-gradient(180deg, #070b14 0%, #0b1220 100%);
-            font-family: "Inter", sans-serif;
-            color: #edf2ff;
+                radial-gradient(circle at top left, rgba(90, 74, 56, 0.25), transparent 24%),
+                radial-gradient(circle at top right, rgba(120, 87, 52, 0.12), transparent 20%),
+                linear-gradient(180deg, #0c0a09 0%, #120f0d 100%);
+            color: #f4efe9;
+            font-family: "Manrope", sans-serif;
         }
 
-        .openp-noise {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            opacity: 0.08;
-            background-image:
-                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-            background-size: 64px 64px;
-            mask-image: radial-gradient(circle at center, black 30%, transparent 100%);
-        }
-
-        .openp-container {
-            position: relative;
-            z-index: 1;
+        .dbp-page {
             width: min(1180px, 100%);
             margin: 0 auto;
         }
 
-        .openp-topbar,
-        .openp-strip,
-        .openp-metrics,
-        .openp-feature-card,
-        .openp-program-card,
-        .openp-process-card,
-        .openp-fit-card,
-        .openp-team-card,
-        .openp-media-feature,
-        .openp-media-card,
-        .openp-cta,
-        .openp-visual-card,
-        .openp-price-card {
+        .dbp-topbar,
+        .dbp-strip,
+        .dbp-value-card,
+        .dbp-fit-card,
+        .dbp-resource-card,
+        .dbp-program-card,
+        .dbp-step-card,
+        .dbp-team-card,
+        .dbp-media-feature,
+        .dbp-media-card,
+        .dbp-price-card,
+        .dbp-note-card,
+        .dbp-faq-item,
+        .dbp-final-cta,
+        .dbp-hero-panel {
             border: 1px solid rgba(255, 255, 255, 0.08);
-            background: linear-gradient(180deg, rgba(17, 24, 39, 0.88) 0%, rgba(9, 14, 24, 0.92) 100%);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.28);
-            backdrop-filter: blur(14px);
+            background: linear-gradient(180deg, rgba(26, 20, 17, 0.96) 0%, rgba(14, 11, 10, 0.96) 100%);
+            box-shadow: 0 28px 80px rgba(0, 0, 0, 0.28);
         }
 
-        .openp-topbar {
+        .dbp-topbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 16px;
-            min-height: 78px;
+            min-height: 76px;
             padding: 14px 18px;
             border-radius: 22px;
         }
 
-        .openp-brand {
-            display: inline-flex;
-            align-items: center;
-            min-width: 120px;
-        }
-
-        .openp-brand img {
-            max-width: 122px;
-            max-height: 40px;
+        .dbp-brand img {
+            max-width: 128px;
+            max-height: 42px;
             object-fit: contain;
         }
 
-        .openp-nav,
-        .openp-actions,
-        .openp-hero__actions,
-        .openp-chip-row {
+        .dbp-nav,
+        .dbp-actions,
+        .dbp-chip-row {
             display: flex;
             align-items: center;
-            gap: 12px;
             flex-wrap: wrap;
+            gap: 12px;
         }
 
-        .openp-nav a,
-        .openp-inline-link {
-            color: rgba(237, 242, 255, 0.82);
+        .dbp-nav a {
+            color: rgba(244, 239, 233, 0.8);
             font-size: 14px;
             font-weight: 600;
         }
 
-        .openp-button {
+        .dbp-button {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             min-height: 46px;
             padding: 0 18px;
             border-radius: 999px;
-            background: linear-gradient(180deg, #6366f1 0%, #4f46e5 100%);
-            color: #ffffff;
+            background: linear-gradient(180deg, #e8b476 0%, #d18f47 100%);
+            color: #140f0b;
             font-size: 14px;
-            font-weight: 700;
+            font-weight: 800;
             border: 1px solid transparent;
-            transition: transform 180ms ease, box-shadow 180ms ease;
-            box-shadow: 0 18px 40px rgba(79, 70, 229, 0.28);
+            transition: transform 180ms ease;
         }
 
-        .openp-button:hover,
-        .openp-button:focus-visible,
-        .openp-inline-link:hover {
+        .dbp-button--ghost {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: #f4efe9;
+        }
+
+        .dbp-button:hover,
+        .dbp-button:focus-visible {
             transform: translateY(-1px);
         }
 
-        .openp-button--ghost {
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(255, 255, 255, 0.1);
-            box-shadow: none;
-            color: #eef2ff;
-        }
-
-        .openp-kicker,
-        .openp-chip {
+        .dbp-overline,
+        .dbp-kicker,
+        .dbp-chip,
+        .dbp-value-card__label,
+        .dbp-fit-card__title,
+        .dbp-step-card__label {
             display: inline-flex;
+            width: fit-content;
             align-items: center;
             min-height: 30px;
-            width: fit-content;
             padding: 0 12px;
             border-radius: 999px;
-            background: rgba(99, 102, 241, 0.12);
-            border: 1px solid rgba(99, 102, 241, 0.24);
-            color: #c7d2fe;
+            background: rgba(209, 143, 71, 0.12);
+            border: 1px solid rgba(209, 143, 71, 0.25);
+            color: #e6ba85;
             font-size: 12px;
             font-weight: 700;
             letter-spacing: 0.08em;
             text-transform: uppercase;
         }
 
-        .openp-hero {
+        .dbp-hero {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) minmax(320px, 0.92fr);
-            gap: 28px;
+            grid-template-columns: minmax(0, 1.02fr) minmax(340px, 0.98fr);
+            gap: 34px;
             align-items: center;
-            padding: 72px 0 36px;
+            padding: 84px 0 38px;
         }
 
-        .openp-hero__copy,
-        .openp-visual-card__body,
-        .openp-section__head,
-        .openp-feature-card,
-        .openp-program-card__body,
-        .openp-process-card,
-        .openp-fit-card,
-        .openp-team-card,
-        .openp-media-feature__body,
-        .openp-media-card,
-        .openp-price-card,
-        .openp-cta__inner {
+        .dbp-hero__copy,
+        .dbp-hero-panel__body,
+        .dbp-section__head,
+        .dbp-value-card,
+        .dbp-resource-card,
+        .dbp-program-card__body,
+        .dbp-step-card,
+        .dbp-team-card,
+        .dbp-media-feature__body,
+        .dbp-media-card,
+        .dbp-price-card,
+        .dbp-final-cta {
             display: grid;
             gap: 14px;
         }
 
-        .openp-hero h1,
-        .openp-section__head h2,
-        .openp-feature-card h3,
-        .openp-program-card__body h3,
-        .openp-process-card h3,
-        .openp-fit-card h3,
-        .openp-media-feature__body h3,
-        .openp-media-card h3,
-        .openp-price-card h3,
-        .openp-cta h2,
-        .openp-visual-card__body strong {
+        .dbp-hero h1,
+        .dbp-section__head h2,
+        .dbp-value-card h3,
+        .dbp-resource-card h3,
+        .dbp-program-card__body h3,
+        .dbp-step-card h3,
+        .dbp-media-feature__body h3,
+        .dbp-media-card h3,
+        .dbp-price-card h3,
+        .dbp-final-cta h2,
+        .dbp-hero-panel__body h2 {
             margin: 0;
             font-family: "Sora", sans-serif;
             color: #ffffff;
             text-wrap: balance;
         }
 
-        .openp-hero h1 {
-            margin-top: 4px;
-            font-size: clamp(40px, 5vw, 66px);
-            line-height: 1;
-            letter-spacing: -0.06em;
-            background: linear-gradient(90deg, #f8fafc 0%, #c7d2fe 45%, #e2e8f0 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+        .dbp-hero h1 {
+            font-size: clamp(40px, 5vw, 68px);
+            line-height: 0.98;
+            letter-spacing: -0.05em;
         }
 
-        .openp-hero p,
-        .openp-section__head p,
-        .openp-feature-card p,
-        .openp-program-card__body p,
-        .openp-process-card p,
-        .openp-media-feature__body p,
-        .openp-media-card p,
-        .openp-price-card p,
-        .openp-visual-card__body p,
-        .openp-list li,
-        .openp-strip span,
-        .openp-team-grid span,
-        .openp-visual-card__meta span {
+        .dbp-hero p,
+        .dbp-section__head p,
+        .dbp-value-card p,
+        .dbp-resource-card li,
+        .dbp-program-card__body p,
+        .dbp-program-card__body li,
+        .dbp-step-card p,
+        .dbp-media-feature__body p,
+        .dbp-media-card p,
+        .dbp-price-card p,
+        .dbp-note-card,
+        .dbp-faq-item p,
+        .dbp-fit-card li,
+        .dbp-strip span,
+        .dbp-team-grid span,
+        .dbp-hero-panel__body p,
+        .dbp-hero-panel__meta span {
             margin: 0;
-            color: rgba(199, 210, 254, 0.72);
+            color: rgba(244, 239, 233, 0.72);
             line-height: 1.75;
         }
 
-        .openp-visual-card {
+        .dbp-hero-panel {
             overflow: hidden;
-            border-radius: 26px;
+            border-radius: 28px;
         }
 
-        .openp-visual-card__media {
+        .dbp-hero-panel__media,
+        .dbp-program-card__media {
+            background: linear-gradient(145deg, rgba(41, 30, 25, 0.98), rgba(18, 14, 12, 1));
+        }
+
+        .dbp-hero-panel__media {
             aspect-ratio: 16 / 10;
-            background: radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.2), transparent 30%), linear-gradient(145deg, rgba(22, 29, 49, 0.96), rgba(9, 14, 24, 1));
         }
 
-        .openp-visual-card__media img,
-        .openp-program-card__media img,
-        .openp-media-feature__media video {
+        .dbp-hero-panel__media img,
+        .dbp-program-card__media img,
+        .dbp-media-feature__media video {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
         }
 
-        .openp-visual-card__fallback {
-            width: 100%;
-            height: 100%;
-            display: grid;
-            place-items: center;
-            font-family: "Sora", sans-serif;
-            font-size: clamp(64px, 10vw, 104px);
-            font-weight: 800;
-            color: #ffffff;
-        }
-
-        .openp-visual-card__body,
-        .openp-program-card__body,
-        .openp-media-feature__body,
-        .openp-price-card {
+        .dbp-hero-panel__body,
+        .dbp-program-card__body,
+        .dbp-media-feature__body,
+        .dbp-price-card {
             padding: 22px;
         }
 
-        .openp-visual-card__meta,
-        .openp-program-card__meta {
+        .dbp-hero-panel__meta,
+        .dbp-program-card__meta {
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
         }
 
-        .openp-strip {
-            margin-top: 12px;
+        .dbp-strip {
             padding: 16px 18px;
             border-radius: 20px;
             display: flex;
@@ -604,105 +577,109 @@
             gap: 12px 18px;
         }
 
-        .openp-metrics,
-        .openp-feature-grid,
-        .openp-program-grid,
-        .openp-process-grid,
-        .openp-fit-grid,
-        .openp-media-grid,
-        .openp-price-grid,
-        .openp-faq-grid {
+        .dbp-section {
+            padding-top: 100px;
+            display: grid;
+            gap: 28px;
+        }
+
+        .dbp-value-grid,
+        .dbp-resource-grid,
+        .dbp-program-grid,
+        .dbp-step-grid,
+        .dbp-media-grid,
+        .dbp-price-grid,
+        .dbp-note-grid,
+        .dbp-faq-grid {
             display: grid;
             gap: 18px;
         }
 
-        .openp-metrics {
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            padding: 18px;
-            border-radius: 22px;
-            margin-top: 18px;
+        .dbp-value-grid,
+        .dbp-resource-grid,
+        .dbp-price-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
         }
 
-        .openp-metric {
-            min-height: 110px;
-            border-radius: 18px;
-            padding: 18px;
-            background: rgba(255, 255, 255, 0.03);
+        .dbp-fit-layout,
+        .dbp-media-grid {
             display: grid;
-            align-content: end;
-            gap: 8px;
-        }
-
-        .openp-metric strong,
-        .openp-process-card__index {
-            font-family: "Sora", sans-serif;
-            color: #ffffff;
-            font-size: 30px;
-        }
-
-        .openp-section {
-            padding-top: 92px;
-            display: grid;
-            gap: 26px;
-        }
-
-        .openp-feature-grid,
-        .openp-process-grid,
-        .openp-fit-grid,
-        .openp-media-grid,
-        .openp-price-grid,
-        .openp-faq-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
         }
 
-        .openp-program-grid {
+        .dbp-program-grid,
+        .dbp-step-grid,
+        .dbp-note-grid,
+        .dbp-faq-grid {
             grid-template-columns: 1fr;
         }
 
-        .openp-feature-card,
-        .openp-process-card,
-        .openp-fit-card,
-        .openp-team-card,
-        .openp-media-card,
-        .openp-price-card,
-        .openp-faq-item {
-            min-height: 100%;
+        .dbp-fit-card,
+        .dbp-value-card,
+        .dbp-resource-card,
+        .dbp-step-card,
+        .dbp-media-card,
+        .dbp-note-card,
+        .dbp-faq-item {
             border-radius: 24px;
             padding: 24px;
         }
 
-        .openp-program-card {
-            overflow: hidden;
-            border-radius: 24px;
-            display: grid;
-            grid-template-columns: minmax(260px, 0.82fr) minmax(0, 1.18fr);
-        }
-
-        .openp-program-card__media {
-            min-height: 240px;
-            background: linear-gradient(145deg, rgba(28, 41, 69, 0.96), rgba(13, 20, 32, 1));
-        }
-
-        .openp-list {
+        .dbp-fit-card ul,
+        .dbp-resource-card ul,
+        .dbp-program-card__body ul {
             margin: 0;
             padding-left: 18px;
             display: grid;
             gap: 8px;
         }
 
-        .openp-emphasis {
+        .dbp-fit-card--positive {
+            background: linear-gradient(180deg, rgba(26, 20, 17, 0.96) 0%, rgba(18, 15, 13, 0.96) 100%);
+        }
+
+        .dbp-program-card {
+            overflow: hidden;
+            border-radius: 24px;
+            display: grid;
+            grid-template-columns: minmax(260px, 0.82fr) minmax(0, 1.18fr);
+        }
+
+        .dbp-program-card__media {
+            min-height: 280px;
+        }
+
+        .dbp-program-card__meta strong,
+        .dbp-media-feature__body strong,
+        .dbp-price-card strong {
             color: #ffffff;
             font-size: 14px;
             font-weight: 700;
         }
 
-        .openp-team-grid {
+        .dbp-step-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        .dbp-step-card__index {
+            font-family: "Sora", sans-serif;
+            color: #ffffff;
+            font-size: 28px;
+        }
+
+        .dbp-team-card {
+            border-radius: 24px;
+            padding: 24px;
+        }
+
+        .dbp-team-grid {
             display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 12px;
         }
 
-        .openp-team-grid span {
+        .dbp-team-grid span {
             display: inline-flex;
             align-items: center;
             min-height: 46px;
@@ -711,39 +688,38 @@
             background: rgba(255, 255, 255, 0.04);
         }
 
-        .openp-media-feature {
+        .dbp-media-feature {
             overflow: hidden;
             border-radius: 24px;
             display: grid;
             grid-template-columns: minmax(0, 1.12fr) minmax(300px, 0.88fr);
         }
 
-        .openp-media-feature__media {
+        .dbp-media-feature__media {
             min-height: 360px;
             background: #0d1524;
         }
 
-        .openp-media-card__mark,
-        .openp-result-card__mark {
-            width: 42px;
-            height: 42px;
-            border-radius: 14px;
-            background: linear-gradient(180deg, rgba(99, 102, 241, 0.34), rgba(59, 130, 246, 0.16));
-            border: 1px solid rgba(99, 102, 241, 0.3);
+        .dbp-media-card a {
+            color: #e6ba85;
+            font-size: 14px;
+            font-weight: 700;
         }
 
-        .openp-cta {
-            margin-top: 96px;
-            border-radius: 28px;
-            padding: 32px;
+        .dbp-price-card {
+            min-height: 100%;
+            border-radius: 24px;
         }
 
-        .openp-list--notes {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 10px 18px;
+        .dbp-price-card--featured {
+            background: linear-gradient(180deg, rgba(64, 38, 16, 0.98) 0%, rgba(24, 16, 10, 0.98) 100%);
         }
 
-        .openp-faq-item summary {
+        .dbp-note-card {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .dbp-faq-item summary {
             cursor: pointer;
             color: #ffffff;
             font-family: "Sora", sans-serif;
@@ -752,65 +728,65 @@
             list-style: none;
         }
 
-        .openp-faq-item summary::-webkit-details-marker {
+        .dbp-faq-item summary::-webkit-details-marker {
             display: none;
         }
 
-        .openp-reveal {
+        .dbp-final-cta {
+            margin-top: 100px;
+            border-radius: 28px;
+            padding: 32px;
+        }
+
+        .dbp-reveal {
             opacity: 0;
             transform: translateY(24px);
             transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        .openp-reveal.is-visible {
+        .dbp-reveal.is-visible {
             opacity: 1;
             transform: none;
         }
 
-        @media (max-width: 960px) {
-            .openp-hero,
-            .openp-program-card,
-            .openp-media-feature,
-            .openp-feature-grid,
-            .openp-process-grid,
-            .openp-fit-grid,
-            .openp-media-grid,
-            .openp-price-grid,
-            .openp-faq-grid,
-            .openp-list--notes {
+        @media (max-width: 1024px) {
+            .dbp-hero,
+            .dbp-program-card,
+            .dbp-media-feature,
+            .dbp-value-grid,
+            .dbp-resource-grid,
+            .dbp-step-grid,
+            .dbp-price-grid,
+            .dbp-team-grid {
                 grid-template-columns: 1fr;
             }
 
-            .openp-metrics {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
+            .dbp-fit-layout,
+            .dbp-media-grid {
+                grid-template-columns: 1fr;
             }
         }
 
         @media (max-width: 760px) {
-            .openp-shell {
+            .dbp-shell {
                 padding: 14px 12px 56px;
             }
 
-            .openp-topbar {
+            .dbp-topbar {
                 flex-direction: column;
                 align-items: stretch;
             }
 
-            .openp-nav,
-            .openp-actions {
+            .dbp-nav,
+            .dbp-actions {
                 justify-content: flex-start;
             }
 
-            .openp-hero {
-                padding: 48px 0 24px;
+            .dbp-hero {
+                padding: 48px 0 18px;
             }
 
-            .openp-metrics,
-            .openp-team-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .openp-section {
+            .dbp-section {
                 padding-top: 72px;
             }
         }
@@ -820,7 +796,7 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            var targets = document.querySelectorAll('.openp-reveal');
+            var targets = document.querySelectorAll('.dbp-reveal');
             if (!targets.length) return;
 
             if (!('IntersectionObserver' in window)) {
@@ -839,7 +815,7 @@
                 });
             }, {
                 threshold: 0.14,
-                rootMargin: '0px 0px -50px 0px'
+                rootMargin: '0px 0px -48px 0px'
             });
 
             targets.forEach(function (element, index) {
