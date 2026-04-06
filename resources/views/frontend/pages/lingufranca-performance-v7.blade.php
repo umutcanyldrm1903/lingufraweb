@@ -24,7 +24,8 @@
     $pricingNotes = array_slice($pageData['pricing_notes'] ?? [], 0, 4);
     $faqs = array_slice($pageData['faq'] ?? [], 0, 4);
     $programs = array_map(function ($program) {
-        $program['bullets'] = array_slice($program['bullets'] ?? [], 0, 2);
+        $program['bullets'] = array_slice($program['bullets'] ?? [], 0, 1);
+        $program['teaser'] = $program['result'] ?? ($program['subtitle'] ?? '');
         return $program;
     }, $downloads ?? []);
     $primaryProgram = $programs[0] ?? null;
@@ -127,19 +128,20 @@
                             @elseif (!empty($pageData['hero_primary_visual']))
                                 <img src="{{ $pageData['hero_primary_visual'] }}" alt="{{ $siteName }}" />
                             @endif
+                            <span class="dbp-hero-panel__stamp">Featured Flow</span>
                         </div>
 
                         <div class="dbp-hero-panel__body">
                             <span class="dbp-kicker">{{ $primaryProgram['label'] ?? 'Program' }}</span>
                             <h2>{{ $primaryProgram['title'] ?? $siteName }}</h2>
-                            <p>{{ $primaryProgram['result'] ?? ($primaryProgram['subtitle'] ?? '') }}</p>
+                            <p>{{ $primaryProgram['teaser'] ?? ($primaryProgram['subtitle'] ?? '') }}</p>
 
                             <div class="dbp-hero-panel__meta">
                                 @if (!empty($primaryProgram['meta']))
                                     <span>{{ $primaryProgram['meta'] }}</span>
                                 @endif
-                                @if (!empty($primaryProgram['result']))
-                                    <span>{{ $primaryProgram['result'] }}</span>
+                                @if (!empty($heroBadges[0]))
+                                    <span>{{ $heroBadges[0] }}</span>
                                 @endif
                             </div>
                         </div>
@@ -235,7 +237,7 @@
                             <div class="dbp-program-card__body">
                                 <span class="dbp-kicker">{{ $program['label'] }}</span>
                                 <h3>{{ $program['title'] }}</h3>
-                                <p>{{ $program['subtitle'] }}</p>
+                                <p>{{ $program['teaser'] }}</p>
                                 <ul>
                                     @foreach ($program['bullets'] as $bullet)
                                         <li>{{ $bullet }}</li>
@@ -245,8 +247,8 @@
                                     @if (!empty($program['meta']))
                                         <span>{{ $program['meta'] }}</span>
                                     @endif
-                                    @if (!empty($program['result']))
-                                        <strong>{{ $program['result'] }}</strong>
+                                    @if (!empty($program['subtitle']))
+                                        <strong>{{ \Illuminate\Support\Str::limit($program['subtitle'], 58) }}</strong>
                                     @endif
                                 </div>
                             </div>
@@ -597,20 +599,21 @@
 
         .dbp-hero-panel {
             overflow: hidden;
-            border-radius: 30px;
-            transform: rotate(-2deg);
+            border-radius: 34px;
+            transform: rotate(-1.2deg);
             position: relative;
+            min-height: 620px;
         }
 
         .dbp-hero-panel::after {
             content: "";
             position: absolute;
-            inset: auto 22px 18px auto;
-            width: 140px;
-            height: 140px;
-            border-radius: 24px;
-            background: linear-gradient(180deg, rgba(96, 89, 247, 0.24), rgba(6, 35, 91, 0.08));
-            filter: blur(6px);
+            inset: auto -24px -36px auto;
+            width: 220px;
+            height: 220px;
+            border-radius: 999px;
+            background: radial-gradient(circle, rgba(96, 89, 247, 0.28), rgba(6, 35, 91, 0));
+            filter: blur(2px);
             pointer-events: none;
         }
 
@@ -622,7 +625,8 @@
         }
 
         .dbp-hero-panel__media {
-            aspect-ratio: 16 / 10;
+            position: absolute;
+            inset: 0;
         }
 
         .dbp-hero-panel__media img,
@@ -639,6 +643,32 @@
         .dbp-media-feature__body,
         .dbp-price-card {
             padding: 24px;
+        }
+
+        .dbp-hero-panel__media::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(180deg, rgba(4, 15, 36, 0.1) 0%, rgba(4, 15, 36, 0.1) 28%, rgba(4, 15, 36, 0.92) 100%);
+        }
+
+        .dbp-hero-panel__stamp {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 2;
+            display: inline-flex;
+            align-items: center;
+            min-height: 32px;
+            padding: 0 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #06235b;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
         }
 
         .dbp-hero__proofline {
@@ -670,6 +700,25 @@
         .dbp-hero__media {
             display: grid;
             gap: 18px;
+        }
+
+        .dbp-hero-panel__body {
+            position: absolute;
+            inset: auto 0 0 0;
+            z-index: 2;
+            padding: 32px;
+            gap: 12px;
+            background: linear-gradient(180deg, rgba(4, 15, 36, 0) 0%, rgba(4, 15, 36, 0.28) 22%, rgba(4, 15, 36, 0.92) 100%);
+        }
+
+        .dbp-hero-panel__body h2 {
+            font-size: clamp(30px, 3vw, 42px);
+            line-height: 1.02;
+            max-width: 10ch;
+        }
+
+        .dbp-hero-panel__body p {
+            max-width: 28ch;
         }
 
         .dbp-hero-notes {
@@ -788,11 +837,19 @@
             overflow: hidden;
             border-radius: 26px;
             display: grid;
-            grid-template-columns: minmax(260px, 0.82fr) minmax(0, 1.18fr);
+            grid-template-columns: minmax(280px, 0.92fr) minmax(0, 1.08fr);
         }
 
         .dbp-program-card__media {
-            min-height: 300px;
+            min-height: 340px;
+            position: relative;
+        }
+
+        .dbp-program-card__media::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(4, 15, 36, 0.04) 0%, rgba(4, 15, 36, 0.52) 100%);
         }
 
         .dbp-program-card__meta strong,
@@ -808,6 +865,59 @@
         .dbp-media-feature__body h3 {
             font-size: clamp(26px, 2.6vw, 36px);
             line-height: 1.12;
+        }
+
+        .dbp-program-card__body {
+            padding: 30px;
+            gap: 12px;
+            align-content: center;
+        }
+
+        .dbp-program-card__body p {
+            color: rgba(255, 255, 255, 0.94);
+            font-size: 20px;
+            line-height: 1.35;
+            max-width: 26ch;
+        }
+
+        .dbp-program-card__body ul {
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .dbp-program-card__body li {
+            position: relative;
+            padding-left: 18px;
+        }
+
+        .dbp-program-card__body li::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 10px;
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: #6059f7;
+            box-shadow: 0 0 0 6px rgba(96, 89, 247, 0.12);
+        }
+
+        .dbp-program-card__meta {
+            margin-top: 8px;
+            align-items: center;
+        }
+
+        .dbp-program-card__meta span,
+        .dbp-program-card__meta strong {
+            display: inline-flex;
+            align-items: center;
+            min-height: 34px;
+            padding: 0 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 13px;
+            font-weight: 700;
         }
 
         .dbp-step-grid {
@@ -987,6 +1097,11 @@
 
             .dbp-hero-notes {
                 grid-template-columns: 1fr;
+            }
+
+            .dbp-hero-panel {
+                min-height: 520px;
+                transform: none;
             }
         }
 
