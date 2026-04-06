@@ -109,19 +109,11 @@
                         </article>
                     @endif
 
-                    <div class="lfps-hero-side-grid">
+                    <div class="lfps-hero-caption">
                         <article class="lfps-quote-card">
                             <span class="lfps-section-tag">{{ $pageData['hero_quote_title'] }}</span>
                             <p>{{ $pageData['hero_quote'] }}</p>
                         </article>
-
-                        @foreach ($secondaryPrograms as $program)
-                            <article class="lfps-mini-program">
-                                <span class="lfps-stack-card__label">{{ $program['label'] }}</span>
-                                <h3>{{ $program['title'] }}</h3>
-                                <p>{{ $program['result'] }}</p>
-                            </article>
-                        @endforeach
                     </div>
                 </div>
             </section>
@@ -291,6 +283,7 @@
                 </div>
 
                 @if (!empty($featuredMedia))
+                    @php($secondaryVideoItems = array_slice($remainingMedia, 0, 6))
                     <div class="lfps-video-stage">
                         <article class="lfps-video-card lfps-video-card--feature">
                             <div class="lfps-video-card__media">
@@ -308,7 +301,7 @@
                         </article>
 
                         <div class="lfps-video-grid">
-                            @foreach ($remainingMedia as $item)
+                            @foreach ($secondaryVideoItems as $item)
                                 <article class="lfps-video-card">
                                     <div class="lfps-video-card__media">
                                         <video controls preload="metadata" playsinline @if (!empty($item['poster_url'])) poster="{{ $item['poster_url'] }}" @endif>
@@ -1864,12 +1857,180 @@
             color: #ffffff !important;
         }
 
+        .lfps-hero {
+            grid-template-columns: minmax(0, 1.04fr) minmax(360px, 0.96fr);
+            gap: 34px;
+            min-height: 78vh;
+        }
+
+        .lfps-hero__copy {
+            max-width: 680px;
+        }
+
+        .lfps-hero__visual {
+            display: grid;
+            gap: 18px;
+            align-content: start;
+        }
+
+        .lfps-hero-program {
+            grid-template-columns: 1fr;
+            min-height: 0;
+            border-radius: 32px;
+        }
+
+        .lfps-hero-program__media {
+            min-height: 280px;
+        }
+
+        .lfps-hero-program__body {
+            padding: 30px 30px 32px;
+        }
+
+        .lfps-hero-caption {
+            display: grid;
+        }
+
+        .lfps-quote-card {
+            min-height: 0;
+            padding: 22px 24px;
+        }
+
+        .lfps-quote-card p {
+            font-size: 15px;
+            line-height: 1.75;
+        }
+
+        .lfps-program-stage,
+        .lfps-program-showcase {
+            display: grid;
+            gap: 22px;
+        }
+
+        .lfps-resource-grid {
+            gap: 18px;
+        }
+
+        .lfps-resource-card,
+        .lfps-program-panel {
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            background:
+                linear-gradient(180deg, rgba(18, 28, 50, 0.98) 0%, rgba(13, 22, 40, 0.98) 100%) !important;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        .lfps-resource-card {
+            border-radius: 26px;
+        }
+
+        .lfps-program-panel {
+            grid-template-columns: minmax(260px, 0.78fr) minmax(0, 1.22fr);
+            min-height: 300px;
+            border-radius: 30px;
+        }
+
+        .lfps-program-panel__media {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, rgba(229, 236, 255, 0.88) 100%);
+        }
+
+        .lfps-program-panel__body {
+            padding: 30px 30px 28px;
+            gap: 12px;
+        }
+
+        .lfps-program-panel__body h3 {
+            font-size: clamp(24px, 2.3vw, 34px);
+        }
+
+        .lfps-program-panel__body ul {
+            display: grid;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .lfps-program-panel__footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+        }
+
+        .lfps-video-stage {
+            gap: 24px;
+        }
+
+        .lfps-video-card,
+        .lfps-video-card--feature {
+            border-radius: 30px;
+        }
+
+        .lfps-video-card--feature {
+            grid-template-columns: minmax(0, 1.22fr) minmax(320px, 0.78fr);
+            min-height: 500px;
+        }
+
+        .lfps-video-card--feature .lfps-video-card__media video {
+            aspect-ratio: 16 / 10;
+        }
+
+        .lfps-video-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .lfps-video-card:not(.lfps-video-card--feature) {
+            display: grid;
+            grid-template-rows: auto 1fr;
+        }
+
+        .lfps-video-card:not(.lfps-video-card--feature) .lfps-video-card__media video {
+            aspect-ratio: 16 / 10;
+        }
+
+        .lfps-video-card:not(.lfps-video-card--feature) .lfps-video-card__body {
+            padding: 20px 20px 22px;
+        }
+
+        .lfps-video-card:not(.lfps-video-card--feature) h3 {
+            font-size: 20px;
+            line-height: 1.28;
+        }
+
+        .lfps-video-card__meta {
+            display: inline-flex;
+            margin-bottom: 10px;
+        }
+
         .lfps-mini-card,
         .lfps-mini-card strong,
         .lfps-mini-card ul,
         .lfps-mini-card li,
         .lfps-reason-list span {
             color: #0e2450 !important;
+        }
+
+        @media (max-width: 1180px) {
+            .lfps-hero,
+            .lfps-video-card--feature,
+            .lfps-program-panel {
+                grid-template-columns: 1fr;
+            }
+
+            .lfps-video-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 760px) {
+            .lfps-hero-program__body,
+            .lfps-program-panel__body,
+            .lfps-video-card:not(.lfps-video-card--feature) .lfps-video-card__body {
+                padding: 22px;
+            }
+
+            .lfps-video-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 @endpush
