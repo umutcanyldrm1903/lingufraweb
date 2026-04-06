@@ -75,6 +75,14 @@
                     <h1>{{ $pageData['title'] ?? '' }}</h1>
                     <p>{{ $pageData['lead'] ?? '' }}</p>
 
+                    @if (!empty($pressBadges))
+                        <div class="dbp-hero__proofline">
+                            @foreach (array_slice($pressBadges, 0, 3) as $badge)
+                                <span>{{ $badge }}</span>
+                            @endforeach
+                        </div>
+                    @endif
+
                     <div class="dbp-actions">
                         <a class="dbp-button" href="{{ $applyUrl }}">Programa Basvur</a>
                         <a class="dbp-button dbp-button--ghost" href="#videolar">Video Kayitlarini Incele</a>
@@ -114,6 +122,17 @@
                             </div>
                         </div>
                     </article>
+
+                    @if (!empty($heroStats))
+                        <div class="dbp-hero-notes">
+                            @foreach (array_slice($heroStats, 0, 3) as $metric)
+                                <article class="dbp-hero-note">
+                                    <strong>{{ $metric['value'] }}</strong>
+                                    <span>{{ $metric['label'] }}</span>
+                                </article>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
             </section>
 
@@ -276,6 +295,13 @@
                 <div class="dbp-media-grid">
                     @foreach ($secondaryMedia as $media)
                         <article class="dbp-media-card dbp-reveal">
+                            <div class="dbp-media-card__thumb">
+                                @if (!empty($media['poster_url']))
+                                    <img src="{{ $media['poster_url'] }}" alt="{{ $media['title'] }}" />
+                                @else
+                                    <span>{{ $media['category'] }}</span>
+                                @endif
+                            </div>
                             <span class="dbp-kicker">{{ $media['category'] }}</span>
                             <h3>{{ $media['title'] }}</h3>
                             <p>{{ $media['description'] }}</p>
@@ -295,10 +321,17 @@
                 <div class="dbp-price-grid">
                     @foreach ($packages as $package)
                         <article class="dbp-price-card dbp-reveal @if(!empty($package['featured'])) dbp-price-card--featured @endif">
+                            @if (!empty($package['featured']))
+                                <span class="dbp-price-card__badge">Onerilen paket</span>
+                            @endif
                             <span class="dbp-kicker">{{ $package['name'] }}</span>
                             <h3>{{ $package['price'] }}</h3>
                             <p>{{ $package['unit'] }}</p>
                             <strong>{{ $package['note'] }}</strong>
+                            <div class="dbp-price-card__actions">
+                                <a class="dbp-button" href="{{ $applyUrl }}">Basvur</a>
+                                <a class="dbp-button dbp-button--ghost" href="{{ $testUrl }}">Seviye Tespiti</a>
+                            </div>
                         </article>
                     @endforeach
                 </div>
@@ -471,7 +504,19 @@
             grid-template-columns: minmax(0, 1.02fr) minmax(340px, 0.98fr);
             gap: 42px;
             align-items: center;
-            padding: 88px 0 54px;
+            padding: 96px 0 62px;
+            position: relative;
+        }
+
+        .dbp-hero::before {
+            content: "";
+            position: absolute;
+            inset: 8% 0 auto 42%;
+            height: 320px;
+            border-radius: 999px;
+            background: radial-gradient(circle, rgba(96, 89, 247, 0.22) 0%, rgba(96, 89, 247, 0) 70%);
+            filter: blur(20px);
+            pointer-events: none;
         }
 
         .dbp-hero__copy,
@@ -511,6 +556,7 @@
             font-size: clamp(42px, 5.2vw, 72px);
             line-height: 0.98;
             letter-spacing: -0.05em;
+            max-width: 12ch;
         }
 
         .dbp-hero p,
@@ -538,6 +584,20 @@
         .dbp-hero-panel {
             overflow: hidden;
             border-radius: 30px;
+            transform: rotate(-2deg);
+            position: relative;
+        }
+
+        .dbp-hero-panel::after {
+            content: "";
+            position: absolute;
+            inset: auto 22px 18px auto;
+            width: 140px;
+            height: 140px;
+            border-radius: 24px;
+            background: linear-gradient(180deg, rgba(96, 89, 247, 0.24), rgba(6, 35, 91, 0.08));
+            filter: blur(6px);
+            pointer-events: none;
         }
 
         .dbp-hero-panel__media,
@@ -567,11 +627,66 @@
             padding: 24px;
         }
 
+        .dbp-hero__proofline {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .dbp-hero__proofline span {
+            display: inline-flex;
+            align-items: center;
+            min-height: 34px;
+            padding: 0 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(238, 243, 255, 0.82);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
         .dbp-hero-panel__meta,
         .dbp-program-card__meta {
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
+        }
+
+        .dbp-hero__media {
+            display: grid;
+            gap: 18px;
+        }
+
+        .dbp-hero-notes {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .dbp-hero-note {
+            min-height: 96px;
+            border-radius: 20px;
+            padding: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: linear-gradient(180deg, rgba(13, 31, 77, 0.96) 0%, rgba(8, 24, 57, 0.96) 100%);
+            box-shadow: 0 20px 50px rgba(1, 9, 24, 0.22);
+            display: grid;
+            align-content: end;
+            gap: 6px;
+        }
+
+        .dbp-hero-note strong {
+            font-family: "Sora", sans-serif;
+            font-size: 26px;
+            color: #ffffff;
+        }
+
+        .dbp-hero-note span {
+            color: rgba(226, 235, 255, 0.72);
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.45;
         }
 
         .dbp-strip {
@@ -721,11 +836,42 @@
             border-radius: 26px;
             display: grid;
             grid-template-columns: minmax(0, 1.12fr) minmax(300px, 0.88fr);
+            min-height: 440px;
         }
 
         .dbp-media-feature__media {
-            min-height: 360px;
-            background: #0d1524;
+            min-height: 420px;
+            background:
+                radial-gradient(circle at 24% 24%, rgba(96, 89, 247, 0.18), transparent 24%),
+                #0d1524;
+        }
+
+        .dbp-media-card {
+            overflow: hidden;
+            gap: 14px;
+        }
+
+        .dbp-media-card__thumb {
+            aspect-ratio: 16 / 10;
+            border-radius: 18px;
+            overflow: hidden;
+            background: linear-gradient(145deg, rgba(13, 31, 77, 0.96), rgba(8, 24, 57, 0.96));
+            display: grid;
+            place-items: center;
+        }
+
+        .dbp-media-card__thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .dbp-media-card__thumb span {
+            color: rgba(238, 243, 255, 0.8);
+            font-family: "Sora", sans-serif;
+            font-size: 14px;
+            font-weight: 700;
         }
 
         .dbp-media-card a {
@@ -739,6 +885,8 @@
             border-radius: 26px;
             padding: 28px;
             gap: 16px;
+            position: relative;
+            overflow: hidden;
         }
 
         .dbp-price-card--featured {
@@ -749,6 +897,30 @@
 
         .dbp-price-card h3 {
             letter-spacing: -0.03em;
+            font-size: clamp(30px, 3vw, 44px);
+            line-height: 1.04;
+        }
+
+        .dbp-price-card__badge {
+            display: inline-flex;
+            align-items: center;
+            width: fit-content;
+            min-height: 30px;
+            padding: 0 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.16);
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .dbp-price-card__actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: auto;
         }
 
         .dbp-note-card {
@@ -799,6 +971,10 @@
 
             .dbp-fit-layout,
             .dbp-media-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dbp-hero-notes {
                 grid-template-columns: 1fr;
             }
         }
