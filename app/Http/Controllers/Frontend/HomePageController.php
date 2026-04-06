@@ -311,7 +311,7 @@ class HomePageController extends Controller {
         $pageData['hero_tertiary_visual'] = $this->linguFrancaPerformanceAssetUrl('pte-cover');
         $pageData['meta_image_url'] = $pageData['hero_primary_visual'] ?: $pageData['hero_secondary_visual'];
 
-        return view('frontend.pages.lingufranca-performance-v5', compact('pageData', 'downloads', 'mediaLibrary'));
+        return view('frontend.pages.lingufranca-performance-v6', compact('pageData', 'downloads', 'mediaLibrary'));
     }
 
     public function linguFrancaPerformanceAsset(string $asset) {
