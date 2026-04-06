@@ -1863,6 +1863,14 @@
         .lfps-page label {
             color: #ffffff !important;
         }
+
+        .lfps-mini-card,
+        .lfps-mini-card strong,
+        .lfps-mini-card ul,
+        .lfps-mini-card li,
+        .lfps-reason-list span {
+            color: #0e2450 !important;
+        }
     </style>
 @endpush
 
