@@ -8,21 +8,28 @@
     $homeUrl = route('home');
 
     $topLinks = $pageData['top_links'] ?? [];
-    $heroBadges = $pageData['hero_badges'] ?? [];
+    $heroBadges = array_slice($pageData['hero_badges'] ?? [], 0, 3);
     $heroStats = $pageData['hero_stats'] ?? [];
-    $manifestoPoints = $pageData['manifesto_points'] ?? [];
-    $resourceColumns = $pageData['resource_columns'] ?? [];
-    $fitFor = $pageData['fit_for'] ?? [];
-    $fitNotFor = $pageData['fit_not_for'] ?? [];
-    $steps = $pageData['steps'] ?? [];
-    $packages = $pageData['packages'] ?? [];
-    $pricingNotes = $pageData['pricing_notes'] ?? [];
-    $faqs = $pageData['faq'] ?? [];
-    $pressBadges = $pageData['press_badges'] ?? [];
-    $primaryProgram = $downloads[0] ?? null;
-    $programs = $downloads ?? [];
+    $heroNotes = array_slice($heroStats, 0, 2);
+    $proofBadges = array_slice($pageData['press_badges'] ?? [], 0, 3);
+    $manifestoPoints = array_slice($pageData['manifesto_points'] ?? [], 0, 3);
+    $resourceColumns = array_map(function ($column) {
+        $column['items'] = array_slice($column['items'] ?? [], 0, 3);
+        return $column;
+    }, array_slice($pageData['resource_columns'] ?? [], 0, 2));
+    $fitFor = array_slice($pageData['fit_for'] ?? [], 0, 4);
+    $fitNotFor = array_slice($pageData['fit_not_for'] ?? [], 0, 4);
+    $steps = array_slice($pageData['steps'] ?? [], 0, 4);
+    $packages = array_slice($pageData['packages'] ?? [], 0, 2);
+    $pricingNotes = array_slice($pageData['pricing_notes'] ?? [], 0, 4);
+    $faqs = array_slice($pageData['faq'] ?? [], 0, 4);
+    $programs = array_map(function ($program) {
+        $program['bullets'] = array_slice($program['bullets'] ?? [], 0, 2);
+        return $program;
+    }, $downloads ?? []);
+    $primaryProgram = $programs[0] ?? null;
     $featuredMedia = $mediaLibrary[0] ?? null;
-    $secondaryMedia = array_slice($mediaLibrary ?? [], 1, 5);
+    $secondaryMedia = array_slice($mediaLibrary ?? [], 1, 4);
 
     $teamRoles = [
         'Kurucu & Dil Kocu',
@@ -30,6 +37,25 @@
         'Mufredat Sorumlusu',
         'Rehber Mentor',
     ];
+
+    $heroOverline = $pageData['eyebrow'] ?? 'LinguFranca Performans Sistemi';
+    $heroTitleShort = 'Akici konus. Hedef skoru al.';
+    $heroLeadShort = 'Daginik ders degil. Analiz, plan ve takip ile ilerleyen tek bir sistem.';
+    $systemTitleShort = 'Ders degil, performans duzeni.';
+    $systemLeadShort = 'Her sey analiz, plan ve duzenli takip etrafinda kurulu.';
+    $fitTitleShort = 'Herkes icin degil.';
+    $fitLeadShort = 'Vakit ayiracak ve sonucu zorlayacak kisiler icin tasarlandi.';
+    $resourceTitleShort = 'Ihtiyaca gore 3 net akis.';
+    $resourceLeadShort = 'Genel Ingilizce, IELTS ve PTE tek omurgada ilerler.';
+    $processTitleShort = '4 net adim.';
+    $processLeadShort = 'Analiz, plan, uygulama, takip.';
+    $proofTitleShort = 'Sistem ekranda da gorunuyor.';
+    $proofLeadShort = 'Basin ve ogrenci videolari ayni akisin parcasi.';
+    $pricingTitleShort = 'Net fiyat. Net paket.';
+    $pricingLeadShort = 'Paketini sec, takvimini kur, basla.';
+    $faqTitleShort = 'Karar oncesi en cok sorulanlar';
+    $ctaTitleShort = 'Planini netlestir.';
+    $ctaTextShort = 'Dogru akisi sec, seviye tespitiyle basla.';
 @endphp
 
 @section('meta_title', ($pageData['meta_title'] ?? 'LinguFranca') . ' | ' . $siteName)
@@ -66,18 +92,14 @@
 
             <section class="dbp-hero" id="overview">
                 <div class="dbp-hero__copy dbp-reveal">
-                    @if (!empty($heroStats[3]['label']))
-                        <span class="dbp-overline">{{ $heroStats[3]['value'] }} {{ $heroStats[3]['label'] }}</span>
-                    @else
-                        <span class="dbp-overline">{{ $pageData['eyebrow'] ?? 'LinguFranca' }}</span>
-                    @endif
+                    <span class="dbp-overline">{{ $heroOverline }}</span>
 
-                    <h1>{{ $pageData['title'] ?? '' }}</h1>
-                    <p>{{ $pageData['lead'] ?? '' }}</p>
+                    <h1>{{ $heroTitleShort }}</h1>
+                    <p>{{ $heroLeadShort }}</p>
 
-                    @if (!empty($pressBadges))
+                    @if (!empty($proofBadges))
                         <div class="dbp-hero__proofline">
-                            @foreach (array_slice($pressBadges, 0, 3) as $badge)
+                            @foreach ($proofBadges as $badge)
                                 <span>{{ $badge }}</span>
                             @endforeach
                         </div>
@@ -110,7 +132,7 @@
                         <div class="dbp-hero-panel__body">
                             <span class="dbp-kicker">{{ $primaryProgram['label'] ?? 'Program' }}</span>
                             <h2>{{ $primaryProgram['title'] ?? $siteName }}</h2>
-                            <p>{{ $primaryProgram['subtitle'] ?? ($pageData['hero_quote'] ?? '') }}</p>
+                            <p>{{ $primaryProgram['result'] ?? ($primaryProgram['subtitle'] ?? '') }}</p>
 
                             <div class="dbp-hero-panel__meta">
                                 @if (!empty($primaryProgram['meta']))
@@ -123,9 +145,9 @@
                         </div>
                     </article>
 
-                    @if (!empty($heroStats))
+                    @if (!empty($heroNotes))
                         <div class="dbp-hero-notes">
-                            @foreach (array_slice($heroStats, 0, 3) as $metric)
+                            @foreach ($heroNotes as $metric)
                                 <article class="dbp-hero-note">
                                     <strong>{{ $metric['value'] }}</strong>
                                     <span>{{ $metric['label'] }}</span>
@@ -136,19 +158,11 @@
                 </div>
             </section>
 
-            @if (!empty($pressBadges))
-                <section class="dbp-strip dbp-reveal">
-                    @foreach ($pressBadges as $badge)
-                        <span>{{ $badge }}</span>
-                    @endforeach
-                </section>
-            @endif
-
             <section class="dbp-section" id="sistem">
                 <div class="dbp-section__head dbp-reveal">
-                    <span class="dbp-kicker">Degerlerimiz</span>
-                    <h2>{{ $pageData['manifesto_title'] ?? '' }}</h2>
-                    <p>{{ $pageData['manifesto_lead'] ?? '' }}</p>
+                    <span class="dbp-kicker">Sistem</span>
+                    <h2>{{ $systemTitleShort }}</h2>
+                    <p>{{ $systemLeadShort }}</p>
                 </div>
 
                 <div class="dbp-value-grid">
@@ -165,8 +179,8 @@
             <section class="dbp-section" id="uygunluk">
                 <div class="dbp-section__head dbp-reveal">
                     <span class="dbp-kicker">Bu senin icin mi?</span>
-                    <h2>{{ $pageData['fit_title'] ?? '' }}</h2>
-                    <p>{{ $pageData['fit_lead'] ?? '' }}</p>
+                    <h2>{{ $fitTitleShort }}</h2>
+                    <p>{{ $fitLeadShort }}</p>
                 </div>
 
                 <div class="dbp-fit-layout">
@@ -193,8 +207,8 @@
             <section class="dbp-section" id="programlar">
                 <div class="dbp-section__head dbp-reveal">
                     <span class="dbp-kicker">Nelere eriseceksin?</span>
-                    <h2>{{ $pageData['resource_title'] ?? '' }}</h2>
-                    <p>{{ $pageData['hero_quote'] ?? '' }}</p>
+                    <h2>{{ $resourceTitleShort }}</h2>
+                    <p>{{ $resourceLeadShort }}</p>
                 </div>
 
                 <div class="dbp-resource-grid">
@@ -244,8 +258,8 @@
             <section class="dbp-section" id="surec">
                 <div class="dbp-section__head dbp-reveal">
                     <span class="dbp-kicker">Surec</span>
-                    <h2>{{ $pageData['process_title'] ?? '' }}</h2>
-                    <p>Tekerlegi yeniden icat etmene gerek yok. PDF'lerde anlatilan ortak omurga burada 4 net adima ayrildi.</p>
+                    <h2>{{ $processTitleShort }}</h2>
+                    <p>{{ $processLeadShort }}</p>
                 </div>
 
                 <div class="dbp-step-grid">
@@ -272,8 +286,8 @@
             <section class="dbp-section" id="videolar">
                 <div class="dbp-section__head dbp-reveal">
                     <span class="dbp-kicker">{{ $pageData['proof_eyebrow'] ?? 'Basin ve ogrenci videolari' }}</span>
-                    <h2>{{ $pageData['proof_title'] ?? '' }}</h2>
-                    <p>{{ $pageData['proof_lead'] ?? '' }}</p>
+                    <h2>{{ $proofTitleShort }}</h2>
+                    <p>{{ $proofLeadShort }}</p>
                 </div>
 
                 @if (!empty($featuredMedia))
@@ -286,7 +300,7 @@
                         <div class="dbp-media-feature__body">
                             <span class="dbp-kicker">{{ $featuredMedia['category'] }}</span>
                             <h3>{{ $featuredMedia['title'] }}</h3>
-                            <p>{{ $featuredMedia['description'] }}</p>
+                            <p>{{ \Illuminate\Support\Str::limit($featuredMedia['description'] ?? '', 96) }}</p>
                             <strong>{{ $featuredMedia['duration'] }}</strong>
                         </div>
                     </article>
@@ -304,7 +318,7 @@
                             </div>
                             <span class="dbp-kicker">{{ $media['category'] }}</span>
                             <h3>{{ $media['title'] }}</h3>
-                            <p>{{ $media['description'] }}</p>
+                            <p>{{ \Illuminate\Support\Str::limit($media['description'] ?? '', 78) }}</p>
                             <a href="{{ $media['file_url'] }}" target="_blank" rel="noopener">Videoyu ac</a>
                         </article>
                     @endforeach
@@ -314,8 +328,8 @@
             <section class="dbp-section" id="fiyat">
                 <div class="dbp-section__head dbp-reveal">
                     <span class="dbp-kicker">{{ $pageData['pricing_eyebrow'] ?? 'Fiyat' }}</span>
-                    <h2>{{ $pageData['pricing_title'] ?? '' }}</h2>
-                    <p>{{ $pageData['pricing_lead'] ?? '' }}</p>
+                    <h2>{{ $pricingTitleShort }}</h2>
+                    <p>{{ $pricingLeadShort }}</p>
                 </div>
 
                 <div class="dbp-price-grid">
@@ -349,7 +363,7 @@
                 <section class="dbp-section" id="sss">
                     <div class="dbp-section__head dbp-reveal">
                         <span class="dbp-kicker">SSS</span>
-                        <h2>Karar oncesi en cok sorulanlar</h2>
+                        <h2>{{ $faqTitleShort }}</h2>
                     </div>
 
                     <div class="dbp-faq-grid">
@@ -365,8 +379,8 @@
 
             <section class="dbp-final-cta dbp-reveal">
                 <span class="dbp-kicker">Son adim</span>
-                <h2>{{ $pageData['cta_title'] ?? '' }}</h2>
-                <p>{{ $pageData['cta_text'] ?? '' }}</p>
+                <h2>{{ $ctaTitleShort }}</h2>
+                <p>{{ $ctaTextShort }}</p>
                 <div class="dbp-actions">
                     <a class="dbp-button" href="{{ $applyUrl }}">Programa Basvur</a>
                     <a class="dbp-button dbp-button--ghost" href="{{ $testUrl }}">Seviye Tespiti</a>
@@ -532,7 +546,7 @@
         .dbp-price-card,
         .dbp-final-cta {
             display: grid;
-            gap: 16px;
+            gap: 14px;
         }
 
         .dbp-hero h1,
@@ -553,10 +567,10 @@
         }
 
         .dbp-hero h1 {
-            font-size: clamp(42px, 5.2vw, 72px);
+            font-size: clamp(40px, 5vw, 68px);
             line-height: 0.98;
             letter-spacing: -0.05em;
-            max-width: 12ch;
+            max-width: 9ch;
         }
 
         .dbp-hero p,
@@ -578,7 +592,7 @@
         .dbp-hero-panel__meta span {
             margin: 0;
             color: rgba(226, 235, 255, 0.74);
-            line-height: 1.75;
+            line-height: 1.68;
         }
 
         .dbp-hero-panel {
@@ -630,7 +644,7 @@
         .dbp-hero__proofline {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
         }
 
         .dbp-hero__proofline span {
@@ -660,7 +674,7 @@
 
         .dbp-hero-notes {
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 12px;
         }
 
@@ -689,23 +703,15 @@
             line-height: 1.45;
         }
 
-        .dbp-strip {
-            padding: 18px 20px;
-            border-radius: 22px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px 18px;
-        }
-
         .dbp-section {
-            padding-top: 112px;
+            padding-top: 124px;
             display: grid;
-            gap: 34px;
+            gap: 28px;
         }
 
         .dbp-section__head {
-            max-width: 760px;
-            gap: 14px;
+            max-width: 640px;
+            gap: 12px;
         }
 
         .dbp-section__head h2 {
@@ -714,7 +720,7 @@
         }
 
         .dbp-section__head p {
-            max-width: 700px;
+            max-width: 52ch;
         }
 
         .dbp-value-grid,
@@ -726,13 +732,17 @@
         .dbp-note-grid,
         .dbp-faq-grid {
             display: grid;
-            gap: 18px;
+            gap: 20px;
         }
 
-        .dbp-value-grid,
-        .dbp-resource-grid,
-        .dbp-price-grid {
+        .dbp-value-grid {
             grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .dbp-resource-grid,
+        .dbp-price-grid,
+        .dbp-note-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
         .dbp-fit-layout,
@@ -757,7 +767,7 @@
         .dbp-note-card,
         .dbp-faq-item {
             border-radius: 26px;
-            padding: 26px;
+            padding: 28px;
         }
 
         .dbp-fit-card ul,
@@ -766,7 +776,7 @@
             margin: 0;
             padding-left: 18px;
             display: grid;
-            gap: 8px;
+            gap: 10px;
         }
 
         .dbp-fit-card--positive {
@@ -965,6 +975,7 @@
             .dbp-resource-grid,
             .dbp-step-grid,
             .dbp-price-grid,
+            .dbp-note-grid,
             .dbp-team-grid {
                 grid-template-columns: 1fr;
             }
