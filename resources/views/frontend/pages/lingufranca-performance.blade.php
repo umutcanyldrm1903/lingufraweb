@@ -1842,6 +1842,27 @@
                 padding-top: 74px;
             }
         }
+
+        /* Global white text override */
+        .lfps-page,
+        .lfps-page h1,
+        .lfps-page h2,
+        .lfps-page h3,
+        .lfps-page h4,
+        .lfps-page h5,
+        .lfps-page h6,
+        .lfps-page p,
+        .lfps-page span,
+        .lfps-page small,
+        .lfps-page strong,
+        .lfps-page em,
+        .lfps-page li,
+        .lfps-page a,
+        .lfps-page button,
+        .lfps-page summary,
+        .lfps-page label {
+            color: #ffffff !important;
+        }
     </style>
 @endpush
 
