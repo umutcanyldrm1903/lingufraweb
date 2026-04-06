@@ -2033,6 +2033,124 @@
             }
         }
     </style>
+    <style>
+        .lfps-performance-shell {
+            background:
+                radial-gradient(circle at 18% 0%, rgba(92, 107, 165, 0.26), transparent 38%),
+                radial-gradient(circle at 88% 14%, rgba(78, 96, 149, 0.22), transparent 30%),
+                linear-gradient(180deg, #05070f 0%, #070d1a 42%, #05070f 100%) !important;
+            color: #f3f7ff !important;
+        }
+
+        .lfps-page {
+            width: min(100% - 28px, 1200px) !important;
+        }
+
+        .lfps-topbar {
+            background: rgba(7, 12, 23, 0.74) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 16px !important;
+            box-shadow: none !important;
+            padding: 12px 16px !important;
+        }
+
+        .lfps-topbar__nav a,
+        .lfps-footer__links a,
+        .lfps-lead,
+        .lfps-section-head p,
+        .lfps-step-card p,
+        .lfps-value-card p,
+        .lfps-faq-item p,
+        .lfps-price-card p {
+            color: #aab5cb !important;
+        }
+
+        .lfps-kicker,
+        .lfps-section-tag,
+        .lfps-fit-card__tag,
+        .lfps-video-card__meta,
+        .lfps-chip,
+        .lfps-proof-strip__items span,
+        .lfps-reason-list span,
+        .lfps-hero-program__meta span {
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            background: rgba(255, 255, 255, 0.06) !important;
+            color: #f3f7ff !important;
+        }
+
+        .lfps-button {
+            background: #ffffff !important;
+            color: #0a1020 !important;
+            border-color: transparent !important;
+            box-shadow: none !important;
+        }
+
+        .lfps-button--ghost {
+            background: transparent !important;
+            color: #f3f7ff !important;
+            border-color: rgba(255, 255, 255, 0.25) !important;
+        }
+
+        .lfps-hero h1,
+        .lfps-section h2,
+        .lfps-cta-band h2,
+        .lfps-price-card h3,
+        .lfps-value-card h3,
+        .lfps-step-card h3,
+        .lfps-resource-card h3,
+        .lfps-program-panel__body h3,
+        .lfps-video-card__body h3,
+        .lfps-faq-item summary,
+        .lfps-hero-program__body h2 {
+            color: #f3f7ff !important;
+            font-family: 'Sora', 'Manrope', sans-serif !important;
+        }
+
+        .lfps-stat-card,
+        .lfps-value-card,
+        .lfps-fit-card,
+        .lfps-resource-card,
+        .lfps-step-card,
+        .lfps-insight-card,
+        .lfps-video-card,
+        .lfps-price-card,
+        .lfps-note-card,
+        .lfps-faq-item,
+        .lfps-cta-band,
+        .lfps-split-block__intro,
+        .lfps-hero-program,
+        .lfps-quote-card {
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 22px !important;
+            background: linear-gradient(180deg, #10192c 0%, #141f35 100%) !important;
+            box-shadow: none !important;
+        }
+
+        .lfps-fit-card--muted {
+            background: linear-gradient(180deg, #162241 0%, #121a30 100%) !important;
+        }
+
+        .lfps-price-card--featured {
+            background: linear-gradient(180deg, #f5f7fd 0%, #e7edf9 100%) !important;
+            color: #0a1020 !important;
+        }
+
+        .lfps-price-card--featured strong,
+        .lfps-price-card--featured h3,
+        .lfps-price-card--featured span,
+        .lfps-price-card--featured p {
+            color: #0a1020 !important;
+        }
+
+        .lfps-price-card--featured .lfps-button {
+            background: #0c1324 !important;
+            color: #ffffff !important;
+        }
+
+        .lfps-inline-link {
+            color: #f3f7ff !important;
+        }
+    </style>
 @endpush
 
 @push('scripts')
