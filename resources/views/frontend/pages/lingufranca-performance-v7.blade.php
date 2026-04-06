@@ -353,10 +353,10 @@
             min-height: 100vh;
             padding: 22px 18px 80px;
             background:
-                radial-gradient(circle at top left, rgba(90, 74, 56, 0.25), transparent 24%),
-                radial-gradient(circle at top right, rgba(120, 87, 52, 0.12), transparent 20%),
-                linear-gradient(180deg, #0c0a09 0%, #120f0d 100%);
-            color: #f4efe9;
+                radial-gradient(circle at top left, rgba(96, 89, 247, 0.22), transparent 24%),
+                radial-gradient(circle at top right, rgba(6, 35, 91, 0.18), transparent 22%),
+                linear-gradient(180deg, #041128 0%, #071a42 45%, #05132f 100%);
+            color: #eef3ff;
             font-family: "Manrope", sans-serif;
         }
 
@@ -381,8 +381,9 @@
         .dbp-final-cta,
         .dbp-hero-panel {
             border: 1px solid rgba(255, 255, 255, 0.08);
-            background: linear-gradient(180deg, rgba(26, 20, 17, 0.96) 0%, rgba(14, 11, 10, 0.96) 100%);
-            box-shadow: 0 28px 80px rgba(0, 0, 0, 0.28);
+            background:
+                linear-gradient(180deg, rgba(10, 29, 68, 0.96) 0%, rgba(6, 20, 47, 0.96) 100%);
+            box-shadow: 0 28px 80px rgba(1, 9, 24, 0.34);
         }
 
         .dbp-topbar {
@@ -390,9 +391,9 @@
             align-items: center;
             justify-content: space-between;
             gap: 16px;
-            min-height: 76px;
-            padding: 14px 18px;
-            border-radius: 22px;
+            min-height: 78px;
+            padding: 16px 20px;
+            border-radius: 24px;
         }
 
         .dbp-brand img {
@@ -411,7 +412,7 @@
         }
 
         .dbp-nav a {
-            color: rgba(244, 239, 233, 0.8);
+            color: rgba(238, 243, 255, 0.78);
             font-size: 14px;
             font-weight: 600;
         }
@@ -423,18 +424,20 @@
             min-height: 46px;
             padding: 0 18px;
             border-radius: 999px;
-            background: linear-gradient(180deg, #e8b476 0%, #d18f47 100%);
-            color: #140f0b;
+            background: linear-gradient(180deg, #6f68ff 0%, #6059f7 100%);
+            color: #ffffff;
             font-size: 14px;
             font-weight: 800;
-            border: 1px solid transparent;
-            transition: transform 180ms ease;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+            box-shadow: 0 18px 40px rgba(96, 89, 247, 0.3);
         }
 
         .dbp-button--ghost {
             background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(255, 255, 255, 0.1);
-            color: #f4efe9;
+            border-color: rgba(255, 255, 255, 0.12);
+            color: #eef3ff;
+            box-shadow: none;
         }
 
         .dbp-button:hover,
@@ -454,9 +457,9 @@
             min-height: 30px;
             padding: 0 12px;
             border-radius: 999px;
-            background: rgba(209, 143, 71, 0.12);
-            border: 1px solid rgba(209, 143, 71, 0.25);
-            color: #e6ba85;
+            background: rgba(96, 89, 247, 0.12);
+            border: 1px solid rgba(96, 89, 247, 0.22);
+            color: #cfd2ff;
             font-size: 12px;
             font-weight: 700;
             letter-spacing: 0.08em;
@@ -466,9 +469,9 @@
         .dbp-hero {
             display: grid;
             grid-template-columns: minmax(0, 1.02fr) minmax(340px, 0.98fr);
-            gap: 34px;
+            gap: 42px;
             align-items: center;
-            padding: 84px 0 38px;
+            padding: 88px 0 54px;
         }
 
         .dbp-hero__copy,
@@ -484,7 +487,7 @@
         .dbp-price-card,
         .dbp-final-cta {
             display: grid;
-            gap: 14px;
+            gap: 16px;
         }
 
         .dbp-hero h1,
@@ -505,7 +508,7 @@
         }
 
         .dbp-hero h1 {
-            font-size: clamp(40px, 5vw, 68px);
+            font-size: clamp(42px, 5.2vw, 72px);
             line-height: 0.98;
             letter-spacing: -0.05em;
         }
@@ -528,18 +531,20 @@
         .dbp-hero-panel__body p,
         .dbp-hero-panel__meta span {
             margin: 0;
-            color: rgba(244, 239, 233, 0.72);
+            color: rgba(226, 235, 255, 0.74);
             line-height: 1.75;
         }
 
         .dbp-hero-panel {
             overflow: hidden;
-            border-radius: 28px;
+            border-radius: 30px;
         }
 
         .dbp-hero-panel__media,
         .dbp-program-card__media {
-            background: linear-gradient(145deg, rgba(41, 30, 25, 0.98), rgba(18, 14, 12, 1));
+            background:
+                radial-gradient(circle at 24% 24%, rgba(96, 89, 247, 0.16), transparent 24%),
+                linear-gradient(145deg, rgba(9, 34, 91, 0.98), rgba(5, 20, 47, 1));
         }
 
         .dbp-hero-panel__media {
@@ -559,7 +564,7 @@
         .dbp-program-card__body,
         .dbp-media-feature__body,
         .dbp-price-card {
-            padding: 22px;
+            padding: 24px;
         }
 
         .dbp-hero-panel__meta,
@@ -570,17 +575,31 @@
         }
 
         .dbp-strip {
-            padding: 16px 18px;
-            border-radius: 20px;
+            padding: 18px 20px;
+            border-radius: 22px;
             display: flex;
             flex-wrap: wrap;
             gap: 12px 18px;
         }
 
         .dbp-section {
-            padding-top: 100px;
+            padding-top: 112px;
             display: grid;
-            gap: 28px;
+            gap: 34px;
+        }
+
+        .dbp-section__head {
+            max-width: 760px;
+            gap: 14px;
+        }
+
+        .dbp-section__head h2 {
+            font-size: clamp(30px, 3vw, 46px);
+            line-height: 1.08;
+        }
+
+        .dbp-section__head p {
+            max-width: 700px;
         }
 
         .dbp-value-grid,
@@ -605,7 +624,7 @@
         .dbp-media-grid {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 18px;
+            gap: 22px;
         }
 
         .dbp-program-grid,
@@ -622,8 +641,8 @@
         .dbp-media-card,
         .dbp-note-card,
         .dbp-faq-item {
-            border-radius: 24px;
-            padding: 24px;
+            border-radius: 26px;
+            padding: 26px;
         }
 
         .dbp-fit-card ul,
@@ -636,18 +655,19 @@
         }
 
         .dbp-fit-card--positive {
-            background: linear-gradient(180deg, rgba(26, 20, 17, 0.96) 0%, rgba(18, 15, 13, 0.96) 100%);
+            background:
+                linear-gradient(180deg, rgba(13, 31, 77, 0.98) 0%, rgba(8, 24, 57, 0.98) 100%);
         }
 
         .dbp-program-card {
             overflow: hidden;
-            border-radius: 24px;
+            border-radius: 26px;
             display: grid;
             grid-template-columns: minmax(260px, 0.82fr) minmax(0, 1.18fr);
         }
 
         .dbp-program-card__media {
-            min-height: 280px;
+            min-height: 300px;
         }
 
         .dbp-program-card__meta strong,
@@ -658,8 +678,16 @@
             font-weight: 700;
         }
 
+        .dbp-program-card__body h3,
+        .dbp-price-card h3,
+        .dbp-media-feature__body h3 {
+            font-size: clamp(26px, 2.6vw, 36px);
+            line-height: 1.12;
+        }
+
         .dbp-step-grid {
             grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 22px;
         }
 
         .dbp-step-card__index {
@@ -669,8 +697,8 @@
         }
 
         .dbp-team-card {
-            border-radius: 24px;
-            padding: 24px;
+            border-radius: 26px;
+            padding: 26px;
         }
 
         .dbp-team-grid {
@@ -690,7 +718,7 @@
 
         .dbp-media-feature {
             overflow: hidden;
-            border-radius: 24px;
+            border-radius: 26px;
             display: grid;
             grid-template-columns: minmax(0, 1.12fr) minmax(300px, 0.88fr);
         }
@@ -701,18 +729,26 @@
         }
 
         .dbp-media-card a {
-            color: #e6ba85;
+            color: #9fa3ff;
             font-size: 14px;
             font-weight: 700;
         }
 
         .dbp-price-card {
             min-height: 100%;
-            border-radius: 24px;
+            border-radius: 26px;
+            padding: 28px;
+            gap: 16px;
         }
 
         .dbp-price-card--featured {
-            background: linear-gradient(180deg, rgba(64, 38, 16, 0.98) 0%, rgba(24, 16, 10, 0.98) 100%);
+            background:
+                radial-gradient(circle at top right, rgba(255, 255, 255, 0.16), transparent 20%),
+                linear-gradient(180deg, rgba(96, 89, 247, 0.98) 0%, rgba(61, 91, 230, 0.98) 100%);
+        }
+
+        .dbp-price-card h3 {
+            letter-spacing: -0.03em;
         }
 
         .dbp-note-card {
@@ -733,9 +769,9 @@
         }
 
         .dbp-final-cta {
-            margin-top: 100px;
-            border-radius: 28px;
-            padding: 32px;
+            margin-top: 112px;
+            border-radius: 30px;
+            padding: 36px;
         }
 
         .dbp-reveal {
