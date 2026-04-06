@@ -1,0 +1,13 @@
+Source reference:
+https://github.com/cruip/open-react-template
+
+Reference notes captured from the upstream README:
+
+- Open is a free React / Next.js landing page template built with Tailwind CSS.
+- Copyright 2024 Cruip.
+- README states:
+  - Released under GPL.
+  - Use it for personal and commercial projects.
+  - Do not republish, redistribute, or resell the template.
+
+This project uses the template as a visual reference for section structure and styling direction.
