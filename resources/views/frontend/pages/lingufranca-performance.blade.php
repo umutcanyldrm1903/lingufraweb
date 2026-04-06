@@ -22,6 +22,10 @@
     $heroStats = $pageData['hero_stats'] ?? [];
     $milestones = $pageData['milestones'] ?? [];
     $pricingNotes = $pageData['pricing_notes'] ?? [];
+    $primaryProgram = $downloads[0] ?? null;
+    $secondaryPrograms = array_slice($downloads, 1);
+    $featuredMedia = $mediaLibrary[0] ?? null;
+    $remainingMedia = array_slice($mediaLibrary, 1);
 @endphp
 
 @section('meta_title', $pageData['meta_title'] . ' | ' . $siteName)
@@ -86,23 +90,36 @@
                 </div>
 
                 <div class="lfps-hero__visual">
-                    <article class="lfps-quote-card">
-                        <span class="lfps-section-tag">{{ $pageData['hero_quote_title'] }}</span>
-                        <p>{{ $pageData['hero_quote'] }}</p>
-                    </article>
-
-                    <div class="lfps-stack-grid">
-                        @foreach ($downloads as $program)
-                            <article class="lfps-stack-card">
-                                @if (!empty($program['cover_url']))
-                                    <div class="lfps-stack-card__cover" style="background-image:url('{{ $program['cover_url'] }}')"></div>
+                    @if (!empty($primaryProgram))
+                        <article class="lfps-hero-program">
+                            <div class="lfps-hero-program__media">
+                                @if (!empty($primaryProgram['cover_url']))
+                                    <img src="{{ $primaryProgram['cover_url'] }}" alt="{{ $primaryProgram['title'] }}" loading="lazy" />
                                 @endif
-                                <div class="lfps-stack-card__body">
-                                    <span class="lfps-stack-card__label">{{ $program['label'] }}</span>
-                                    <h2>{{ $program['title'] }}</h2>
-                                    <p>{{ $program['subtitle'] }}</p>
-                                    <small>{{ $program['meta'] }} | {{ $program['result'] }}</small>
+                            </div>
+                            <div class="lfps-hero-program__body">
+                                <span class="lfps-section-tag">{{ $primaryProgram['label'] }}</span>
+                                <h2>{{ $primaryProgram['title'] }}</h2>
+                                <p>{{ $primaryProgram['subtitle'] }}</p>
+                                <div class="lfps-hero-program__meta">
+                                    <span>{{ $primaryProgram['meta'] }}</span>
+                                    <span>{{ $primaryProgram['result'] }}</span>
                                 </div>
+                            </div>
+                        </article>
+                    @endif
+
+                    <div class="lfps-hero-side-grid">
+                        <article class="lfps-quote-card">
+                            <span class="lfps-section-tag">{{ $pageData['hero_quote_title'] }}</span>
+                            <p>{{ $pageData['hero_quote'] }}</p>
+                        </article>
+
+                        @foreach ($secondaryPrograms as $program)
+                            <article class="lfps-mini-program">
+                                <span class="lfps-stack-card__label">{{ $program['label'] }}</span>
+                                <h3>{{ $program['title'] }}</h3>
+                                <p>{{ $program['result'] }}</p>
                             </article>
                         @endforeach
                     </div>
@@ -137,30 +154,32 @@
             </section>
 
             <section class="lfps-section">
-                <div class="lfps-section-head lfps-section-head--left">
-                    <span class="lfps-section-tag">{{ $pageData['fit_eyebrow'] }}</span>
-                    <h2>{{ $pageData['fit_title'] }}</h2>
-                    <p>{{ $pageData['fit_lead'] }}</p>
-                </div>
+                <div class="lfps-split-block">
+                    <div class="lfps-split-block__intro">
+                        <span class="lfps-section-tag">{{ $pageData['fit_eyebrow'] }}</span>
+                        <h2>{{ $pageData['fit_title'] }}</h2>
+                        <p>{{ $pageData['fit_lead'] }}</p>
+                    </div>
 
-                <div class="lfps-fit-grid">
-                    <article class="lfps-fit-card">
-                        <span class="lfps-fit-card__tag">Kimin icin</span>
-                        <ul>
-                            @foreach ($pageData['fit_for'] as $item)
-                                <li>{{ $item }}</li>
-                            @endforeach
-                        </ul>
-                    </article>
+                    <div class="lfps-fit-grid">
+                        <article class="lfps-fit-card">
+                            <span class="lfps-fit-card__tag">Kimin icin</span>
+                            <ul>
+                                @foreach ($pageData['fit_for'] as $item)
+                                    <li>{{ $item }}</li>
+                                @endforeach
+                            </ul>
+                        </article>
 
-                    <article class="lfps-fit-card lfps-fit-card--muted">
-                        <span class="lfps-fit-card__tag">Kimin icin degil</span>
-                        <ul>
-                            @foreach ($pageData['fit_not_for'] as $item)
-                                <li>{{ $item }}</li>
-                            @endforeach
-                        </ul>
-                    </article>
+                        <article class="lfps-fit-card lfps-fit-card--muted">
+                            <span class="lfps-fit-card__tag">Kimin icin degil</span>
+                            <ul>
+                                @foreach ($pageData['fit_not_for'] as $item)
+                                    <li>{{ $item }}</li>
+                                @endforeach
+                            </ul>
+                        </article>
+                    </div>
                 </div>
             </section>
 
@@ -170,45 +189,47 @@
                     <h2>{{ $pageData['resource_title'] }}</h2>
                 </div>
 
-                <div class="lfps-resource-grid">
-                    @foreach ($pageData['resource_columns'] as $column)
-                        <article class="lfps-resource-card">
-                            <h3>{{ $column['label'] }}</h3>
-                            <ul>
-                                @foreach ($column['items'] as $item)
-                                    <li>{{ $item }}</li>
-                                @endforeach
-                            </ul>
-                        </article>
-                    @endforeach
-                </div>
-
-                <div class="lfps-program-showcase">
-                    @foreach ($downloads as $program)
-                        <article class="lfps-program-panel">
-                            <div class="lfps-program-panel__media">
-                                @if (!empty($program['cover_url']))
-                                    <img src="{{ $program['cover_url'] }}" alt="{{ $program['title'] }}" loading="lazy" />
-                                @endif
-                            </div>
-                            <div class="lfps-program-panel__body">
-                                <span class="lfps-section-tag">{{ $program['label'] }}</span>
-                                <h3>{{ $program['title'] }}</h3>
-                                <p>{{ $program['subtitle'] }}</p>
+                <div class="lfps-program-stage">
+                    <div class="lfps-resource-grid">
+                        @foreach ($pageData['resource_columns'] as $column)
+                            <article class="lfps-resource-card">
+                                <h3>{{ $column['label'] }}</h3>
                                 <ul>
-                                    @foreach ($program['bullets'] as $bullet)
-                                        <li>{{ $bullet }}</li>
+                                    @foreach ($column['items'] as $item)
+                                        <li>{{ $item }}</li>
                                     @endforeach
                                 </ul>
-                                <div class="lfps-program-panel__footer">
-                                    <strong>{{ $program['result'] }}</strong>
-                                    @if (!empty($program['file_url']))
-                                        <a class="lfps-inline-link" href="{{ $program['file_url'] }}" target="_blank" rel="noopener">Program Detayi</a>
+                            </article>
+                        @endforeach
+                    </div>
+
+                    <div class="lfps-program-showcase">
+                        @foreach ($downloads as $program)
+                            <article class="lfps-program-panel">
+                                <div class="lfps-program-panel__media">
+                                    @if (!empty($program['cover_url']))
+                                        <img src="{{ $program['cover_url'] }}" alt="{{ $program['title'] }}" loading="lazy" />
                                     @endif
                                 </div>
-                            </div>
-                        </article>
-                    @endforeach
+                                <div class="lfps-program-panel__body">
+                                    <span class="lfps-section-tag">{{ $program['label'] }}</span>
+                                    <h3>{{ $program['title'] }}</h3>
+                                    <p>{{ $program['subtitle'] }}</p>
+                                    <ul>
+                                        @foreach ($program['bullets'] as $bullet)
+                                            <li>{{ $bullet }}</li>
+                                        @endforeach
+                                    </ul>
+                                    <div class="lfps-program-panel__footer">
+                                        <strong>{{ $program['result'] }}</strong>
+                                        @if (!empty($program['file_url']))
+                                            <a class="lfps-inline-link" href="{{ $program['file_url'] }}" target="_blank" rel="noopener">Program Detayi</a>
+                                        @endif
+                                    </div>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
                 </div>
             </section>
 
@@ -269,28 +290,47 @@
                     <p>{{ $pageData['proof_lead'] }}</p>
                 </div>
 
-                <div class="lfps-video-grid">
-                    @forelse ($mediaLibrary as $item)
-                        <article class="lfps-video-card">
+                @if (!empty($featuredMedia))
+                    <div class="lfps-video-stage">
+                        <article class="lfps-video-card lfps-video-card--feature">
                             <div class="lfps-video-card__media">
-                                <video controls preload="metadata" playsinline @if (!empty($item['poster_url'])) poster="{{ $item['poster_url'] }}" @endif>
-                                    <source src="{{ $item['file_url'] }}" type="video/mp4">
+                                <video controls preload="metadata" playsinline @if (!empty($featuredMedia['poster_url'])) poster="{{ $featuredMedia['poster_url'] }}" @endif>
+                                    <source src="{{ $featuredMedia['file_url'] }}" type="video/mp4">
                                     Tarayiciniz video etiketini desteklemiyor.
                                 </video>
                             </div>
                             <div class="lfps-video-card__body">
-                                <span class="lfps-video-card__meta">{{ $item['category'] }} | {{ $item['duration'] }}</span>
-                                <h3>{{ $item['title'] }}</h3>
-                                <p>{{ $item['description'] }}</p>
-                                <a class="lfps-inline-link" href="{{ $item['file_url'] }}" target="_blank" rel="noopener">Videoyu yeni sekmede ac</a>
+                                <span class="lfps-video-card__meta">{{ $featuredMedia['category'] }} | {{ $featuredMedia['duration'] }}</span>
+                                <h3>{{ $featuredMedia['title'] }}</h3>
+                                <p>{{ $featuredMedia['description'] }}</p>
+                                <a class="lfps-inline-link" href="{{ $featuredMedia['file_url'] }}" target="_blank" rel="noopener">Videoyu yeni sekmede ac</a>
                             </div>
                         </article>
-                    @empty
-                        <div class="lfps-empty-card">
-                            Video kayitlari gecici olarak yuklenemedi.
+
+                        <div class="lfps-video-grid">
+                            @foreach ($remainingMedia as $item)
+                                <article class="lfps-video-card">
+                                    <div class="lfps-video-card__media">
+                                        <video controls preload="metadata" playsinline @if (!empty($item['poster_url'])) poster="{{ $item['poster_url'] }}" @endif>
+                                            <source src="{{ $item['file_url'] }}" type="video/mp4">
+                                            Tarayiciniz video etiketini desteklemiyor.
+                                        </video>
+                                    </div>
+                                    <div class="lfps-video-card__body">
+                                        <span class="lfps-video-card__meta">{{ $item['category'] }} | {{ $item['duration'] }}</span>
+                                        <h3>{{ $item['title'] }}</h3>
+                                        <p>{{ $item['description'] }}</p>
+                                        <a class="lfps-inline-link" href="{{ $item['file_url'] }}" target="_blank" rel="noopener">Videoyu yeni sekmede ac</a>
+                                    </div>
+                                </article>
+                            @endforeach
                         </div>
-                    @endforelse
-                </div>
+                    </div>
+                @else
+                    <div class="lfps-empty-card">
+                        Video kayitlari gecici olarak yuklenemedi.
+                    </div>
+                @endif
             </section>
 
             <section class="lfps-section" id="fiyat">
@@ -552,6 +592,79 @@
             gap: 18px;
         }
 
+        .lfps-hero-program {
+            display: grid;
+            grid-template-columns: minmax(220px, 0.92fr) minmax(0, 1.08fr);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 30px 60px rgba(7, 26, 67, 0.18);
+        }
+
+        .lfps-hero-program__media img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .lfps-hero-program__body {
+            padding: 28px;
+        }
+
+        .lfps-hero-program__body h2 {
+            margin: 12px 0 0;
+            color: #ffffff;
+            font-size: 30px;
+            line-height: 1.15;
+            font-weight: 800;
+        }
+
+        .lfps-hero-program__body p {
+            margin: 14px 0 0;
+            color: rgba(255, 255, 255, 0.84);
+            line-height: 1.8;
+        }
+
+        .lfps-hero-program__meta {
+            display: grid;
+            gap: 8px;
+            margin-top: 18px;
+            color: rgba(255, 255, 255, 0.76);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .lfps-hero-side-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr 1fr;
+            gap: 18px;
+        }
+
+        .lfps-mini-program {
+            padding: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 30px 60px rgba(7, 26, 67, 0.18);
+        }
+
+        .lfps-mini-program h3 {
+            margin: 0;
+            color: #ffffff;
+            font-size: 18px;
+            line-height: 1.35;
+            font-weight: 700;
+        }
+
+        .lfps-mini-program p {
+            margin: 10px 0 0;
+            color: rgba(255, 255, 255, 0.76);
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
         .lfps-kicker,
         .lfps-section-tag,
         .lfps-fit-card__tag,
@@ -713,6 +826,32 @@
             padding-top: 84px;
         }
 
+        .lfps-split-block {
+            display: grid;
+            grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+            gap: 24px;
+            align-items: start;
+        }
+
+        .lfps-split-block__intro {
+            position: sticky;
+            top: 24px;
+        }
+
+        .lfps-split-block__intro h2 {
+            margin: 18px 0 0;
+            color: #0e2450;
+            font-size: clamp(28px, 3vw, 42px);
+            line-height: 1.1;
+            font-weight: 800;
+        }
+
+        .lfps-split-block__intro p {
+            margin: 16px 0 0;
+            color: var(--lfps-muted);
+            line-height: 1.8;
+        }
+
         .lfps-section-head {
             max-width: 760px;
             margin: 0 auto 28px;
@@ -767,10 +906,20 @@
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
+        .lfps-program-stage {
+            display: grid;
+            gap: 28px;
+        }
+
         .lfps-video-grid,
         .lfps-note-grid,
         .lfps-mini-grid {
             grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .lfps-video-stage {
+            display: grid;
+            gap: 18px;
         }
 
         .lfps-value-card,
@@ -933,6 +1082,18 @@
             overflow: hidden;
         }
 
+        .lfps-video-card--feature {
+            display: grid;
+            grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+            align-items: stretch;
+        }
+
+        .lfps-video-card--feature .lfps-video-card__media video {
+            height: 100%;
+            min-height: 100%;
+            aspect-ratio: auto;
+        }
+
         .lfps-video-card__media video {
             display: block;
             width: 100%;
@@ -1009,7 +1170,11 @@
 
         @media (max-width: 1100px) {
             .lfps-hero,
+            .lfps-hero-program,
+            .lfps-hero-side-grid,
             .lfps-program-panel,
+            .lfps-video-card--feature,
+            .lfps-split-block,
             .lfps-fit-grid,
             .lfps-insight-grid,
             .lfps-resource-grid,
@@ -1024,6 +1189,10 @@
 
             .lfps-stat-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .lfps-split-block__intro {
+                position: static;
             }
         }
 
@@ -1059,6 +1228,10 @@
             }
 
             .lfps-stack-card {
+                grid-template-columns: 1fr;
+            }
+
+            .lfps-hero-program {
                 grid-template-columns: 1fr;
             }
 
