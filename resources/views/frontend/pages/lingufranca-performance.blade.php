@@ -1168,6 +1168,254 @@
             font-weight: 500;
         }
 
+        .lfps-hero {
+            gap: 40px;
+            align-items: center;
+            min-height: 88vh;
+            padding: 92px 0 64px;
+        }
+
+        .lfps-hero h1 {
+            max-width: 680px;
+            text-wrap: balance;
+        }
+
+        .lfps-hero__copy {
+            gap: 0;
+        }
+
+        .lfps-hero__visual {
+            gap: 20px;
+        }
+
+        .lfps-hero-program {
+            grid-template-columns: minmax(250px, 0.92fr) minmax(0, 1.08fr);
+            min-height: 360px;
+            border-radius: 32px;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.08) 100%);
+        }
+
+        .lfps-hero-program__media {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(235, 241, 255, 0.88) 100%);
+        }
+
+        .lfps-hero-program__body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 14px;
+            min-width: 0;
+            padding: 34px;
+        }
+
+        .lfps-hero-program__body h2,
+        .lfps-mini-program h3,
+        .lfps-program-panel__body h3,
+        .lfps-video-card h3 {
+            text-wrap: balance;
+        }
+
+        .lfps-hero-side-grid {
+            grid-template-columns: minmax(0, 1.2fr) repeat(2, minmax(0, 1fr));
+            align-items: stretch;
+        }
+
+        .lfps-quote-card,
+        .lfps-mini-program {
+            height: 100%;
+        }
+
+        .lfps-mini-program {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 190px;
+            min-width: 0;
+        }
+
+        .lfps-mini-program p,
+        .lfps-quote-card p,
+        .lfps-program-panel__body p,
+        .lfps-video-card p {
+            overflow-wrap: anywhere;
+        }
+
+        .lfps-proof-strip {
+            margin-top: 8px;
+            padding: 22px 26px;
+            border-radius: 24px;
+            background: #ffffff;
+            border: 1px solid rgba(9, 41, 102, 0.08);
+            box-shadow: 0 20px 50px rgba(17, 35, 70, 0.08);
+        }
+
+        .lfps-proof-strip > span,
+        .lfps-proof-strip__items span {
+            color: #17376e;
+        }
+
+        .lfps-section {
+            padding-top: 110px;
+        }
+
+        .lfps-section-head {
+            margin-bottom: 36px;
+        }
+
+        .lfps-section-head h2,
+        .lfps-split-block__intro h2 {
+            max-width: 760px;
+            text-wrap: balance;
+        }
+
+        .lfps-value-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .lfps-value-card,
+        .lfps-step-card,
+        .lfps-resource-card,
+        .lfps-fit-card,
+        .lfps-insight-card,
+        .lfps-note-card,
+        .lfps-video-card,
+        .lfps-program-panel,
+        .lfps-faq-item {
+            border-radius: 30px;
+        }
+
+        .lfps-split-block {
+            gap: 30px;
+            align-items: start;
+        }
+
+        .lfps-fit-grid {
+            gap: 20px;
+        }
+
+        .lfps-fit-card,
+        .lfps-resource-card,
+        .lfps-step-card,
+        .lfps-value-card {
+            min-width: 0;
+        }
+
+        .lfps-program-stage {
+            gap: 32px;
+        }
+
+        .lfps-program-showcase {
+            gap: 22px;
+        }
+
+        .lfps-program-panel {
+            grid-template-columns: minmax(280px, 0.82fr) minmax(0, 1.18fr);
+            min-height: 330px;
+        }
+
+        .lfps-program-panel__media {
+            background: #f8faff;
+        }
+
+        .lfps-program-panel__body {
+            gap: 14px;
+            min-width: 0;
+            padding: 34px;
+        }
+
+        .lfps-program-panel__footer {
+            padding-top: 14px;
+            border-top: 1px solid rgba(9, 41, 102, 0.08);
+        }
+
+        .lfps-step-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .lfps-step-card {
+            position: relative;
+            padding-top: 32px;
+        }
+
+        .lfps-step-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 28px;
+            width: 56px;
+            height: 3px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #6059f7 0%, #8f8aff 100%);
+        }
+
+        .lfps-insight-grid {
+            gap: 22px;
+        }
+
+        .lfps-video-stage {
+            gap: 22px;
+        }
+
+        .lfps-video-card--feature {
+            overflow: hidden;
+            min-height: 420px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8faff 100%);
+        }
+
+        .lfps-video-grid {
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .lfps-video-card {
+            min-width: 0;
+        }
+
+        .lfps-video-card__body {
+            min-width: 0;
+        }
+
+        .lfps-pricing-grid {
+            gap: 22px;
+        }
+
+        .lfps-price-card {
+            min-height: 320px;
+        }
+
+        .lfps-note-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .lfps-faq-list {
+            display: grid;
+            gap: 14px;
+        }
+
+        .lfps-cta-band {
+            margin-top: 110px;
+            padding: 38px;
+            border-radius: 34px;
+            background:
+                radial-gradient(circle at top right, rgba(96, 89, 247, 0.34), transparent 26%),
+                linear-gradient(135deg, #06235b 0%, #0b3277 100%);
+        }
+
+        .lfps-reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity 0.65s ease, transform 0.65s ease;
+        }
+
+        .lfps-reveal.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         @media (max-width: 1100px) {
             .lfps-hero,
             .lfps-hero-program,
@@ -1188,6 +1436,10 @@
             }
 
             .lfps-stat-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .lfps-video-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
@@ -1225,6 +1477,7 @@
 
             .lfps-hero {
                 padding-top: 42px;
+                min-height: auto;
             }
 
             .lfps-stack-card {
@@ -1259,6 +1512,54 @@
             .lfps-hero h1 {
                 font-size: 34px;
             }
+
+            .lfps-stat-grid,
+            .lfps-video-grid,
+            .lfps-note-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
+@endpush
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var targets = document.querySelectorAll(
+                '.lfps-hero__copy, .lfps-hero__visual, .lfps-proof-strip, .lfps-section-head, .lfps-value-card, .lfps-fit-card, .lfps-resource-card, .lfps-program-panel, .lfps-step-card, .lfps-insight-card, .lfps-video-card, .lfps-price-card, .lfps-note-card, .lfps-faq-item, .lfps-cta-band'
+            );
+
+            if (!targets.length) {
+                return;
+            }
+
+            targets.forEach(function (element) {
+                element.classList.add('lfps-reveal');
+            });
+
+            if (!('IntersectionObserver' in window)) {
+                targets.forEach(function (element) {
+                    element.classList.add('is-visible');
+                });
+                return;
+            }
+
+            var observer = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.14,
+                rootMargin: '0px 0px -40px 0px'
+            });
+
+            targets.forEach(function (element, index) {
+                element.style.transitionDelay = Math.min(index * 35, 240) + 'ms';
+                observer.observe(element);
+            });
+        });
+    </script>
 @endpush
