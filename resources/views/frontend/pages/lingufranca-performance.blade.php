@@ -408,11 +408,684 @@
 @endpush
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('frontend/css/saasy-dark-tailwind.css') }}">
-    <link rel="stylesheet" href="{{ asset('frontend/css/saasy-dark.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" integrity="sha512-dPXYcDub/aeb08c63jRq/k6GaKccl256JQy/AnOq7CAnEZ9FzSL9wSbcZkMp4R26vBsMLFYH4kQ67/bbV8XaCQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-@endpush
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .lfps-performance-shell {
+            --lfps-navy: #06235b;
+            --lfps-navy-soft: #0d367f;
+            --lfps-accent: #6059f7;
+            --lfps-accent-soft: #8f8aff;
+            --lfps-slate: #545d70;
+            --lfps-text: #12233f;
+            --lfps-muted: #5e6b86;
+            --lfps-white: #ffffff;
+            position: relative;
+            overflow: hidden;
+            padding: 28px 0 72px;
+            background: #f4f7fc;
+            color: var(--lfps-text);
+            font-family: "Plus Jakarta Sans", sans-serif;
+        }
 
-@push('scripts')
-    <script src="{{ asset('frontend/js/saasy-dark.js') }}"></script>
+        .lfps-performance-shell::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto;
+            height: 760px;
+            background:
+                radial-gradient(circle at 12% 18%, rgba(96, 89, 247, 0.34), transparent 22%),
+                radial-gradient(circle at 86% 10%, rgba(106, 163, 255, 0.18), transparent 20%),
+                linear-gradient(180deg, #041836 0%, #06235b 48%, #0c3276 100%);
+            pointer-events: none;
+        }
+
+        .lfps-performance-shell * {
+            box-sizing: border-box;
+        }
+
+        .lfps-performance-shell a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .lfps-page {
+            position: relative;
+            z-index: 1;
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto;
+        }
+
+        .lfps-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 16px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 24px 56px rgba(4, 20, 54, 0.18);
+        }
+
+        .lfps-brand {
+            display: inline-flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .lfps-brand img {
+            display: block;
+            max-height: 54px;
+            width: auto;
+        }
+
+        .lfps-topbar__nav,
+        .lfps-topbar__actions,
+        .lfps-hero__actions,
+        .lfps-cta-band__actions,
+        .lfps-proof-strip__items,
+        .lfps-chip-row,
+        .lfps-footer__links,
+        .lfps-reason-list {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .lfps-topbar__nav {
+            justify-content: center;
+        }
+
+        .lfps-topbar__nav a {
+            color: rgba(255, 255, 255, 0.88);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .lfps-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
+            padding: 0 20px;
+            border: 1px solid transparent;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #6059f7 0%, #7f79ff 100%);
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 18px 34px rgba(96, 89, 247, 0.24);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .lfps-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 22px 38px rgba(96, 89, 247, 0.3);
+        }
+
+        .lfps-button--ghost {
+            border-color: rgba(255, 255, 255, 0.28);
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            box-shadow: none;
+        }
+
+        .lfps-hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+            gap: 28px;
+            align-items: stretch;
+            padding: 72px 0 48px;
+        }
+
+        .lfps-hero__copy,
+        .lfps-hero__visual {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .lfps-hero__visual {
+            gap: 18px;
+        }
+
+        .lfps-kicker,
+        .lfps-section-tag,
+        .lfps-fit-card__tag,
+        .lfps-price-card__badge {
+            display: inline-flex;
+            width: fit-content;
+            padding: 8px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .lfps-hero h1 {
+            margin: 18px 0 0;
+            color: #ffffff;
+            font-size: clamp(36px, 5vw, 64px);
+            line-height: 1.02;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+        }
+
+        .lfps-lead,
+        .lfps-hero .lfps-quote-card p,
+        .lfps-proof-strip > span,
+        .lfps-proof-strip__items span,
+        .lfps-chip,
+        .lfps-stack-card__body p,
+        .lfps-stack-card__body small,
+        .lfps-stat-card span {
+            color: rgba(255, 255, 255, 0.82);
+        }
+
+        .lfps-lead {
+            margin: 18px 0 0;
+            font-size: 18px;
+            line-height: 1.8;
+            max-width: 720px;
+        }
+
+        .lfps-chip-row {
+            margin-top: 28px;
+        }
+
+        .lfps-chip {
+            padding: 10px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .lfps-hero__actions {
+            margin-top: 30px;
+        }
+
+        .lfps-stat-grid,
+        .lfps-value-grid,
+        .lfps-resource-grid,
+        .lfps-step-grid,
+        .lfps-insight-grid,
+        .lfps-pricing-grid,
+        .lfps-video-grid,
+        .lfps-note-grid,
+        .lfps-mini-grid,
+        .lfps-fit-grid,
+        .lfps-program-showcase,
+        .lfps-stack-grid {
+            display: grid;
+            gap: 18px;
+        }
+
+        .lfps-stat-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            margin-top: 32px;
+        }
+
+        .lfps-stat-card,
+        .lfps-quote-card,
+        .lfps-stack-card,
+        .lfps-proof-strip,
+        .lfps-price-card,
+        .lfps-cta-band {
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 28px;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 30px 60px rgba(7, 26, 67, 0.18);
+        }
+
+        .lfps-stat-card {
+            padding: 18px;
+        }
+
+        .lfps-stat-card strong {
+            display: block;
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .lfps-quote-card {
+            padding: 24px;
+        }
+
+        .lfps-stack-card {
+            display: grid;
+            grid-template-columns: 160px minmax(0, 1fr);
+            overflow: hidden;
+        }
+
+        .lfps-stack-card__cover {
+            min-height: 180px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .lfps-stack-card__body {
+            padding: 24px;
+        }
+
+        .lfps-stack-card__label {
+            display: inline-block;
+            margin-bottom: 8px;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .lfps-stack-card__body h2 {
+            margin: 0;
+            color: #ffffff;
+            font-size: 24px;
+            line-height: 1.2;
+            font-weight: 700;
+        }
+
+        .lfps-proof-strip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 20px 24px;
+            margin-top: 10px;
+        }
+
+        .lfps-proof-strip > span {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .lfps-section {
+            padding-top: 84px;
+        }
+
+        .lfps-section-head {
+            max-width: 760px;
+            margin: 0 auto 28px;
+            text-align: center;
+        }
+
+        .lfps-section-head--left {
+            margin-left: 0;
+            margin-right: 0;
+            text-align: left;
+        }
+
+        .lfps-section-head .lfps-section-tag,
+        .lfps-insight-card .lfps-section-tag,
+        .lfps-cta-band .lfps-section-tag,
+        .lfps-fit-card__tag,
+        .lfps-price-card__badge {
+            border-color: rgba(96, 89, 247, 0.16);
+            background: rgba(96, 89, 247, 0.08);
+            color: #6059f7;
+        }
+
+        .lfps-section-head h2,
+        .lfps-insight-card h2,
+        .lfps-cta-band h2 {
+            margin: 18px 0 0;
+            color: #0e2450;
+            font-size: clamp(28px, 3vw, 42px);
+            line-height: 1.1;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+        }
+
+        .lfps-section-head p,
+        .lfps-insight-card p,
+        .lfps-cta-band p {
+            margin: 16px 0 0;
+            color: var(--lfps-muted);
+            font-size: 16px;
+            line-height: 1.8;
+        }
+
+        .lfps-value-grid,
+        .lfps-step-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .lfps-fit-grid,
+        .lfps-insight-grid,
+        .lfps-resource-grid,
+        .lfps-pricing-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .lfps-video-grid,
+        .lfps-note-grid,
+        .lfps-mini-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .lfps-value-card,
+        .lfps-fit-card,
+        .lfps-resource-card,
+        .lfps-step-card,
+        .lfps-insight-card,
+        .lfps-note-card,
+        .lfps-video-card,
+        .lfps-program-panel,
+        .lfps-faq-item {
+            border: 1px solid rgba(9, 41, 102, 0.08);
+            border-radius: 28px;
+            background: #ffffff;
+            box-shadow: 0 24px 50px rgba(17, 35, 70, 0.08);
+        }
+
+        .lfps-value-card,
+        .lfps-fit-card,
+        .lfps-resource-card,
+        .lfps-step-card,
+        .lfps-insight-card,
+        .lfps-note-card,
+        .lfps-price-card,
+        .lfps-video-card__body,
+        .lfps-program-panel__body {
+            padding: 28px;
+        }
+
+        .lfps-value-card__index,
+        .lfps-step-card__index {
+            display: inline-flex;
+            margin-bottom: 14px;
+            color: #6059f7;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+        }
+
+        .lfps-value-card h3,
+        .lfps-fit-card h3,
+        .lfps-resource-card h3,
+        .lfps-step-card h3,
+        .lfps-video-card h3,
+        .lfps-program-panel__body h3,
+        .lfps-price-card h3 {
+            margin: 0;
+            color: #0e2450;
+            font-size: 24px;
+            line-height: 1.25;
+            font-weight: 700;
+        }
+
+        .lfps-value-card p,
+        .lfps-fit-card li,
+        .lfps-resource-card li,
+        .lfps-step-card p,
+        .lfps-video-card p,
+        .lfps-program-panel__body p,
+        .lfps-program-panel__body li,
+        .lfps-note-card,
+        .lfps-mini-card li,
+        .lfps-price-card p,
+        .lfps-price-card span,
+        .lfps-faq-item p {
+            color: var(--lfps-muted);
+            line-height: 1.8;
+        }
+
+        .lfps-fit-card ul,
+        .lfps-resource-card ul,
+        .lfps-program-panel__body ul,
+        .lfps-mini-card ul {
+            margin: 16px 0 0;
+            padding-left: 18px;
+        }
+
+        .lfps-fit-card--muted,
+        .lfps-cta-band,
+        .lfps-price-card {
+            background: linear-gradient(180deg, #0a2d6b 0%, #06235b 100%);
+            border-color: rgba(6, 35, 91, 0.08);
+        }
+
+        .lfps-fit-card--muted li,
+        .lfps-fit-card--muted .lfps-fit-card__tag,
+        .lfps-cta-band h2,
+        .lfps-cta-band p,
+        .lfps-cta-band .lfps-section-tag,
+        .lfps-price-card strong,
+        .lfps-price-card h3,
+        .lfps-price-card p,
+        .lfps-price-card span {
+            color: #ffffff;
+        }
+
+        .lfps-price-card--featured {
+            background: linear-gradient(135deg, #6059f7 0%, #3c5fe4 100%);
+        }
+
+        .lfps-program-panel {
+            display: grid;
+            grid-template-columns: minmax(260px, 0.86fr) minmax(0, 1.14fr);
+            overflow: hidden;
+        }
+
+        .lfps-program-panel__media img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .lfps-program-panel__body {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .lfps-program-panel__footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: auto;
+            padding-top: 8px;
+            color: #0e2450;
+            font-weight: 700;
+        }
+
+        .lfps-inline-link {
+            color: #6059f7;
+            font-weight: 700;
+        }
+
+        .lfps-mini-card {
+            padding: 22px;
+            border: 1px solid rgba(9, 41, 102, 0.08);
+            border-radius: 22px;
+            background: #f7f9ff;
+        }
+
+        .lfps-mini-card strong,
+        .lfps-video-card__meta {
+            color: #0e2450;
+        }
+
+        .lfps-reason-list span {
+            display: inline-flex;
+            padding: 12px 14px;
+            border-radius: 16px;
+            background: #f0f3ff;
+            color: #3f4f6e;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .lfps-video-card {
+            overflow: hidden;
+        }
+
+        .lfps-video-card__media video {
+            display: block;
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            background: #0d1933;
+        }
+
+        .lfps-video-card__meta {
+            display: inline-block;
+            margin-bottom: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .lfps-empty-card {
+            padding: 26px;
+            border: 1px solid rgba(9, 41, 102, 0.08);
+            border-radius: 24px;
+            background: #ffffff;
+            color: var(--lfps-muted);
+            text-align: center;
+        }
+
+        .lfps-faq-item {
+            overflow: hidden;
+        }
+
+        .lfps-faq-item summary {
+            cursor: pointer;
+            list-style: none;
+            padding: 22px 24px;
+            color: #0e2450;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .lfps-faq-item summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .lfps-faq-item p {
+            margin: 0;
+            padding: 0 24px 24px;
+        }
+
+        .lfps-price-card__badge {
+            border-color: rgba(255, 255, 255, 0.16);
+            background: rgba(255, 255, 255, 0.14);
+        }
+
+        .lfps-price-card .lfps-button {
+            margin-top: auto;
+            background: #ffffff;
+            color: #06235b;
+            box-shadow: none;
+        }
+
+        .lfps-price-card .lfps-button:hover {
+            box-shadow: none;
+        }
+
+        .lfps-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 48px 2px 0;
+            color: #5b6984;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        @media (max-width: 1100px) {
+            .lfps-hero,
+            .lfps-program-panel,
+            .lfps-fit-grid,
+            .lfps-insight-grid,
+            .lfps-resource-grid,
+            .lfps-pricing-grid,
+            .lfps-video-grid,
+            .lfps-note-grid,
+            .lfps-mini-grid,
+            .lfps-value-grid,
+            .lfps-step-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .lfps-stat-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 720px) {
+            .lfps-performance-shell {
+                padding-top: 18px;
+            }
+
+            .lfps-performance-shell::before {
+                height: 960px;
+            }
+
+            .lfps-page {
+                width: min(100% - 20px, 1180px);
+            }
+
+            .lfps-topbar,
+            .lfps-proof-strip,
+            .lfps-footer,
+            .lfps-cta-band {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .lfps-topbar__nav,
+            .lfps-topbar__actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .lfps-hero {
+                padding-top: 42px;
+            }
+
+            .lfps-stack-card {
+                grid-template-columns: 1fr;
+            }
+
+            .lfps-stack-card__cover {
+                min-height: 220px;
+            }
+
+            .lfps-section {
+                padding-top: 58px;
+            }
+
+            .lfps-value-card,
+            .lfps-fit-card,
+            .lfps-resource-card,
+            .lfps-step-card,
+            .lfps-insight-card,
+            .lfps-note-card,
+            .lfps-video-card__body,
+            .lfps-program-panel__body,
+            .lfps-price-card,
+            .lfps-quote-card {
+                padding: 22px;
+            }
+
+            .lfps-hero h1 {
+                font-size: 34px;
+            }
+        }
+    </style>
 @endpush
