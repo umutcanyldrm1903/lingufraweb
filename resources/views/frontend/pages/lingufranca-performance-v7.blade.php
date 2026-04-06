@@ -12,14 +12,68 @@
     $heroStats = $pageData['hero_stats'] ?? [];
     $heroNotes = array_slice($heroStats, 0, 2);
     $proofBadges = array_slice($pageData['press_badges'] ?? [], 0, 3);
-    $manifestoPoints = array_slice($pageData['manifesto_points'] ?? [], 0, 3);
-    $resourceColumns = array_map(function ($column) {
-        $column['items'] = array_slice($column['items'] ?? [], 0, 3);
-        return $column;
-    }, array_slice($pageData['resource_columns'] ?? [], 0, 2));
-    $fitFor = array_slice($pageData['fit_for'] ?? [], 0, 4);
-    $fitNotFor = array_slice($pageData['fit_not_for'] ?? [], 0, 4);
-    $steps = array_slice($pageData['steps'] ?? [], 0, 4);
+    $manifestoPoints = [
+        [
+            'title' => 'Programin amaci',
+            'description' => 'Sadece bilgi yuklemek degil; sinav mantigi, zaman yonetimi ve puan odakli performans kurmak.',
+        ],
+        [
+            'title' => 'Calisma platformu',
+            'description' => 'Alfa IELTS uzerinden 7/24 erisilebilen kaynak, gorev ve takip alaniyla surec ders saatinin disina tasiniyor.',
+        ],
+        [
+            'title' => 'Olculebilir takip',
+            'description' => 'Mock exam, writing-speaking geri bildirimi ve bolum bazli analizle performans duzenli guncelleniyor.',
+        ],
+    ];
+    $resourceColumns = [
+        [
+            'label' => 'Sinav Programi Omurgasi',
+            'items' => [
+                'Hedef band / skor analizi',
+                'Reading, Listening, Writing ve Speaking stratejisi',
+                'Band descriptor ve trap question analizi',
+            ],
+        ],
+        [
+            'label' => 'Program Ici Destek',
+            'items' => [
+                'Alfa IELTS calisma platformu',
+                'Sinirsiz mock exam ve performans takibi',
+                'WhatsApp geri bildirim ve surec destegi',
+            ],
+        ],
+    ];
+    $fitFor = [
+        'IELTS / TOEFL / PTE / YDS hedef puani olanlar',
+        'Yurt disi yuksek lisans veya doktora basvurusu yapacaklar',
+        'Akademik kariyer hedefleyenler',
+        'Mevcut puanini stratejik olarak yukseltmek isteyenler',
+    ];
+    $fitNotFor = [
+        'Sabit mufredat ve pasif icerikle ilerlemek isteyenler',
+        'Surece aktif katilim gostermeye hazir olmayanlar',
+        'Hizli ve zahmetsiz sonuc beklentisi olanlar',
+        'Kisa yol ya da sihirli cozum arayanlar',
+    ];
+    $steps = [
+        [
+            'title' => 'Ilk tanisma ve analiz',
+            'description' => 'Mevcut seviye, hedef band, zayif moduller ve haftalik uygunluk netlestirilir.',
+        ],
+        [
+            'title' => 'Kisisel performans plani',
+            'description' => 'Writing gorev yapisi, essay mimarisi, speaking stratejisi ve zaman yonetimi plana baglanir.',
+        ],
+        [
+            'title' => 'Surekli iletisim ve geri bildirim',
+            'description' => 'WhatsApp uzerinden gorev kontrolu, speaking geri bildirimi ve surec duzeltmeleri aktif verilir.',
+        ],
+        [
+            'title' => 'Duzenli sinav performans takibi',
+            'description' => 'Reading sure, listening hata, writing band ve speaking coherence duzenli olculur.',
+        ],
+    ];
     $packages = array_slice($pageData['packages'] ?? [], 0, 2);
     $pricingNotes = array_slice($pageData['pricing_notes'] ?? [], 0, 4);
     $faqs = array_slice($pageData['faq'] ?? [], 0, 4);
@@ -28,7 +82,8 @@
         $program['teaser'] = $program['result'] ?? ($program['subtitle'] ?? '');
         return $program;
     }, $downloads ?? []);
-    $primaryProgram = $programs[0] ?? null;
+    $primaryProgram = $programs[1] ?? ($programs[0] ?? null);
+    $programs = isset($programs[1]) ? [$programs[1]] : $programs;
     $mediaCount = count($mediaLibrary ?? []);
     $featuredMedia = $mediaLibrary[0] ?? null;
     $secondaryMedia = array_slice($mediaLibrary ?? [], 1, 4);
@@ -40,25 +95,33 @@
         'Rehber Mentor',
     ];
 
-    $heroOverline = $pageData['eyebrow'] ?? 'LinguFranca Performans Sistemi';
-    $heroTitleShort = 'Akici konus. Hedef skoru al.';
-    $heroLeadShort = 'Daginik ders degil. Analiz, plan ve takip ile ilerleyen tek bir sistem.';
-    $systemTitleShort = 'Ders degil, performans duzeni.';
-    $systemLeadShort = 'Her sey analiz, plan ve duzenli takip etrafinda kurulu.';
-    $fitTitleShort = 'Herkes icin degil.';
-    $fitLeadShort = 'Vakit ayiracak ve sonucu zorlayacak kisiler icin tasarlandi.';
-    $resourceTitleShort = 'Ihtiyaca gore 3 net akis.';
-    $resourceLeadShort = 'Genel Ingilizce, IELTS ve PTE tek omurgada ilerler.';
+    $heroOverline = 'IELTS / TOEFL / PTE / YDS';
+    $heroTitleShort = 'Hedef band icin daginik ders degil.';
+    $heroLeadShort = 'Sinav mantigi, zaman yonetimi, mock exam ve stratejik takip tek bir performans sisteminde.';
+    $systemTitleShort = 'Sinav performansi icin kurulu sistem.';
+    $systemLeadShort = 'Analiz, strateji, uygulama ve olcum ayni akis icinde ilerler.';
+    $fitTitleShort = 'Bu akisa kimler girer?';
+    $fitLeadShort = 'Hedef puani olan, duzenli calisacak ve sistemi uygulayacak katilimcilar icin tasarlandi.';
+    $resourceTitleShort = 'IELTS akisinda ne var?';
+    $resourceLeadShort = 'Platform, mock exam, writing-speaking stratejisi ve detayli performans takibi burada.';
     $processTitleShort = '4 net adim.';
     $processLeadShort = 'Analiz, plan, uygulama, takip.';
     $proofTitleShort = 'Sistem ekranda da gorunuyor.';
-    $proofLeadShort = 'Basin ve ogrenci videolari ayni akisin parcasi.';
+    $proofLeadShort = 'Basin ve ogrenci videolari sinav akisinin sahadaki yansimasi.';
     $pricingTitleShort = 'Net fiyat. Net paket.';
     $pricingLeadShort = 'Paketini sec, takvimini kur, basla.';
     $faqTitleShort = 'Karar oncesi en cok sorulanlar';
     $ctaTitleShort = 'Planini netlestir.';
     $ctaTextShort = 'Dogru akisi sec, seviye tespitiyle basla.';
-    $deckGalleries = $deckGalleries ?? [];
+    $deckGalleries = collect($deckGalleries ?? [])
+        ->filter(fn($deck) => ($deck['slug'] ?? null) === 'ielts-exam')
+        ->map(function ($deck) {
+            $deck['eyebrow'] = 'IELTS Performans Akisi';
+            $deck['lead'] = 'Program daveti, hedefler, ekip, platform, mock exam, surec, fiyat ve odeme adimlari tek akista burada.';
+            return $deck;
+        })
+        ->values()
+        ->all();
 @endphp
 
 @section('meta_title', ($pageData['meta_title'] ?? 'LinguFranca') . ' | ' . $siteName)
@@ -902,13 +965,12 @@
         }
 
         .dbp-deck-pages {
-            columns: 2 320px;
-            column-gap: 18px;
+            display: grid;
+            gap: 18px;
         }
 
         .dbp-deck-page {
-            margin: 0 0 18px;
-            break-inside: avoid;
+            margin: 0;
             border-radius: 24px;
             overflow: hidden;
             background: #ffffff;
@@ -1357,9 +1419,6 @@
                 padding-top: 72px;
             }
 
-            .dbp-deck-pages {
-                columns: 1;
-            }
         }
     </style>
 @endpush
