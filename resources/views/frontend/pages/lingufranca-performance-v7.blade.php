@@ -29,6 +29,7 @@
         return $program;
     }, $downloads ?? []);
     $primaryProgram = $programs[0] ?? null;
+    $mediaCount = count($mediaLibrary ?? []);
     $featuredMedia = $mediaLibrary[0] ?? null;
     $secondaryMedia = array_slice($mediaLibrary ?? [], 1, 4);
 
@@ -298,12 +299,23 @@
                             <video controls preload="metadata" playsinline @if (!empty($featuredMedia['poster_url'])) poster="{{ $featuredMedia['poster_url'] }}" @endif>
                                 <source src="{{ $featuredMedia['file_url'] }}" type="video/mp4">
                             </video>
+                            <div class="dbp-media-feature__floating">
+                                <span class="dbp-media-feature__play">Featured Proof</span>
+                                <strong>{{ $featuredMedia['duration'] }}</strong>
+                            </div>
                         </div>
                         <div class="dbp-media-feature__body">
                             <span class="dbp-kicker">{{ $featuredMedia['category'] }}</span>
                             <h3>{{ $featuredMedia['title'] }}</h3>
                             <p>{{ \Illuminate\Support\Str::limit($featuredMedia['description'] ?? '', 96) }}</p>
-                            <strong>{{ $featuredMedia['duration'] }}</strong>
+                            <div class="dbp-media-feature__meta">
+                                <span>{{ $featuredMedia['duration'] }}</span>
+                                <span>{{ $mediaCount }} video arsivi</span>
+                            </div>
+                            <div class="dbp-media-feature__actions">
+                                <a class="dbp-button" href="{{ $featuredMedia['file_url'] }}" target="_blank" rel="noopener">Tam ekran ac</a>
+                                <a class="dbp-button dbp-button--ghost" href="#fiyat">Paketleri incele</a>
+                            </div>
                         </div>
                     </article>
                 @endif
@@ -317,9 +329,14 @@
                                 @else
                                     <span>{{ $media['category'] }}</span>
                                 @endif
+                                <div class="dbp-media-card__overlay">
+                                    <div class="dbp-media-card__meta">
+                                        <span>{{ $media['category'] }}</span>
+                                        <span>{{ $media['duration'] }}</span>
+                                    </div>
+                                    <h3>{{ $media['title'] }}</h3>
+                                </div>
                             </div>
-                            <span class="dbp-kicker">{{ $media['category'] }}</span>
-                            <h3>{{ $media['title'] }}</h3>
                             <p>{{ \Illuminate\Support\Str::limit($media['description'] ?? '', 78) }}</p>
                             <a href="{{ $media['file_url'] }}" target="_blank" rel="noopener">Videoyu ac</a>
                         </article>
@@ -953,31 +970,115 @@
 
         .dbp-media-feature {
             overflow: hidden;
-            border-radius: 26px;
+            border-radius: 30px;
             display: grid;
-            grid-template-columns: minmax(0, 1.12fr) minmax(300px, 0.88fr);
-            min-height: 440px;
+            grid-template-columns: minmax(0, 1.18fr) minmax(320px, 0.82fr);
+            min-height: 520px;
         }
 
         .dbp-media-feature__media {
-            min-height: 420px;
+            min-height: 500px;
+            position: relative;
             background:
                 radial-gradient(circle at 24% 24%, rgba(96, 89, 247, 0.18), transparent 24%),
                 #0d1524;
         }
 
-        .dbp-media-card {
-            overflow: hidden;
+        .dbp-media-feature__media::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(180deg, rgba(4, 15, 36, 0.08) 0%, rgba(4, 15, 36, 0.16) 36%, rgba(4, 15, 36, 0.88) 100%);
+            pointer-events: none;
+        }
+
+        .dbp-media-feature__floating {
+            position: absolute;
+            left: 26px;
+            right: 26px;
+            bottom: 26px;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             gap: 14px;
         }
 
+        .dbp-media-feature__play,
+        .dbp-media-feature__floating strong {
+            display: inline-flex;
+            align-items: center;
+            min-height: 38px;
+            padding: 0 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            backdrop-filter: blur(14px);
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .dbp-media-feature__body {
+            padding: 34px 32px;
+            align-content: end;
+        }
+
+        .dbp-media-feature__meta,
+        .dbp-media-card__meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .dbp-media-feature__meta span,
+        .dbp-media-card__meta span {
+            display: inline-flex;
+            align-items: center;
+            min-height: 34px;
+            padding: 0 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(238, 243, 255, 0.86);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .dbp-media-feature__actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .dbp-media-card {
+            overflow: hidden;
+            gap: 16px;
+            padding: 18px;
+        }
+
         .dbp-media-card__thumb {
-            aspect-ratio: 16 / 10;
-            border-radius: 18px;
+            aspect-ratio: 16 / 11;
+            border-radius: 22px;
             overflow: hidden;
             background: linear-gradient(145deg, rgba(13, 31, 77, 0.96), rgba(8, 24, 57, 0.96));
             display: grid;
             place-items: center;
+            position: relative;
+        }
+
+        .dbp-media-card__thumb::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(4, 15, 36, 0.04) 0%, rgba(4, 15, 36, 0.24) 40%, rgba(4, 15, 36, 0.92) 100%);
+            pointer-events: none;
         }
 
         .dbp-media-card__thumb img {
@@ -992,6 +1093,22 @@
             font-family: "Sora", sans-serif;
             font-size: 14px;
             font-weight: 700;
+        }
+
+        .dbp-media-card__overlay {
+            position: absolute;
+            inset: auto 18px 18px 18px;
+            z-index: 2;
+            display: grid;
+            gap: 10px;
+        }
+
+        .dbp-media-card__overlay h3 {
+            margin: 0;
+            color: #ffffff;
+            font-size: 24px;
+            line-height: 1.05;
+            max-width: 12ch;
         }
 
         .dbp-media-card a {
@@ -1102,6 +1219,10 @@
             .dbp-hero-panel {
                 min-height: 520px;
                 transform: none;
+            }
+
+            .dbp-media-feature__media {
+                min-height: 360px;
             }
         }
 
