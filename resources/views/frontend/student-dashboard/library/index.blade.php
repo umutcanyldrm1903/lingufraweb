@@ -47,10 +47,10 @@
                             <div>
                                 <strong>{{ $item->title }}</strong>
                                 <p>{{ $item->description }}</p>
-                                <small>{{ __('Instructor') }}: {{ $item->instructor?->name ?? '-' }}</small>
+                                <small>{{ __('Instructor') }}: {{ \Illuminate\Support\Str::before($item->instructor?->name ?? '', ' ') ?: ($item->instructor?->name ?? '-') }}</small>
                             </div>
                             <div class="sp-library-actions">
-                                <a href="{{ asset($item->file_path) }}" target="_blank" class="sp-library-btn">
+                                <a href="{{ !empty($item->is_external) ? $item->file_path : asset($item->file_path) }}" target="_blank" class="sp-library-btn">
                                     {{ __('View File') }}
                                 </a>
                             </div>

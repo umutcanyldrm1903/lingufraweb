@@ -20,10 +20,10 @@
                     @endphp
                     <a href="{{ route('student.messages.index', $teacher->id) }}" class="sm-contact {{ $active ? 'is-active' : '' }}">
                         <div class="sm-contact__avatar">
-                            <img src="{{ asset($teacher->image ?? 'frontend/img/placeholder/instructor.png') }}" alt="{{ $teacher->name }}">
+                            <img src="{{ asset($teacher->image ?? 'frontend/img/placeholder/instructor.png') }}" alt="{{ \Illuminate\Support\Str::before($teacher->name, ' ') ?: $teacher->name }}">
                         </div>
                         <div class="sm-contact__meta">
-                            <div class="sm-contact__name">{{ $teacher->name }}</div>
+                            <div class="sm-contact__name">{{ \Illuminate\Support\Str::before($teacher->name, ' ') ?: $teacher->name }}</div>
                             <div class="sm-contact__last">
                                 @if($lastMessage)
                                     {{ \Illuminate\Support\Str::limit($lastMessage->body, 36) }}
@@ -47,10 +47,10 @@
                 <div class="sm-thread__header">
                     <div class="sm-thread__user">
                         <div class="sm-contact__avatar">
-                            <img src="{{ asset($partner->image ?? 'frontend/img/placeholder/instructor.png') }}" alt="{{ $partner->name }}">
+                            <img src="{{ asset($partner->image ?? 'frontend/img/placeholder/instructor.png') }}" alt="{{ \Illuminate\Support\Str::before($partner->name, ' ') ?: $partner->name }}">
                         </div>
                         <div>
-                            <div class="sm-contact__name">{{ $partner->name }}</div>
+                            <div class="sm-contact__name">{{ \Illuminate\Support\Str::before($partner->name, ' ') ?: $partner->name }}</div>
                             <div class="sm-thread__mail">{{ $partner->email }}</div>
                         </div>
                     </div>
@@ -72,7 +72,7 @@
                     @csrf
                     <textarea name="body" rows="2" class="form-control" placeholder="{{ __('Write your message...') }}" required></textarea>
                     <div class="text-end">
-                        <button type="submit" class="sp-btn sp-btn-dark mt-2">{{ __('Send') }}</button>
+                        <button type="submit" class="sp-btn sm-send-btn mt-2">{{ __('Send') }}</button>
                     </div>
                 </form>
             @else
@@ -115,6 +115,8 @@
     .sm-form textarea{resize:none;}
     .sm-empty{display:grid;place-items:center;flex:1;}
     .sm-empty__text{color:#777;font-weight:700;}
+    .sm-send-btn{background:#0e5c93;color:#fff;border:1px solid #0e5c93;min-width:108px;}
+    .sm-send-btn:hover{background:#0b4a78;color:#fff;border-color:#0b4a78;}
 
     @media(max-width:991px){
         .sm-grid{grid-template-columns:1fr;grid-template-rows:auto auto;}

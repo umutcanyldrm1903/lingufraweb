@@ -30,7 +30,7 @@
                                 $isCancelled = in_array($statusKey, ['cancelled_teacher', 'cancelled_student'], true);
                                 $isPending = $statusKey === 'pending';
                                 $canJoin = !$isCancelled && !$isPending && ($alreadyJoined || $lessonsRemaining > 0);
-                                $canCancel = $live->kind === 'student' && in_array($statusKey, ['scheduled', 'pending'], true) && $cancelRemaining > 0;
+                                $canCancel = $live->kind === 'student' && in_array($statusKey, ['scheduled', 'pending'], true);
                                 $thumbnail = asset($live->thumbnail ?: 'frontend/img/courses/course_thumb01.jpg');
                             @endphp
                             <div class="sp-live-card">
@@ -43,8 +43,8 @@
                                         <span class="sp-live-card__time">{{ $startTime }}</span>
                                     </div>
                                     <h5 class="sp-live-card__lesson">{{ $live->title }}</h5>
-                                    <p class="sp-live-card__course">{{ $live->course_title ?: __('Ozel Ders') }}</p>
-                                    <p class="sp-live-card__teacher">{{ $live->instructor_name }}</p>
+                                    <p class="sp-live-card__course">{{ $live->course_title ?: __('Private Lesson') }}</p>
+                                    <p class="sp-live-card__teacher">{{ \Illuminate\Support\Str::before($live->instructor_name ?? '', ' ') ?: $live->instructor_name }}</p>
                                     @if ($isCancelled)
                                         <p class="sp-live-card__status">{{ __('Ders Iptal Edildi') }}</p>
                                     @elseif ($isPending)
@@ -66,7 +66,7 @@
                                     @if ($canCancel)
                                         <form method="POST" action="{{ $live->cancel_route }}" class="sp-live-card__cancel">
                                             @csrf
-                                            <button type="submit" class="sp-live-card__cancel-btn">{{ __('Dersi Iptal Et') }}</button>
+                                            <button type="submit" class="sp-live-card__cancel-btn">{{ $cancelRemaining > 0 ? __('Cancel Lesson') : __('Cancel And Lose Credit') }}</button>
                                         </form>
                                     @endif
                                 </div>
@@ -100,8 +100,8 @@
                                         <span class="sp-live-card__time">{{ $startTime }}</span>
                                     </div>
                                     <h5 class="sp-live-card__lesson">{{ $live->title }}</h5>
-                                    <p class="sp-live-card__course">{{ $live->course_title ?: __('Ozel Ders') }}</p>
-                                    <p class="sp-live-card__teacher">{{ $live->instructor_name }}</p>
+                                    <p class="sp-live-card__course">{{ $live->course_title ?: __('Private Lesson') }}</p>
+                                    <p class="sp-live-card__teacher">{{ \Illuminate\Support\Str::before($live->instructor_name ?? '', ' ') ?: $live->instructor_name }}</p>
                                     @if (in_array($statusKey, ['cancelled_teacher', 'cancelled_student'], true))
                                         <p class="sp-live-card__status">{{ __('Ders Iptal Edildi') }}</p>
                                     @endif

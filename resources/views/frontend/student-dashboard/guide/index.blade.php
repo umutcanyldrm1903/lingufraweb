@@ -2,22 +2,20 @@
 
 @section('dashboard-contents')
     @php
-        $thumb = asset('frontend/img/bg/video_bg.jpg');
-
-        // TODO: Manage videos in admin. Placeholder list for now.
+        $thumbs = [
+            asset('frontend/img/bg/breadcrumb_bg.jpg'),
+            asset('frontend/img/bg/video_bg.jpg'),
+            asset('frontend/img/bg/instructor_bg.jpg'),
+        ];
         $videos = collect([
-            ['title' => 'How can I view notifications?', 'thumb' => $thumb, 'url' => null],
-            ['title' => 'How can I start a lesson?', 'thumb' => $thumb, 'url' => null],
-            ['title' => 'How can I pause my training?', 'thumb' => $thumb, 'url' => null],
-            ['title' => 'How can I view my attendance?', 'thumb' => $thumb, 'url' => null],
-            ['title' => 'How do I purchase a package?', 'thumb' => $thumb, 'url' => null],
-            ['title' => 'How do I track assignments?', 'thumb' => $thumb, 'url' => null],
-            ['title' => 'How do I contact my instructor?', 'thumb' => $thumb, 'url' => null],
-            ['title' => 'How do I use the library?', 'thumb' => $thumb, 'url' => null],
-            ['title' => 'Where can I view my reports?', 'thumb' => $thumb, 'url' => null],
-            ['title' => 'How do I update my profile settings?', 'thumb' => $thumb, 'url' => null],
-            ['title' => 'Steps to change your password', 'thumb' => $thumb, 'url' => null],
-            ['title' => 'How do I create a support request?', 'thumb' => $thumb, 'url' => null],
+            ['title' => 'How to reserve your weekly lessons', 'thumb' => $thumbs[0], 'url' => null],
+            ['title' => 'How to join your upcoming class', 'thumb' => $thumbs[1], 'url' => null],
+            ['title' => 'How to message your instructor', 'thumb' => $thumbs[2], 'url' => null],
+            ['title' => 'How to use your cancellation rights', 'thumb' => $thumbs[0], 'url' => null],
+            ['title' => 'How to follow homework and reports', 'thumb' => $thumbs[1], 'url' => null],
+            ['title' => 'How to use the student library', 'thumb' => $thumbs[2], 'url' => null],
+            ['title' => 'How to update your profile settings', 'thumb' => $thumbs[0], 'url' => null],
+            ['title' => 'How to contact support quickly', 'thumb' => $thumbs[1], 'url' => null],
         ]);
     @endphp
 

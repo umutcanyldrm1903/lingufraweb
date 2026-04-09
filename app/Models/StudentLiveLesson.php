@@ -21,6 +21,8 @@ class StudentLiveLesson extends Model
         'cancelled_reason',
         'cancelled_at',
         'ended_at',
+        'instructor_summary',
+        'instructor_summary_written_at',
         'student_rating',
         'student_review',
         'rated_at',
@@ -30,6 +32,7 @@ class StudentLiveLesson extends Model
         'start_time' => 'datetime',
         'cancelled_at' => 'datetime',
         'ended_at' => 'datetime',
+        'instructor_summary_written_at' => 'datetime',
         'rated_at' => 'datetime',
         'student_rating' => 'integer',
     ];

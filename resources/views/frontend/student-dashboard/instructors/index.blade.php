@@ -102,6 +102,7 @@
                         <div class="ci-list">
                             @forelse ($instructors as $instructor)
                                 @php
+                                    $displayName = \Illuminate\Support\Str::before($instructor->name, ' ') ?: $instructor->name;
                                     $profileUrl = route('instructor-details', ['id' => $instructor->id, 'slug' => \Illuminate\Support\Str::slug($instructor->name)]);
                                     $instructorImage = !empty($instructor->image) ? asset($instructor->image) : asset('frontend/img/instructor/instructor01.png');
                                     $avgRating = (float) ($instructor->avg_live_rating ?? 0);
@@ -130,13 +131,13 @@
                                     </button>
                                     <div class="ci-avatar">
                                         <a href="{{ $profileUrl }}" class="ci-link">
-                                            <img src="{{ $instructorImage }}" alt="{{ $instructor->name }}">
+                                            <img src="{{ $instructorImage }}" alt="{{ $displayName }}">
                                         </a>
                                     </div>
                                     <div class="ci-body">
                                         <div class="ci-head">
                                             <div>
-                                                <h4><a href="{{ $profileUrl }}" class="ci-link">{{ $instructor->name }}</a></h4>
+                                                <h4><a href="{{ $profileUrl }}" class="ci-link">{{ $displayName }}</a></h4>
                                                 <p class="ci-role">{{ $instructor->job_title }}</p>
                                             </div>
                                         </div>

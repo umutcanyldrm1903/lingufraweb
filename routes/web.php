@@ -251,6 +251,7 @@ Route::group(['middleware' => 'maintenance.mode'], function () {
 	        Route::delete('schedule/availability/{availability}', [InstructorScheduleController::class, 'destroyAvailability'])->name('schedule.availability.destroy');
 	        Route::get('lessons', [InstructorLessonController::class, 'index'])->name('lessons.index');
 	        Route::post('lessons/{lesson}/cancel', [InstructorLessonController::class, 'cancel'])->name('lessons.cancel');
+	        Route::post('lessons/{lesson}/summary', [InstructorLessonController::class, 'updateSummary'])->name('lessons.summary');
 	        Route::get('live-lessons/{lesson}', [LearningController::class, 'studentLiveSession'])->name('live-lessons.join');
 	        Route::get('students', [InstructorStudentController::class, 'index'])->name('students.index');
 	        Route::get('students/{student}/panel', [InstructorStudentController::class, 'panel'])->name('students.panel');

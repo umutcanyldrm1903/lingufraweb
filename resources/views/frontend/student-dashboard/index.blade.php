@@ -14,7 +14,7 @@
             if (!empty($currentPlan?->assigned_instructor_id)) {
                 $assignedInstructorName = DB::table('users')->where('id', $currentPlan->assigned_instructor_id)->value('name');
                 if ($assignedInstructorName) {
-                    $assignedInstructor = (object) ['name' => $assignedInstructorName];
+                    $assignedInstructor = (object) ['name' => (\Illuminate\Support\Str::before($assignedInstructorName, ' ') ?: $assignedInstructorName)];
                 }
             }
         }
@@ -36,9 +36,9 @@
             <div class="sp-panel__head">
                 <div class="sp-panel__title">
                     <i class="fas fa-book"></i>
-                    {{ __('Library') }}
+                    {{ __('Upcoming Lessons') }}
                 </div>
-                <a class="sp-panel__more" href="{{ route('student.library.index') }}">{{ __('See More') }}</a>
+                <a class="sp-panel__more" href="{{ route('student.enrolled-courses') }}">{{ __('See More') }}</a>
             </div>
             @php
                 $libraryItems = [
@@ -55,7 +55,7 @@
             @endphp
             <div class="sp-library__grid">
                 @foreach ($libraryItems as $item)
-                    <a class="sp-libcard" href="{{ route('student.library.index') }}" style="background: {{ $item['color'] }}">
+                    <a class="sp-libcard" href="{{ route('student.enrolled-courses') }}" style="background: {{ $item['color'] }}">
                         <div class="sp-libcard__text">{{ __($item['title']) }}</div>
                         <div class="sp-libcard__icon"><i class="{{ $item['icon'] }}"></i></div>
                     </a>
@@ -67,13 +67,13 @@
             <div class="sp-panel__head">
                 <div class="sp-panel__title">
                     <i class="far fa-calendar-alt"></i>
-                    {{ __('Upcoming Lessons') }}
+                    {{ __('Library') }}
                 </div>
             </div>
             <div class="sp-note sp-note--action">
                 <i class="fas fa-video"></i>
-                <span>{{ __('Canli derslerinizi Derslerim sayfasindan takip edebilirsiniz.') }}</span>
-                <a href="{{ route('student.enrolled-courses') }}" class="sp-primary-btn">{{ __('Derse Katil') }}</a>
+                <span>{{ __('Use the library section for grammar, reading, IELTS and vocabulary resources.') }}</span>
+                <a href="{{ route('student.library.index') }}" class="sp-primary-btn">{{ __('Open Library') }}</a>
             </div>
         </div>
 

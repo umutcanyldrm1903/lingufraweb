@@ -461,6 +461,15 @@ class StudentDashboardController extends Controller {
         });
 
         $lessonDuration = $this->resolveLessonDuration($user);
+        $currentPlan = Schema::hasTable('user_plans') ? UserPlan::query()->where('user_id', $user?->id)->first() : null;
+        $weeklyLimit = $this->resolveWeeklyLessonLimit($currentPlan);
+        $reservedThisWeek = StudentLiveLesson::query()
+            ->where('student_id', $user?->id)
+            ->whereBetween('start_time', [$weekStart, $weekEnd])
+            ->when($hasStatusColumn, function ($query) {
+                $query->whereNotIn('status', ['cancelled_teacher', 'cancelled_student']);
+            })
+            ->count();
 
         return view('frontend.student-dashboard.instructors.schedule', compact(
             'instructor',
@@ -472,7 +481,9 @@ class StudentDashboardController extends Controller {
             'dayLabels',
             'availabilityByDay',
             'lessonsByDate',
-            'lessonDuration'
+            'lessonDuration',
+            'weeklyLimit',
+            'reservedThisWeek'
         ));
     }
 
@@ -493,72 +504,79 @@ class StudentDashboardController extends Controller {
         }
 
         $validated = $request->validate([
-            'slot' => ['required', 'string'],
+            'slots' => ['required', 'array', 'min:1'],
+            'slots.*' => ['required', 'string'],
+            'reservation_mode' => ['nullable', 'in:temporary,weekly'],
         ]);
 
-        $parts = array_map('trim', explode('|', $validated['slot']));
-        if (count($parts) !== 2 || $parts[0] === '' || $parts[1] === '') {
+        $selectedSlots = collect($validated['slots'] ?? [])->map(fn ($slot) => trim((string) $slot))->filter()->unique()->values();
+        if ($selectedSlots->isEmpty()) {
             return redirect()->back()->with([
                 'messege' => __('Please select a time slot.'),
                 'alert-type' => 'error',
             ]);
         }
 
-        $dateValue = $parts[0];
-        $timeValue = $parts[1];
-
-        try {
-            $startTime = Carbon::createFromFormat('Y-m-d H:i', $dateValue . ' ' . $timeValue);
-        } catch (\Throwable $e) {
-            return redirect()->back()->with([
-                'messege' => __('Selected slot is invalid.'),
-                'alert-type' => 'error',
-            ]);
-        }
-
-        if ($startTime->isPast()) {
-            return redirect()->back()->with([
-                'messege' => __('Selected slot is no longer available.'),
-                'alert-type' => 'error',
-            ]);
-        }
-
         $lessonDuration = $this->resolveLessonDuration($user);
-        $endedAt = $lessonDuration > 0 ? $startTime->copy()->addMinutes($lessonDuration) : null;
+        $currentPlan = Schema::hasTable('user_plans') ? UserPlan::query()->where('user_id', $user?->id)->first() : null;
 
-        if (Schema::hasTable('user_plans')) {
-            $plan = UserPlan::query()->where('user_id', $user?->id)->first();
-            if (!$plan || ($plan->lessons_remaining ?? 0) <= 0) {
-                return redirect()->back()->with([
-                    'messege' => __('Krediniz kalmadi. Derse katilmak icin paket satin alin.'),
-                    'alert-type' => 'error',
-                ]);
-            }
-        }
-
-        $dayOfWeek = $startTime->dayOfWeekIso - 1;
-        $availability = InstructorAvailability::query()
-            ->where('instructor_id', $instructor->id)
-            ->where('day_of_week', $dayOfWeek)
-            ->where('start_time', $timeValue)
-            ->where('is_active', 1)
-            ->first();
-
-        if (!$availability) {
+        if (Schema::hasTable('user_plans') && (!$currentPlan || ($currentPlan->lessons_remaining ?? 0) <= 0)) {
             return redirect()->back()->with([
-                'messege' => __('Selected slot is no longer available.'),
+                'messege' => __('Krediniz kalmadi. Derse katilmak icin paket satin alin.'),
                 'alert-type' => 'error',
             ]);
         }
 
-        if ($lessonDuration > 0) {
-            $availabilityEnd = Carbon::createFromFormat('Y-m-d H:i', $dateValue . ' ' . substr((string) $availability->end_time, 0, 5));
-            if ($endedAt && $availabilityEnd && $endedAt->greaterThan($availabilityEnd)) {
+        $parsedSlots = [];
+        foreach ($selectedSlots as $slotValue) {
+            $parts = array_map('trim', explode('|', $slotValue));
+            if (count($parts) !== 2 || $parts[0] === '' || $parts[1] === '') {
                 return redirect()->back()->with([
-                    'messege' => __('Selected slot is no longer available.'),
+                    'messege' => __('Selected slot is invalid.'),
                     'alert-type' => 'error',
                 ]);
             }
+
+            try {
+                $startTime = Carbon::createFromFormat('Y-m-d H:i', $parts[0] . ' ' . $parts[1]);
+            } catch (\Throwable $e) {
+                return redirect()->back()->with([
+                    'messege' => __('Selected slot is invalid.'),
+                    'alert-type' => 'error',
+                ]);
+            }
+
+            if ($startTime->lt(now()->addHours(24))) {
+                return redirect()->back()->with([
+                    'messege' => __('Bookings must be made at least 24 hours in advance.'),
+                    'alert-type' => 'error',
+                ]);
+            }
+
+            $parsedSlots[] = [
+                'date' => $parts[0],
+                'time' => $parts[1],
+                'start' => $startTime,
+                'end' => $lessonDuration > 0 ? $startTime->copy()->addMinutes($lessonDuration) : null,
+            ];
+        }
+
+        $firstWeekStart = $parsedSlots[0]['start']->copy()->startOfWeek(Carbon::MONDAY);
+        $firstWeekEnd = $parsedSlots[0]['start']->copy()->endOfWeek(Carbon::SUNDAY);
+        $weeklyLimit = $this->resolveWeeklyLessonLimit($currentPlan);
+        $reservedThisWeek = StudentLiveLesson::query()
+            ->where('student_id', $user?->id)
+            ->whereBetween('start_time', [$firstWeekStart, $firstWeekEnd])
+            ->when(Schema::hasTable('student_live_lessons') && Schema::hasColumn('student_live_lessons', 'status'), function ($query) {
+                $query->whereNotIn('status', ['cancelled_teacher', 'cancelled_student']);
+            })
+            ->count();
+
+        if (($reservedThisWeek + count($parsedSlots)) > $weeklyLimit) {
+            return redirect()->back()->with([
+                'messege' => __('Weekly reservation limit reached for your package.'),
+                'alert-type' => 'error',
+            ]);
         }
 
         $hasStatusColumn = Schema::hasTable('student_live_lessons')
@@ -566,114 +584,175 @@ class StudentDashboardController extends Controller {
         $hasEndedAtColumn = Schema::hasTable('student_live_lessons')
             && Schema::hasColumn('student_live_lessons', 'ended_at');
 
-        $slotTaken = StudentLiveLesson::query()
-            ->where('instructor_id', $instructor->id)
-            ->whereDate('start_time', $dateValue)
-            ->whereTime('start_time', $timeValue)
-            ->when($hasStatusColumn, function ($query) {
-                $query->whereNotIn('status', ['cancelled_teacher', 'cancelled_student']);
-            })
-            ->exists();
+        $recurring = ($validated['reservation_mode'] ?? 'temporary') === 'weekly';
+        $slotTargets = [];
+        foreach ($parsedSlots as $parsedSlot) {
+            $starts = [$parsedSlot['start']];
+            if ($recurring && $currentPlan?->ends_at) {
+                $cursor = $parsedSlot['start']->copy()->addWeek();
+                while ($cursor->lte($currentPlan->ends_at) && count($slotTargets) < (int) ($currentPlan->lessons_remaining ?? 0)) {
+                    $starts[] = $cursor->copy();
+                    $cursor->addWeek();
+                }
+            }
 
-        if ($slotTaken) {
+            foreach ($starts as $startTime) {
+                $dateValue = $startTime->format('Y-m-d');
+                $timeValue = $startTime->format('H:i');
+                $endedAt = $lessonDuration > 0 ? $startTime->copy()->addMinutes($lessonDuration) : null;
+                $dayOfWeek = $startTime->dayOfWeekIso - 1;
+                $availability = InstructorAvailability::query()
+                    ->where('instructor_id', $instructor->id)
+                    ->where('day_of_week', $dayOfWeek)
+                    ->where('start_time', $timeValue)
+                    ->where('is_active', 1)
+                    ->first();
+
+                if (!$availability) {
+                    return redirect()->back()->with([
+                        'messege' => __('Selected slot is no longer available.'),
+                        'alert-type' => 'error',
+                    ]);
+                }
+
+                if ($lessonDuration > 0) {
+                    $availabilityEnd = Carbon::createFromFormat('Y-m-d H:i', $dateValue . ' ' . substr((string) $availability->end_time, 0, 5));
+                    if ($endedAt && $availabilityEnd && $endedAt->greaterThan($availabilityEnd)) {
+                        return redirect()->back()->with([
+                            'messege' => __('Selected slot is no longer available.'),
+                            'alert-type' => 'error',
+                        ]);
+                    }
+                }
+
+                $slotTaken = StudentLiveLesson::query()
+                    ->where('instructor_id', $instructor->id)
+                    ->whereDate('start_time', $dateValue)
+                    ->whereTime('start_time', $timeValue)
+                    ->when($hasStatusColumn, function ($query) {
+                        $query->whereNotIn('status', ['cancelled_teacher', 'cancelled_student']);
+                    })
+                    ->exists();
+
+                if ($slotTaken) {
+                    return redirect()->back()->with([
+                        'messege' => __('One of the selected slots is no longer available.'),
+                        'alert-type' => 'error',
+                    ]);
+                }
+
+                $slotTargets[] = [
+                    'start' => $startTime,
+                    'end' => $endedAt,
+                    'date' => $dateValue,
+                    'time' => $timeValue,
+                    'availability_id' => $availability->id,
+                ];
+            }
+        }
+
+        if (empty($slotTargets)) {
             return redirect()->back()->with([
-                'messege' => __('Selected slot is no longer available.'),
+                'messege' => __('Please select a time slot.'),
                 'alert-type' => 'error',
             ]);
         }
 
-        $payload = [
-            'instructor_id' => $instructor->id,
-            'student_id' => $user?->id,
-            'title' => __('Ozel Ders'),
-            'start_time' => $startTime,
-            'meeting_id' => 'pending-' . Str::uuid()->toString(),
-            'password' => null,
-            'join_url' => null,
-            'type' => 'zoom',
-        ];
+        $createdLessons = [];
+        foreach ($slotTargets as $slotTarget) {
+            $payload = [
+                'instructor_id' => $instructor->id,
+                'student_id' => $user?->id,
+                'title' => __('Ozel Ders'),
+                'start_time' => $slotTarget['start'],
+                'meeting_id' => 'pending-' . Str::uuid()->toString(),
+                'password' => null,
+                'join_url' => null,
+                'type' => 'zoom',
+            ];
 
-        if ($hasStatusColumn) {
-            $payload['status'] = 'pending';
-        }
-        if ($hasEndedAtColumn) {
-            $payload['ended_at'] = $endedAt;
-        }
-
-        $lesson = DB::transaction(function () use ($payload, $availability, $instructor, $dateValue, $timeValue, $hasStatusColumn) {
-            $lockedAvailability = InstructorAvailability::query()
-                ->where('id', $availability->id)
-                ->lockForUpdate()
-                ->first();
-
-            if (!$lockedAvailability || !$lockedAvailability->is_active) {
-                return null;
+            if ($hasStatusColumn) {
+                $payload['status'] = 'pending';
+            }
+            if ($hasEndedAtColumn) {
+                $payload['ended_at'] = $slotTarget['end'];
             }
 
-            $slotTakenNow = StudentLiveLesson::query()
-                ->where('instructor_id', $instructor->id)
-                ->whereDate('start_time', $dateValue)
-                ->whereTime('start_time', $timeValue)
-                ->when($hasStatusColumn, function ($query) {
-                    $query->whereNotIn('status', ['cancelled_teacher', 'cancelled_student']);
-                })
-                ->lockForUpdate()
-                ->exists();
+            $lesson = DB::transaction(function () use ($payload, $slotTarget, $instructor, $hasStatusColumn) {
+                $lockedAvailability = InstructorAvailability::query()
+                    ->where('id', $slotTarget['availability_id'])
+                    ->lockForUpdate()
+                    ->first();
 
-            if ($slotTakenNow) {
-                return null;
+                if (!$lockedAvailability || !$lockedAvailability->is_active) {
+                    return null;
+                }
+
+                $slotTakenNow = StudentLiveLesson::query()
+                    ->where('instructor_id', $instructor->id)
+                    ->whereDate('start_time', $slotTarget['date'])
+                    ->whereTime('start_time', $slotTarget['time'])
+                    ->when($hasStatusColumn, function ($query) {
+                        $query->whereNotIn('status', ['cancelled_teacher', 'cancelled_student']);
+                    })
+                    ->lockForUpdate()
+                    ->exists();
+
+                if ($slotTakenNow) {
+                    return null;
+                }
+
+                return StudentLiveLesson::create($payload);
+            });
+
+            if (!$lesson) {
+                return redirect()->back()->with([
+                    'messege' => __('Selected slot is no longer available.'),
+                    'alert-type' => 'error',
+                ]);
             }
-
-            return StudentLiveLesson::create($payload);
-        });
-
-        if (!$lesson) {
-            return redirect()->back()->with([
-                'messege' => __('Selected slot is no longer available.'),
-                'alert-type' => 'error',
-            ]);
+            $createdLessons[] = $lesson;
         }
 
         try {
-            $meeting = app(ZoomOAuthService::class)->getOrCreateDefaultRecurringMeeting($instructor, $payload['title']);
-
+            $meeting = app(ZoomOAuthService::class)->getOrCreateDefaultRecurringMeeting($instructor, __('Ozel Ders'));
             $meetingId = (string) ($meeting['id'] ?? '');
             if ($meetingId === '') {
                 throw new \RuntimeException('Zoom meeting id missing.');
             }
 
-            $update = [
-                'meeting_id' => $meetingId,
-                'join_url' => $meeting['join_url'] ?? null,
-                'password' => $meeting['password'] ?? null,
-            ];
+            foreach ($createdLessons as $lesson) {
+                $update = [
+                    'meeting_id' => $meetingId,
+                    'join_url' => $meeting['join_url'] ?? null,
+                    'password' => $meeting['password'] ?? null,
+                ];
 
-            if ($hasStatusColumn) {
-                $update['status'] = 'scheduled';
+                if ($hasStatusColumn) {
+                    $update['status'] = 'scheduled';
+                }
+
+                $lesson->update($update);
             }
-
-            $lesson->update($update);
         } catch (\Throwable $e) {
             report($e);
-            if ($lesson) {
+            foreach ($createdLessons as $lesson) {
                 $lesson->delete();
             }
 
-            $errorMessage = str_contains($e->getMessage(), 'not connected')
-                ? __('Zoom account is not connected.')
-                : __('Zoom meeting could not be created. Please try again.');
-
             return redirect()->back()->with([
-                'messege' => $errorMessage,
+                'messege' => str_contains($e->getMessage(), 'not connected')
+                    ? __('Zoom account is not connected.')
+                    : __('Zoom meeting could not be created. Please try again.'),
                 'alert-type' => 'error',
             ]);
         }
 
         return redirect()->route('student.instructors.schedule', [
             'instructor' => $instructor->id,
-            'start' => $startTime->format('Y-m-d'),
+            'start' => $parsedSlots[0]['start']->format('Y-m-d'),
         ])->with([
-            'messege' => __('Reservation request sent.'),
+            'messege' => __('Reservation confirmed.'),
             'alert-type' => 'success',
         ]);
     }
@@ -980,26 +1059,20 @@ class StudentDashboardController extends Controller {
                     ->lockForUpdate()
                     ->first();
 
-                if (!$plan || ($plan->cancel_remaining ?? 0) <= 0) {
-                    $error = 'no_cancel';
-                    return;
-                }
-
                 $lesson->status = 'cancelled_student';
                 $lesson->cancelled_by = 'student';
                 $lesson->cancelled_reason = trim((string) $request->input('reason', '')) ?: null;
                 $lesson->cancelled_at = now();
                 $lesson->save();
 
-                $plan->decrement('cancel_remaining');
+                if ($plan) {
+                    if (($plan->cancel_remaining ?? 0) > 0) {
+                        $plan->decrement('cancel_remaining');
+                    } elseif (($plan->lessons_remaining ?? 0) > 0) {
+                        $plan->decrement('lessons_remaining');
+                    }
+                }
             });
-
-            if ($error === 'no_cancel') {
-                return redirect()->back()->with([
-                    'messege' => __('Iptal hakkiniz kalmadi.'),
-                    'alert-type' => 'error',
-                ]);
-            }
         } else {
             $lesson->status = 'cancelled_student';
             $lesson->cancelled_by = 'student';
@@ -1269,5 +1342,29 @@ class StudentDashboardController extends Controller {
         }
 
         return $defaultDuration;
+    }
+
+    private function resolveWeeklyLessonLimit(?UserPlan $plan): int
+    {
+        if (!$plan) {
+            return 2;
+        }
+
+        $durationMonths = 0;
+        if (Schema::hasTable('student_plans')) {
+            $durationMonths = (int) DB::table('student_plans')
+                ->where('key', $plan->plan_key)
+                ->value('duration_months');
+        }
+
+        if ($durationMonths <= 0) {
+            $configPlan = (array) data_get(config('student_plans.plans'), $plan->plan_key, []);
+            $durationMonths = (int) ($configPlan['duration_months'] ?? 0);
+        }
+
+        $weeks = max(1, $durationMonths * 4);
+        $lessonsTotal = max(1, (int) ($plan->lessons_total ?? 0));
+
+        return max(1, (int) ceil($lessonsTotal / $weeks));
     }
 }

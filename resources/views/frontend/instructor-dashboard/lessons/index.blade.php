@@ -23,6 +23,11 @@
                         <div class="sp-lesson-row__meta">
                             {{ $lesson->start_time?->format('d M Y, H:i') ?? '-' }}
                         </div>
+                        <form method="POST" action="{{ route('instructor.lessons.summary', $lesson) }}" class="sp-summary-form">
+                            @csrf
+                            <textarea name="instructor_summary" rows="2" class="form-control" placeholder="{{ __('Lesson summary / report') }}">{{ $lesson->instructor_summary }}</textarea>
+                            <button type="submit" class="sp-btn sp-btn-light sp-btn-sm">{{ __('Save Report') }}</button>
+                        </form>
                     </div>
                     <div class="sp-lesson-row__status">{{ $status['label'] }}</div>
                     <div class="sp-lesson-row__actions">
@@ -67,6 +72,8 @@
         .sp-lesson-row__main{display:grid;gap:4px;}
         .sp-lesson-row__name{font-weight:900;color:#111827;}
         .sp-lesson-row__meta{font-weight:700;color:#6b7280;font-size:13px;}
+        .sp-summary-form{display:grid;gap:8px;margin-top:10px;max-width:420px;}
+        .sp-summary-form textarea{min-height:74px;}
         .sp-lesson-row__status{font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:.04em;padding:6px 10px;border-radius:999px;background:#f9fafb;border:1px solid #e5e7eb;}
         .sp-lesson-row__actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
         .sp-inline-form{margin:0;}

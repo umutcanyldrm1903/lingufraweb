@@ -32,7 +32,7 @@ class InstructorLessonController extends Controller
         }
 
         $lessons = $lessonQuery
-            ->orderByDesc('start_time')
+            ->orderBy('start_time')
             ->paginate(20);
 
         $attendanceMap = StudentLiveLessonAttendance::query()
@@ -77,6 +77,30 @@ class InstructorLessonController extends Controller
 
         return redirect()->back()->with([
             'messege' => __('Lesson cancelled.'),
+            'alert-type' => 'success',
+        ]);
+    }
+
+    public function updateSummary(Request $request, StudentLiveLesson $lesson): RedirectResponse
+    {
+        if ((int) $lesson->instructor_id !== (int) auth()->id()) {
+            return redirect()->back()->with([
+                'messege' => __('You cannot update this lesson.'),
+                'alert-type' => 'error',
+            ]);
+        }
+
+        $validated = $request->validate([
+            'instructor_summary' => ['nullable', 'string', 'max:3000'],
+        ]);
+
+        $lesson->update([
+            'instructor_summary' => trim((string) ($validated['instructor_summary'] ?? '')) ?: null,
+            'instructor_summary_written_at' => now(),
+        ]);
+
+        return redirect()->back()->with([
+            'messege' => __('Lesson summary saved.'),
             'alert-type' => 'success',
         ]);
     }

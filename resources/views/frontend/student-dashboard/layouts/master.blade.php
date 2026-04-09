@@ -73,7 +73,7 @@
                     </span>
                     <span class="sp-planbar__item">
                         <i class="fas fa-user-tie"></i>
-                        {{ __('Instructor') }}: <strong>{{ $assignedInstructorName ?: __('Not Assigned') }}</strong>
+                        {{ __('Instructor') }}: <strong>{{ $assignedInstructorName ? (\Illuminate\Support\Str::before($assignedInstructorName, ' ') ?: $assignedInstructorName) : __('Not Assigned') }}</strong>
                     </span>
                 </div>
                 <div class="sp-planbar__actions">
@@ -276,5 +276,4 @@
         })();
     </script>
 @endpush
-
 
