@@ -319,14 +319,14 @@ class StudentDashboardController extends Controller {
 
         if (in_array((string) $lesson->status, ['cancelled_teacher', 'cancelled_student'], true)) {
             return redirect()->route('student.enrolled-courses')->with([
-                'messege' => __('Bu ders iptal edildi, puanlayamazsiniz.'),
+                'messege' => __('This lesson was cancelled, so it cannot be rated.'),
                 'alert-type' => 'error',
             ]);
         }
 
         if ($lesson->start_time && $lesson->start_time->isFuture()) {
             return redirect()->route('student.enrolled-courses')->with([
-                'messege' => __('Ders bitmeden puanlama yapamazsiniz.'),
+                'messege' => __('You cannot rate the lesson before it ends.'),
                 'alert-type' => 'error',
             ]);
         }
@@ -357,21 +357,21 @@ class StudentDashboardController extends Controller {
 
         if (in_array((string) $lesson->status, ['cancelled_teacher', 'cancelled_student'], true)) {
             return redirect()->route('student.enrolled-courses')->with([
-                'messege' => __('Bu ders iptal edildi, puanlayamazsiniz.'),
+                'messege' => __('This lesson was cancelled, so it cannot be rated.'),
                 'alert-type' => 'error',
             ]);
         }
 
         if ($lesson->start_time && $lesson->start_time->isFuture()) {
             return redirect()->route('student.enrolled-courses')->with([
-                'messege' => __('Ders bitmeden puanlama yapamazsiniz.'),
+                'messege' => __('You cannot rate the lesson before it ends.'),
                 'alert-type' => 'error',
             ]);
         }
 
         if (!empty($lesson->student_rating)) {
             return redirect()->route('student.enrolled-courses')->with([
-                'messege' => __('Bu dersi zaten puanladiniz.'),
+                'messege' => __('You have already rated this lesson.'),
                 'alert-type' => 'info',
             ]);
         }
@@ -461,7 +461,7 @@ class StudentDashboardController extends Controller {
         });
 
         $lessonDuration = $this->resolveLessonDuration($user);
-        $currentPlan = Schema::hasTable('user_plans') ? UserPlan::query()->where('user_id', $user?->id)->first() : null;
+        $currentPlan = Schema::hasTable('user_plans') ? UserPlan::query()->currentForUser((int) ($user?->id ?? 0))->first() : null;
         $weeklyLimit = $this->resolveWeeklyLessonLimit($currentPlan);
         $reservedThisWeek = StudentLiveLesson::query()
             ->where('student_id', $user?->id)
@@ -518,11 +518,11 @@ class StudentDashboardController extends Controller {
         }
 
         $lessonDuration = $this->resolveLessonDuration($user);
-        $currentPlan = Schema::hasTable('user_plans') ? UserPlan::query()->where('user_id', $user?->id)->first() : null;
+        $currentPlan = Schema::hasTable('user_plans') ? UserPlan::query()->currentForUser((int) ($user?->id ?? 0))->first() : null;
 
         if (Schema::hasTable('user_plans') && (!$currentPlan || ($currentPlan->lessons_remaining ?? 0) <= 0)) {
             return redirect()->back()->with([
-                'messege' => __('Krediniz kalmadi. Derse katilmak icin paket satin alin.'),
+                'messege' => __('You do not have enough credits left. Please purchase a package to continue.'),
                 'alert-type' => 'error',
             ]);
         }
@@ -663,7 +663,7 @@ class StudentDashboardController extends Controller {
             $payload = [
                 'instructor_id' => $instructor->id,
                 'student_id' => $user?->id,
-                'title' => __('Ozel Ders'),
+                'title' => __('Private Lesson'),
                 'start_time' => $slotTarget['start'],
                 'meeting_id' => 'pending-' . Str::uuid()->toString(),
                 'password' => null,
@@ -715,7 +715,7 @@ class StudentDashboardController extends Controller {
         }
 
         try {
-            $meeting = app(ZoomOAuthService::class)->getOrCreateDefaultRecurringMeeting($instructor, __('Ozel Ders'));
+            $meeting = app(ZoomOAuthService::class)->getOrCreateDefaultRecurringMeeting($instructor, __('Private Lesson'));
             $meetingId = (string) ($meeting['id'] ?? '');
             if ($meetingId === '') {
                 throw new \RuntimeException('Zoom meeting id missing.');
@@ -968,8 +968,8 @@ class StudentDashboardController extends Controller {
                 'kind' => 'student',
                 'id' => $live->id,
                 'lesson_id' => $live->id,
-                'title' => $live->title ?: __('Ozel Canli Ders'),
-                'course_title' => __('Ozel Ders'),
+                'title' => $live->title ?: __('Private Live Lesson'),
+                'course_title' => __('Private Lesson'),
                 'instructor_name' => $live->instructor?->name,
                 'thumbnail' => $live->instructor?->image ?: 'frontend/img/courses/course_thumb01.jpg',
                 'start_time' => $live->start_time,
@@ -988,8 +988,8 @@ class StudentDashboardController extends Controller {
                 'kind' => 'student',
                 'id' => $live->id,
                 'lesson_id' => $live->id,
-                'title' => $live->title ?: __('Ozel Canli Ders'),
-                'course_title' => __('Ozel Ders'),
+                'title' => $live->title ?: __('Private Live Lesson'),
+                'course_title' => __('Private Lesson'),
                 'instructor_name' => $live->instructor?->name,
                 'thumbnail' => $live->instructor?->image ?: 'frontend/img/courses/course_thumb01.jpg',
                 'start_time' => $live->start_time,
@@ -1014,7 +1014,7 @@ class StudentDashboardController extends Controller {
 
         $currentPlan = null;
         if (Schema::hasTable('user_plans')) {
-            $currentPlan = UserPlan::query()->where('user_id', $user->id)->first();
+            $currentPlan = UserPlan::query()->currentForUser($user->id)->first();
         }
 
         return view('frontend.student-dashboard.enrolled-courses.index', compact(
@@ -1032,21 +1032,21 @@ class StudentDashboardController extends Controller {
 
         if ((int) $lesson->student_id !== (int) ($user?->id ?? 0)) {
             return redirect()->back()->with([
-                'messege' => __('Bu derse erisim izniniz yok.'),
+                'messege' => __('You do not have access to this lesson.'),
                 'alert-type' => 'error',
             ]);
         }
 
         if ($lesson->status !== 'scheduled') {
             return redirect()->back()->with([
-                'messege' => __('Ders zaten tamamlandi veya iptal edildi.'),
+                'messege' => __('This lesson is already completed or cancelled.'),
                 'alert-type' => 'error',
             ]);
         }
 
         if ($lesson->start_time && $lesson->start_time->isPast()) {
             return redirect()->back()->with([
-                'messege' => __('Baslamis bir dersi iptal edemezsiniz.'),
+                'messege' => __('You cannot cancel a lesson that has already started.'),
                 'alert-type' => 'error',
             ]);
         }
@@ -1082,7 +1082,7 @@ class StudentDashboardController extends Controller {
         }
 
         return redirect()->back()->with([
-            'messege' => __('Ders iptal edildi.'),
+            'messege' => __('Lesson cancelled.'),
             'alert-type' => 'success',
         ]);
     }
@@ -1266,7 +1266,11 @@ class StudentDashboardController extends Controller {
             return;
         }
 
-        $existingPlan = DB::table('user_plans')->where('user_id', $user->id)->first();
+        $existingPlan = DB::table('user_plans')
+            ->where('user_id', $user->id)
+            ->orderByDesc('last_order_id')
+            ->orderByDesc('id')
+            ->first();
         $existingLastOrderId = (int) ($existingPlan?->last_order_id ?? 0);
 
         if (
@@ -1335,7 +1339,7 @@ class StudentDashboardController extends Controller {
         }
 
         if (Schema::hasTable('user_plans') && Schema::hasColumn('user_plans', 'lesson_duration')) {
-            $plan = UserPlan::query()->where('user_id', $user->id)->first();
+            $plan = UserPlan::query()->currentForUser($user->id)->first();
             if ($plan && (int) $plan->lesson_duration > 0) {
                 return (int) $plan->lesson_duration;
             }

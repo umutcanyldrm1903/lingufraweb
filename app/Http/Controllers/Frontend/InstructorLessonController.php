@@ -75,8 +75,26 @@ class InstructorLessonController extends Controller
         $lesson->cancelled_at = now();
         $lesson->save();
 
+        $teacherCancelLimit = (int) config('student_plans.teacher_cancel_limit', 2);
+        $cancelCountThisMonth = StudentLiveLesson::query()
+            ->where('instructor_id', auth()->id())
+            ->where('status', 'cancelled_teacher')
+            ->whereBetween('cancelled_at', [now()->startOfMonth(), now()->endOfMonth()])
+            ->count();
+
+        $penaltyApplied = false;
+        if ($cancelCountThisMonth > $teacherCancelLimit) {
+            $studentPlan = \App\Models\UserPlan::query()->currentForUser((int) $lesson->student_id)->first();
+            if ($studentPlan) {
+                $studentPlan->increment('lessons_remaining');
+                $penaltyApplied = true;
+            }
+        }
+
         return redirect()->back()->with([
-            'messege' => __('Lesson cancelled.'),
+            'messege' => $penaltyApplied
+                ? __('Lesson cancelled. Student compensation credit was added because the monthly teacher cancellation limit was exceeded.')
+                : __('Lesson cancelled.'),
             'alert-type' => 'success',
         ]);
     }

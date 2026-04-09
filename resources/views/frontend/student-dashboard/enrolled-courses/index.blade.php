@@ -46,7 +46,7 @@
                                     <p class="sp-live-card__course">{{ $live->course_title ?: __('Private Lesson') }}</p>
                                     <p class="sp-live-card__teacher">{{ \Illuminate\Support\Str::before($live->instructor_name ?? '', ' ') ?: $live->instructor_name }}</p>
                                     @if ($isCancelled)
-                                        <p class="sp-live-card__status">{{ __('Ders Iptal Edildi') }}</p>
+                                        <p class="sp-live-card__status">{{ __('Lesson Cancelled') }}</p>
                                     @elseif ($isPending)
                                         <p class="sp-live-card__status">{{ __('Pending') }}</p>
                                     @endif
@@ -56,12 +56,12 @@
                                         <span class="sp-live-card__btn sp-live-card__btn--disabled">{{ __('Pending') }}</span>
                                     @elseif ($canJoin && $live->join_route)
                                         <a href="{{ $live->join_route }}" class="sp-live-card__btn">
-                                            {{ __('Derse Katil') }}
+                                            {{ __('Join Lesson') }}
                                         </a>
                                     @elseif ($isCancelled)
-                                        <span class="sp-live-card__btn sp-live-card__btn--disabled">{{ __('Iptal') }}</span>
+                                        <span class="sp-live-card__btn sp-live-card__btn--disabled">{{ __('Cancelled') }}</span>
                                     @else
-                                        <span class="sp-live-card__btn sp-live-card__btn--disabled">{{ __('Kredi Bitti') }}</span>
+                                        <span class="sp-live-card__btn sp-live-card__btn--disabled">{{ __('No Credits Left') }}</span>
                                     @endif
                                     @if ($canCancel)
                                         <form method="POST" action="{{ $live->cancel_route }}" class="sp-live-card__cancel">
@@ -75,8 +75,8 @@
                     </div>
                 @else
                     <div class="sp-live-empty">
-                        <h5 class="sp-live-empty__title">{{ __('Yakinda Canli Ders Yok') }}</h5>
-                        <p class="sp-live-empty__text">{{ __('Ogretmeniniz ders planladiginda burada gorunecek.') }}</p>
+                        <h5 class="sp-live-empty__title">{{ __('No upcoming live lessons') }}</h5>
+                        <p class="sp-live-empty__text">{{ __('Your teacher will schedule lessons and they will appear here.') }}</p>
                     </div>
                 @endif
             </div>
@@ -103,7 +103,7 @@
                                     <p class="sp-live-card__course">{{ $live->course_title ?: __('Private Lesson') }}</p>
                                     <p class="sp-live-card__teacher">{{ \Illuminate\Support\Str::before($live->instructor_name ?? '', ' ') ?: $live->instructor_name }}</p>
                                     @if (in_array($statusKey, ['cancelled_teacher', 'cancelled_student'], true))
-                                        <p class="sp-live-card__status">{{ __('Ders Iptal Edildi') }}</p>
+                                        <p class="sp-live-card__status">{{ __('Lesson Cancelled') }}</p>
                                     @endif
                                 </div>
                                 <div class="sp-live-card__actions">
@@ -114,17 +114,17 @@
                                     @endphp
 
                                     @if ($isCancelled)
-                                        <span class="sp-live-card__btn sp-live-card__btn--disabled">{{ __('Iptal') }}</span>
+                                        <span class="sp-live-card__btn sp-live-card__btn--disabled">{{ __('Cancelled') }}</span>
                                     @elseif ($isStudentLesson && $studentRating > 0)
                                         <span class="sp-live-card__btn sp-live-card__btn--disabled">
                                             <i class="fas fa-star"></i> {{ $studentRating }} / 5
                                         </span>
                                     @elseif ($isStudentLesson)
                                         <a class="sp-live-card__btn sp-live-card__btn--outline" href="{{ route('student.live-lessons.rate', $live->id) }}">
-                                            {{ __('Dersi Puanla') }}
+                                            {{ __('Rate Lesson') }}
                                         </a>
                                     @else
-                                        <span class="sp-live-card__btn sp-live-card__btn--disabled">{{ __('Ders Bitti') }}</span>
+                                        <span class="sp-live-card__btn sp-live-card__btn--disabled">{{ __('Lesson Finished') }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -132,8 +132,8 @@
                     </div>
                 @else
                     <div class="sp-live-empty">
-                        <h5 class="sp-live-empty__title">{{ __('Gecmis Canli Ders Yok') }}</h5>
-                        <p class="sp-live-empty__text">{{ __('Tamamlanan dersler burada listelenir.') }}</p>
+                        <h5 class="sp-live-empty__title">{{ __('No past live lessons') }}</h5>
+                        <p class="sp-live-empty__text">{{ __('Completed lessons will appear here.') }}</p>
                     </div>
                 @endif
             </div>

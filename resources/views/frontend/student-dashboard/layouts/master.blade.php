@@ -47,7 +47,7 @@
                 $studentPhoneDigits = preg_replace('/\D+/', '', (string) (auth()->user()?->phone ?? ''));
 
                 if (Schema::hasTable('user_plans')) {
-                    $currentPlan = DB::table('user_plans')->where('user_id', auth()->id())->first();
+                    $currentPlan = \App\Models\UserPlan::query()->currentForUser((int) auth()->id())->first();
                     if (!empty($currentPlan?->assigned_instructor_id)) {
                         $assignedInstructorName = DB::table('users')->where('id', $currentPlan->assigned_instructor_id)->value('name');
                     }
@@ -276,4 +276,3 @@
         })();
     </script>
 @endpush
-

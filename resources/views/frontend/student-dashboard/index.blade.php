@@ -9,7 +9,7 @@
         $assignedInstructor = null;
 
         if ($user && Schema::hasTable('user_plans')) {
-            $currentPlan = DB::table('user_plans')->where('user_id', $user->id)->first();
+            $currentPlan = \App\Models\UserPlan::query()->currentForUser((int) $user->id)->first();
 
             if (!empty($currentPlan?->assigned_instructor_id)) {
                 $assignedInstructorName = DB::table('users')->where('id', $currentPlan->assigned_instructor_id)->value('name');
@@ -129,7 +129,7 @@
                     <div class="sp-plan__stats">
                         <div class="sp-plan__stat">
                             <span>{{ __('Plan') }}</span>
-                            <strong>{{ $currentPlan->plan_title ?: __('Plan Yok') }}</strong>
+                            <strong>{{ $currentPlan->plan_title ?: __('No Plan') }}</strong>
                         </div>
                         <div class="sp-plan__stat">
                             <span>{{ __('Credits') }}</span>
@@ -171,7 +171,7 @@
         <div class="sp-plans sp-plans--galaxy" id="student-plans">
             <div class="sp-plans__head">
                 <div>
-                    <h4 class="sp-plans__title">{{ __('Ders Paketleri') }}</h4>
+                    <h4 class="sp-plans__title">{{ __('Lesson Packages') }}</h4>
                     <p class="sp-plans__subtitle">{{ __('Premium Paket - En avantajli ders basi fiyat - Onerilen secim') }}</p>
                 </div>
             </div>
@@ -248,7 +248,7 @@
                             </form>
                         </div>
 
-                        <div class="sp-plan-card__lessons">{{ $lessonsTotal }} {{ __('Ders') }}</div>
+                        <div class="sp-plan-card__lessons">{{ $lessonsTotal }} {{ __('Lessons') }}</div>
                     </div>
                 @endforeach
             </div>

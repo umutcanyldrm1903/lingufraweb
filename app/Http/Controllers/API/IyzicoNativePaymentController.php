@@ -480,7 +480,11 @@ class IyzicoNativePaymentController extends Controller
             $planTitle = 'Plan';
         }
 
-        $existingPlan = DB::table('user_plans')->where('user_id', $order->buyer_id)->first();
+        $existingPlan = DB::table('user_plans')
+            ->where('user_id', $order->buyer_id)
+            ->orderByDesc('last_order_id')
+            ->orderByDesc('id')
+            ->first();
         $newLessons = max(0, $lessonsTotal);
         $newCancels = max(0, $cancelTotal);
         $currentLessonsTotal = (int) ($existingPlan?->lessons_total ?? 0);
@@ -503,7 +507,7 @@ class IyzicoNativePaymentController extends Controller
         ];
 
         if ($existingPlan) {
-            DB::table('user_plans')->where('user_id', $order->buyer_id)->update($payload);
+            DB::table('user_plans')->where('id', $existingPlan->id)->update($payload);
         } else {
             DB::table('user_plans')->insert(array_merge($payload, [
                 'user_id' => $order->buyer_id,

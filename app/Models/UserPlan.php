@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;
 
 class UserPlan extends Model
 {
@@ -36,5 +37,13 @@ class UserPlan extends Model
     public function assignedInstructor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_instructor_id');
+    }
+
+    public function scopeCurrentForUser(Builder $query, int $userId): Builder
+    {
+        return $query
+            ->where('user_id', $userId)
+            ->orderByDesc('last_order_id')
+            ->orderByDesc('id');
     }
 }

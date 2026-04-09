@@ -16,7 +16,11 @@ class UserResource extends JsonResource {
     public function toArray(Request $request): array {
         $plan = null;
         if (Schema::hasTable('user_plans')) {
-            $planRow = DB::table('user_plans')->where('user_id', $this->id)->first();
+            $planRow = DB::table('user_plans')
+                ->where('user_id', $this->id)
+                ->orderByDesc('last_order_id')
+                ->orderByDesc('id')
+                ->first();
             if ($planRow) {
                 $assignedName = null;
                 if (!empty($planRow->assigned_instructor_id)) {

@@ -441,7 +441,7 @@ class InstructorController extends Controller
         $endedAt = $lessonDuration > 0 ? $startTime->copy()->addMinutes($lessonDuration) : null;
 
         if (Schema::hasTable('user_plans')) {
-            $plan = UserPlan::query()->where('user_id', $user?->id)->first();
+            $plan = UserPlan::query()->currentForUser((int) ($user?->id ?? 0))->first();
             if (!$plan || ($plan->lessons_remaining ?? 0) <= 0) {
                 return response()->json([
                     'status' => 'error',
@@ -615,7 +615,11 @@ class InstructorController extends Controller
             return;
         }
 
-        $existingPlan = DB::table('user_plans')->where('user_id', $user->id)->first();
+        $existingPlan = DB::table('user_plans')
+            ->where('user_id', $user->id)
+            ->orderByDesc('last_order_id')
+            ->orderByDesc('id')
+            ->first();
         $existingLastOrderId = (int) ($existingPlan?->last_order_id ?? 0);
 
         if (
@@ -684,7 +688,7 @@ class InstructorController extends Controller
         }
 
         if (Schema::hasTable('user_plans') && Schema::hasColumn('user_plans', 'lesson_duration')) {
-            $plan = UserPlan::query()->where('user_id', $user->id)->first();
+            $plan = UserPlan::query()->currentForUser($user->id)->first();
             if ($plan && (int) $plan->lesson_duration > 0) {
                 return (int) $plan->lesson_duration;
             }

@@ -9,7 +9,7 @@
 
     <div class="sp-rate">
         <div class="sp-rate__head">
-            <h4 class="sp-rate__title">{{ __('Dersi Puanla') }}</h4>
+            <h4 class="sp-rate__title">{{ __('Rate Lesson') }}</h4>
             <a href="{{ route('student.enrolled-courses') }}" class="sp-rate__back">{{ __('Geri') }}</a>
         </div>
 
@@ -24,8 +24,8 @@
                     <span class="sp-rate__value">{{ $startTime }}</span>
                 </div>
                 <div class="sp-rate__meta-item">
-                    <span class="sp-rate__label">{{ __('Ders') }}</span>
-                    <span class="sp-rate__value">{{ $lesson?->title ?: __('Ozel Canli Ders') }}</span>
+                    <span class="sp-rate__label">{{ __('Lesson') }}</span>
+                    <span class="sp-rate__value">{{ $lesson?->title ?: __('Private Live Lesson') }}</span>
                 </div>
             </div>
 
@@ -35,7 +35,7 @@
                         <i class="fas fa-star"></i>
                         {{ (int) $lesson->student_rating }} / 5
                     </span>
-                    <p class="sp-rate__done-text">{{ __('Bu dersi zaten puanladiniz.') }}</p>
+                    <p class="sp-rate__done-text">{{ __('You have already rated this lesson.') }}</p>
                 </div>
             @else
                 <form method="POST" action="{{ route('student.live-lessons.rate.store', $lesson->id) }}" class="sp-rate__form">
@@ -64,7 +64,7 @@
 
                     <div class="sp-rate__actions">
                         <button type="submit" class="sp-rate__btn">{{ __('Gonder') }}</button>
-                        <a href="{{ route('student.enrolled-courses') }}" class="sp-rate__btn sp-rate__btn--ghost">{{ __('Iptal') }}</a>
+                        <a href="{{ route('student.enrolled-courses') }}" class="sp-rate__btn sp-rate__btn--ghost">{{ __('Cancel') }}</a>
                     </div>
                 </form>
             @endif
@@ -146,4 +146,3 @@
         }
     </style>
 @endpush
-
