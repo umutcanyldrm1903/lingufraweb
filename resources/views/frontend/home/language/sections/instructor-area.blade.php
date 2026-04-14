@@ -11,10 +11,10 @@
                 @break($index === 5)
                 <div class="lang-instructors__card">
                     <div class="lang-instructors__avatar">
-                        <img src="{{ asset($instructor->image) }}" alt="{{ $instructor->name }}">
+                        <img src="{{ asset($instructor->image) }}" alt="{{ $instructor->first_name }}">
                         <span class="lang-instructors__badge">{{ __('Online Lesson') }}</span>
                     </div>
-                    <h4>{{ $instructor->name }}</h4>
+                    <h4>{{ $instructor->first_name }}</h4>
                     <p class="lang-instructors__role">{{ $instructor->job_title }}</p>
                 </div>
             @endforeach

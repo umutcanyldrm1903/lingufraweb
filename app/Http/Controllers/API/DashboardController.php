@@ -153,7 +153,7 @@ class DashboardController extends Controller {
                 'title' => $live->title ?: 'Private Live Lesson',
                 'course_title' => 'Private Lesson',
                 'course_slug' => null,
-                'instructor_name' => $live->instructor?->name,
+                'instructor_name' => $live->instructor?->first_name,
                 'thumbnail' => $live->instructor?->image,
                 'start_time' => optional($startTime)->toIso8601String(),
                 'end_time' => optional($endTime)->toIso8601String(),
@@ -700,7 +700,7 @@ class DashboardController extends Controller {
                 'due_at' => optional($homework->due_at)->toDateTimeString(),
                 'attachment_name' => (string) ($homework->attachment_name ?? ''),
                 'attachment_path' => (string) ($homework->attachment_path ?? ''),
-                'instructor_name' => (string) ($homework->instructor?->name ?? ''),
+                'instructor_name' => (string) ($homework->instructor?->first_name ?? $homework->instructor?->name ?? ''),
                 'instructor_image' => (string) ($homework->instructor?->image ?? ''),
                 'submission' => $homework->submission ? [
                     'status' => (string) ($homework->submission->status ?? ''),
@@ -834,7 +834,7 @@ class DashboardController extends Controller {
                 'file_name' => (string) ($item->file_name ?? ''),
                 'file_type' => (string) ($item->file_type ?? ''),
                 'file_path' => (string) ($item->file_path ?? ''),
-                'instructor_name' => (string) ($item->instructor?->name ?? ''),
+                'instructor_name' => (string) ($item->instructor?->first_name ?? $item->instructor?->name ?? ''),
                 'created_at' => optional($item->created_at)->toDateTimeString(),
             ];
         })->values();
@@ -1008,7 +1008,7 @@ class DashboardController extends Controller {
                     'unread' => ((int) ($thread->unread_count ?? 0)) > 0,
                     'thread' => [
                         'partner_id' => (int) ($thread->sender_id ?? 0),
-                        'partner_name' => (string) ($sender?->name ?? ''),
+                        'partner_name' => (string) ($sender?->first_name ?? $sender?->name ?? ''),
                     ],
                     'sort_time' => $createdAt?->timestamp ?? 0,
                 ]);
@@ -1347,7 +1347,7 @@ class DashboardController extends Controller {
         if ($alreadyRequested) {
             return response()->json([
                 'status' => 'error',
-                'message' => __('Deneme dersi talebiniz zaten alindi.'),
+                'message' => __('Your trial lesson request has already been received.'),
             ], 409);
         }
 
@@ -1360,11 +1360,11 @@ class DashboardController extends Controller {
         ]);
 
         $whatsappLeadPhone = preg_replace('/\D+/', '', (string) config('app.whatsapp_lead_phone', ''));
-        $trialMessage = "Merhaba, deneme dersi ayirtmak istiyorum.\n"
-            . 'Ad Soyad: ' . ($user->name ?? '') . "\n"
-            . 'Telefon: ' . (($user->phone ?? '') !== '' ? $user->phone : '-') . "\n"
-            . 'E-posta: ' . ($user->email ?? '') . "\n"
-            . 'Kullanıcı ID: ' . ($user->id ?? '');
+        $trialMessage = "Hello, I would like to request a trial lesson.\n"
+            . 'Name: ' . ($user->name ?? '') . "\n"
+            . 'Phone: ' . (($user->phone ?? '') !== '' ? $user->phone : '-') . "\n"
+            . 'Email: ' . ($user->email ?? '') . "\n"
+            . 'User ID: ' . ($user->id ?? '');
 
         $trialWhatsAppUrl = $whatsappLeadPhone !== ''
             ? 'https://wa.me/' . $whatsappLeadPhone . '?text=' . rawurlencode($trialMessage)
@@ -1372,7 +1372,7 @@ class DashboardController extends Controller {
 
         return response()->json([
             'status' => 'success',
-            'message' => __('Deneme dersi talebiniz alindi.'),
+            'message' => __('Your trial lesson request has been received.'),
             'data' => [
                 'whatsapp_url' => $trialWhatsAppUrl,
             ],
@@ -2004,7 +2004,7 @@ class DashboardController extends Controller {
         $html = str_replace('[platform_name]', cache()->get('setting')->app_name, $html);
         $html = str_replace('[course]', $course->title, $html);
         $html = str_replace('[date]', formatDate($completed_date), $html);
-        $html = str_replace('[instructor_name]', $course->instructor->name, $html);
+        $html = str_replace('[instructor_name]', $course->instructor->first_name ?? $course->instructor->name, $html);
 
         // Initialize Dompdf
         $dompdf = new Dompdf(array('enable_remote' => true));

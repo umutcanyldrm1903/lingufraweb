@@ -62,7 +62,7 @@ class OrderDetailsResource extends JsonResource {
             return [
                 'price'        => $this->formatCurrency($price, $this->payable_currency),
                 'course_title' => (string) optional($item->course)->title ?? 'N/A',
-                'instructor'   => (string) optional($item->course->instructor)->name ?? 'N/A',
+                'instructor'   => (string) (optional($item->course->instructor)->first_name ?? optional($item->course->instructor)->name ?? 'N/A'),
             ];
         })->toArray();
     }

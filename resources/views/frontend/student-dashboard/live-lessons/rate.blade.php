@@ -2,7 +2,7 @@
 
 @section('dashboard-contents')
     @php
-        $instructorName = (string) ($lesson?->instructor?->name ?? '');
+        $instructorName = (string) ($lesson?->instructor?->first_name ?? $lesson?->instructor?->name ?? '');
         $startTime = $lesson?->start_time ? formattedDateTime($lesson->start_time) : '-';
         $alreadyRated = !empty($lesson?->student_rating);
     @endphp
@@ -10,17 +10,17 @@
     <div class="sp-rate">
         <div class="sp-rate__head">
             <h4 class="sp-rate__title">{{ __('Rate Lesson') }}</h4>
-            <a href="{{ route('student.enrolled-courses') }}" class="sp-rate__back">{{ __('Geri') }}</a>
+            <a href="{{ route('student.enrolled-courses') }}" class="sp-rate__back">{{ __('Back') }}</a>
         </div>
 
         <div class="sp-rate__card">
             <div class="sp-rate__meta">
                 <div class="sp-rate__meta-item">
-                    <span class="sp-rate__label">{{ __('Egitmen') }}</span>
+                    <span class="sp-rate__label">{{ __('Instructor') }}</span>
                     <span class="sp-rate__value">{{ $instructorName !== '' ? $instructorName : '-' }}</span>
                 </div>
                 <div class="sp-rate__meta-item">
-                    <span class="sp-rate__label">{{ __('Tarih') }}</span>
+                    <span class="sp-rate__label">{{ __('Date') }}</span>
                     <span class="sp-rate__value">{{ $startTime }}</span>
                 </div>
                 <div class="sp-rate__meta-item">
@@ -42,8 +42,8 @@
                     @csrf
 
                     <div class="sp-rate__field">
-                        <p class="sp-rate__field-label">{{ __('Puan') }}</p>
-                        <div class="sp-rate__stars" role="radiogroup" aria-label="{{ __('Puan') }}">
+                        <p class="sp-rate__field-label">{{ __('Rating') }}</p>
+                        <div class="sp-rate__stars" role="radiogroup" aria-label="{{ __('Rating') }}">
                             @for ($i = 5; $i >= 1; $i--)
                                 <input type="radio" id="rating-{{ $i }}" name="rating" value="{{ $i }}" {{ (int) old('rating') === $i ? 'checked' : '' }}>
                                 <label for="rating-{{ $i }}" title="{{ $i }}">★</label>
@@ -55,15 +55,15 @@
                     </div>
 
                     <div class="sp-rate__field">
-                        <label class="sp-rate__field-label" for="review">{{ __('Yorum (opsiyonel)') }}</label>
-                        <textarea id="review" name="review" rows="4" maxlength="1000" placeholder="{{ __('Kisa bir yorum yazabilirsiniz...') }}">{{ old('review') }}</textarea>
+                        <label class="sp-rate__field-label" for="review">{{ __('Review (optional)') }}</label>
+                        <textarea id="review" name="review" rows="4" maxlength="1000" placeholder="{{ __('You can write a short review...') }}">{{ old('review') }}</textarea>
                         @error('review')
                             <div class="sp-rate__error">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="sp-rate__actions">
-                        <button type="submit" class="sp-rate__btn">{{ __('Gonder') }}</button>
+                        <button type="submit" class="sp-rate__btn">{{ __('Send') }}</button>
                         <a href="{{ route('student.enrolled-courses') }}" class="sp-rate__btn sp-rate__btn--ghost">{{ __('Cancel') }}</a>
                     </div>
                 </form>

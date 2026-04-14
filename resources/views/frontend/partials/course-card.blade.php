@@ -22,7 +22,7 @@
                 <h5 class="title"><a
                         href="{{ route('course.show', $course->slug) }}">{{ truncate($course->title, 50) }}</a></h5>
                 <p class="author">{{ __('By') }} <a
-                        href="{{ route('instructor-details', ['id' => $course->instructor->id, 'slug' => Str::slug($course->instructor->name)]) }}">{{ $course->instructor->name }}</a>
+                        href="{{ route('instructor-details', ['id' => $course->instructor->id, 'slug' => Str::slug($course->instructor->name)]) }}">{{ $course->instructor->first_name }}</a>
                 </p>
                 <div class="courses__item-bottom">
                     @if (in_array($course->id, session('enrollments') ?? []))

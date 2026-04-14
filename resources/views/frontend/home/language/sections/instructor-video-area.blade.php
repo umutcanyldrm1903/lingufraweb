@@ -20,7 +20,7 @@
 
         return [
             'id' => $instructor->id,
-            'name' => $instructor->name,
+            'name' => $instructor->first_name,
             'image' => asset($instructor->image),
             'title' => $instructor->job_title ?: __('Ingilizce Egitmeni'),
             'summary' => \Illuminate\Support\Str::limit(

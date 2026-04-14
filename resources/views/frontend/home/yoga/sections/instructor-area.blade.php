@@ -21,7 +21,7 @@
                             </div>
                             <div class="instructor__content-four">
                                 <h2 class="title"><a
-                                        href="{{ route('instructor-details', $instructor->id) }}">{{ $instructor->name }}</a>
+                                        href="{{ route('instructor-details', $instructor->id) }}">{{ $instructor->first_name }}</a>
                                 </h2>
                                 <span>{{ $instructor->job_title }}</span>
                             </div>

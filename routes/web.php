@@ -230,7 +230,7 @@ Route::group(['middleware' => 'maintenance.mode'], function () {
         Route::view('support', 'frontend.student-dashboard.support.index')->name('support.index');
         Route::view('guide', 'frontend.student-dashboard.guide.index')->name('guide.index');
         Route::get('library', [StudentLibraryController::class, 'index'])->name('library.index');
-        Route::view('reports', 'frontend.student-dashboard.reports.index')->name('reports.index');
+        Route::get('reports', [StudentDashboardController::class, 'reports'])->name('reports.index');
 
     });
 

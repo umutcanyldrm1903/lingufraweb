@@ -39,7 +39,7 @@
                                             <span>({{ number_format($instructor->courses->avg('avg_rating'), 1) }}
                                                 {{ __('Ratings') }})</span>
                                         </div>
-                                        <h2 class="title">{{ $instructor->name }}</h2>
+                                        <h2 class="title">{{ $instructor->first_name }}</h2>
                                         <span class="designation">{{ $instructor->job_title }}</span>
                                         <p>{{ $instructor->short_bio }}</p>
                                         <div class="instructor__social">

@@ -33,7 +33,7 @@ class UserResource extends JsonResource {
                     'title' => (string) ($planRow->plan_title ?? ''),
                     'lessons_remaining' => (int) ($planRow->lessons_remaining ?? 0),
                     'cancel_remaining' => (int) ($planRow->cancel_remaining ?? 0),
-                    'assigned_instructor_name' => $assignedName ? (string) $assignedName : null,
+                    'assigned_instructor_name' => $assignedName ? (string) str($assignedName)->before(' ') : null,
                 ];
             }
         }
@@ -48,6 +48,7 @@ class UserResource extends JsonResource {
         return [
             'id'         => (int) $this->id,
             'name'       => (string) $this->name,
+            'first_name' => (string) $this->first_name,
             'email'      => (string) $this->email,
             'role'       => (string) ($this->role ?? ''),
             'phone'      => (string) $this->phone,

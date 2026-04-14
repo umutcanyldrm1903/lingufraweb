@@ -175,7 +175,7 @@
                                                             <div class="author-two">
                                                                 <a href="javascript:;"><img
                                                                         src="{{ asset($enroll->course->instructor->image) }}"
-                                                                        alt="img">{{ $enroll->course->instructor->name }}</a>
+                                                                        alt="img">{{ $enroll->course->instructor->first_name }}</a>
                                                             </div>
                                                             <div class="avg-rating">
                                                                 <i class="fas fa-star"></i>

@@ -109,11 +109,11 @@
 
     @php
         $whatsappLeadPhone = preg_replace('/\D+/', '', (string) config('app.whatsapp_lead_phone', ''));
-        $trialMessage = "Merhaba, deneme dersi ayirtmak istiyorum.\n"
-            . 'Ad Soyad: ' . (auth()->user()?->name ?? '') . "\n"
-            . 'Telefon: ' . (auth()->user()?->phone ?? '') . "\n"
-            . 'E-posta: ' . (auth()->user()?->email ?? '') . "\n"
-            . 'Kullanıcı ID: ' . (auth()->id() ?? '');
+        $trialMessage = "Hello, I would like to request a trial lesson.\n"
+            . 'Name: ' . (auth()->user()?->name ?? '') . "\n"
+            . 'Phone: ' . (auth()->user()?->phone ?? '') . "\n"
+            . 'Email: ' . (auth()->user()?->email ?? '') . "\n"
+            . 'User ID: ' . (auth()->id() ?? '');
         $trialWhatsAppUrl = $whatsappLeadPhone !== ''
             ? 'https://wa.me/' . $whatsappLeadPhone . '?text=' . rawurlencode($trialMessage)
             : '';

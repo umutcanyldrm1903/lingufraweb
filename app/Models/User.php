@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use Modules\InstructorRequest\app\Models\InstructorRequest;
 use Modules\Location\app\Models\Country;
@@ -134,6 +135,18 @@ class User extends Authenticatable {
     }
     public function getCartTotalAttribute() {
         return $this->carts()->join('courses', 'courses.id', '=', 'carts.course_id')->selectRaw('SUM(carts.qty * IFNULL(NULLIF(courses.discount, 0), courses.price)) as total')->value('total') ?? 0;
+    }
+
+    public function getFirstNameAttribute(): string
+    {
+        $name = trim((string) $this->name);
+        if ($name === '') {
+            return '';
+        }
+
+        $firstName = trim((string) Str::before($name, ' '));
+
+        return $firstName !== '' ? $firstName : $name;
     }
 
     /**

@@ -15,7 +15,7 @@
                         <div class="instructor__item-five">
                             <div class="instructor__thumb-five">
                                 <a href="{{ route('instructor-details', $instructor->id) }}"><img
-                                        src="{{ asset($instructor->image) }}" alt="{{ $instructor->name }}"></a>
+                                        src="{{ asset($instructor->image) }}" alt="{{ $instructor->first_name }}"></a>
                                 <div class="instructor__social-two">
                                     <ul class="list-wrap">
                                         @if ($instructor->facebook)
@@ -39,7 +39,7 @@
                             </div>
                             <div class="instructor__content-five">
                                 <h2 class="title"><a
-                                        href="{{ route('instructor-details', $instructor->id) }}l">{{ $instructor->name }}</a>
+                                        href="{{ route('instructor-details', $instructor->id) }}l">{{ $instructor->first_name }}</a>
                                 </h2>
                                 <span>{{ $instructor->job_title }}</span>
                             </div>

@@ -2,11 +2,9 @@
 
 @section('dashboard-contents')
     @php
-        $startDate = (string) request()->query('start_date', '');
-        $endDate = (string) request()->query('end_date', '');
-
-        // TODO: Load reports from DB. Placeholder empty list for now.
-        $reports = collect();
+        $reports = isset($reports) ? collect($reports) : collect();
+        $startDate = $startDate ?? (string) request()->query('start_date', '');
+        $endDate = $endDate ?? (string) request()->query('end_date', '');
     @endphp
 
     <div class="sp-reports">
@@ -46,10 +44,22 @@
         @else
             <div class="sp-reports__list">
                 @foreach ($reports as $report)
-                    <div class="sp-report-card">
-                        <div class="sp-report-card__title">{{ $report->title ?? __('Report') }}</div>
-                        <div class="sp-report-card__meta">{{ $report->created_at ?? '' }}</div>
-                    </div>
+                    <article class="sp-report-card">
+                        <div class="sp-report-card__top">
+                            <div>
+                                <h4 class="sp-report-card__title">{{ $report->title }}</h4>
+                                <p class="sp-report-card__meta">
+                                    <span>{{ $report->date_label }}</span>
+                                    <span>{{ __('Instructor') }}: {{ $report->instructor_name }}</span>
+                                </p>
+                            </div>
+                            <span class="sp-report-card__status">{{ \Illuminate\Support\Str::headline($report->status) }}</span>
+                        </div>
+
+                        <div class="sp-report-card__body">
+                            {{ $report->summary }}
+                        </div>
+                    </article>
                 @endforeach
             </div>
         @endif
@@ -72,7 +82,14 @@
         .sp-filter__btn{height:44px;display:inline-flex;align-items:center;gap:8px;}
         .sp-alert{display:flex;gap:10px;align-items:center;max-width:920px;margin:0 auto;border-radius:12px;padding:12px 14px;font-weight:900;}
         .sp-alert-info{background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;}
-        .sp-alert i{font-size:18px;}
+
+        .sp-reports__list{display:grid;gap:14px;max-width:920px;margin:0 auto;}
+        .sp-report-card{background:#fff;border:1px solid #eef2f7;border-radius:18px;padding:18px;box-shadow:0 12px 28px rgba(15,23,42,0.06);}
+        .sp-report-card__top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:10px;}
+        .sp-report-card__title{margin:0;font-weight:1000;color:#111827;}
+        .sp-report-card__meta{margin:6px 0 0;display:flex;gap:12px;flex-wrap:wrap;color:#6b7280;font-weight:800;}
+        .sp-report-card__status{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;border-radius:999px;background:#fff7e6;border:1px solid rgba(246,161,5,.35);font-size:12px;font-weight:1000;color:#111827;text-transform:uppercase;letter-spacing:.05em;}
+        .sp-report-card__body{color:#374151;font-weight:800;line-height:1.7;white-space:pre-wrap;}
 
         @media(max-width:575.98px){
             .sp-input{min-width:100%;}

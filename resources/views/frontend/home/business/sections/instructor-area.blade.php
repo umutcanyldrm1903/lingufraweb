@@ -29,7 +29,7 @@
                                         </div>
                                         <div class="instructor__content">
                                             <h2 class="title"><a
-                                                    href="{{ route('instructor-details', $instructor->id) }}">{{ $instructor->name }}</a>
+                                                    href="{{ route('instructor-details', $instructor->id) }}">{{ $instructor->first_name }}</a>
                                             </h2>
                                             <span class="designation">{{ $instructor->job_title }}</span>
                                             <p class="avg-rating">

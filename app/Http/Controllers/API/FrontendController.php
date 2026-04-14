@@ -584,7 +584,7 @@ class FrontendController extends Controller {
             ->map(function (User $instructor) {
                 return [
                     'id' => $instructor->id,
-                    'name' => (string) $instructor->name,
+                    'name' => (string) $instructor->first_name,
                     'image' => $instructor->image ? asset($instructor->image) : null,
                     'job_title' => (string) ($instructor->job_title ?? ''),
                     'short_bio' => (string) ($instructor->short_bio ?? ''),

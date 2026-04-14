@@ -446,7 +446,7 @@ class InstructorController extends Controller
                 return response()->json([
                     'status' => 'error',
                     'error_code' => 'no_credits',
-                    'message' => 'Krediniz kalmadi. Derse katilmak icin paket satin alin.',
+                    'message' => 'No credits remaining. Please purchase a package to book lessons.',
                 ], 422);
             }
         }
@@ -491,7 +491,7 @@ class InstructorController extends Controller
         $payload = [
             'instructor_id' => $instructor->id,
             'student_id' => $user?->id,
-            'title' => __('Ozel Ders'),
+            'title' => __('Private Lesson'),
             'start_time' => $startTime,
             'meeting_id' => 'pending-' . Str::uuid()->toString(),
             'password' => null,
@@ -584,7 +584,7 @@ class InstructorController extends Controller
 
         return [
             'id' => $instructor->id,
-            'name' => (string) $instructor->name,
+            'name' => (string) $instructor->first_name,
             'image' => $instructor->image ? asset($instructor->image) : null,
             'job_title' => (string) ($instructor->job_title ?? ''),
             'short_bio' => (string) ($instructor->short_bio ?? ''),

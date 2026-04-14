@@ -5,7 +5,7 @@
     $courseKeywords = collect([
         $course?->title,
         $course?->category?->translation?->name,
-        $course?->instructor?->name,
+        $course?->instructor?->first_name ?? $course?->instructor?->name,
         $setting->app_name,
         'online course',
         'english lesson',
@@ -105,7 +105,7 @@
                                         class="instructor-avatar">
                                     {{ __('By') }}
                                     <a
-                                        href="{{ route('instructor-details', $course->instructor->id) }}">{{ $course->instructor->name }}</a>
+                                        href="{{ route('instructor-details', $course->instructor->id) }}">{{ $course->instructor->first_name }}</a>
                                 </li>
                                 <li class="date"><i
                                         class="flaticon-calendar"></i>{{ formatDate($course->created_at, 'd/M/Y') }}</li>
@@ -300,7 +300,7 @@
                                             class="instructor-thumb">
                                     </div>
                                     <div class="courses__instructors-content">
-                                        <h2 class="title">{{ $course->instructor->name }}</h2>
+                                        <h2 class="title">{{ $course->instructor->first_name }}</h2>
                                         <span class="designation">{{ $course->instructor->job_title }}</span>
                                         <p>{{ $course->instructor->short_bio }}</p>
                                         <div class="instructor__social">
@@ -352,7 +352,7 @@
                                                 <img src="{{ asset($instructor->instructor->image) }}" alt="img">
                                             </div>
                                             <div class="courses__instructors-content">
-                                                <h2 class="title">{{ $instructor->instructor->name }}</h2>
+                                                <h2 class="title">{{ $instructor->instructor->first_name }}</h2>
                                                 <span class="designation">{{ $instructor->instructor->job_title }}</span>
                                                 <p>{{ $instructor->instructor->short_bio }}</p>
                                                 <div class="instructor__social">
@@ -720,7 +720,7 @@
             ],
             'instructor' => [
                 '@type' => 'Person',
-                'name' => $course->instructor->name,
+                'name' => $course->instructor->first_name ?? $course->instructor->name,
                 'url' => route('instructor-details', $course->instructor->id),
             ],
             'courseMode' => 'online',
@@ -785,7 +785,7 @@
                     'courses': {
                         'name': '{{ $course?->title }}',
                         'price': '{{ currency($course->price) }}',
-                        'instructor': '{{ $course->instructor->name }}',
+                        'instructor': '{{ $course->instructor->first_name ?? $course->instructor->name }}',
                         'category': '{{ $course->category->translation->name }}',
                         'lessons': '{{ $courseLessonCount }}',
                         'duration': '{{ minutesToHours($course->duration) }}',

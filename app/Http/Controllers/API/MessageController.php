@@ -39,7 +39,7 @@ class MessageController extends Controller
             return [
                 'partner' => [
                     'id' => (int) $partner->id,
-                    'name' => (string) $partner->name,
+                    'name' => (string) ($partner->first_name ?? $partner->name),
                     'image' => $partner->image ? asset($partner->image) : null,
                     'role' => (string) $partner->role,
                 ],

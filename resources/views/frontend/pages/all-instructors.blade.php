@@ -112,6 +112,7 @@
                             @php
                                 $profileUrl = route('instructor-details', ['id' => $instructor->id, 'slug' => Str::slug($instructor->name)]);
                                 $instructorImage = !empty($instructor->image) ? asset($instructor->image) : asset('frontend/img/instructor/instructor01.png');
+                                $displayName = $instructor->first_name ?: $instructor->name;
                                 $avgRating = (float) ($instructor->avg_live_rating ?? 0);
                                 $teachMap = [
                                     'speaking_b1' => __('Speaking Lessons'),
@@ -135,13 +136,13 @@
                             <div class="ci-card">
                                 <div class="ci-avatar">
                                     <a href="{{ $profileUrl }}" class="ci-link">
-                                        <img src="{{ $instructorImage }}" alt="{{ $instructor->name }}">
+                                        <img src="{{ $instructorImage }}" alt="{{ $displayName }}">
                                     </a>
                                 </div>
                                 <div class="ci-body">
                                     <div class="ci-head">
                                         <div>
-                                            <h4><a href="{{ $profileUrl }}" class="ci-link">{{ $instructor->name }}</a></h4>
+                                            <h4><a href="{{ $profileUrl }}" class="ci-link">{{ $displayName }}</a></h4>
                                             <p class="ci-role">{{ $instructor->job_title }}</p>
                                         </div>
                                         <a class="ci-profile" href="{{ $profileUrl }}">{{ __('Profile') }}</a>

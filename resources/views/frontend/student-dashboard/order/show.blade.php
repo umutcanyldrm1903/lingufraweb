@@ -93,7 +93,7 @@
                                                         @if ($isPlanOrder)
                                                             --
                                                         @else
-                                                            {{ $item->course?->instructor?->name }}
+                                                            {{ $item->course?->instructor?->first_name ?? $item->course?->instructor?->name }}
                                                             <br>
                                                             {{ $item->course?->instructor?->email }}
                                                         @endif

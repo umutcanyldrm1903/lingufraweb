@@ -68,6 +68,7 @@
         if ($aboutMeText === '') {
             $aboutMeText = trim(strip_tags((string) ($instructor->bio ?? '')));
         }
+        $displayName = $instructor->first_name ?: $instructor->name;
     @endphp
 
     <section class="ce-teacher section-py-120">
@@ -80,7 +81,7 @@
                         </div>
 
                         <div class="ce-teacher__intro">
-                            <h2 class="ce-teacher__name">{{ $instructor->name }}</h2>
+                            <h2 class="ce-teacher__name">{{ $displayName }}</h2>
                             @if ($categoryTags->count())
                                 <div class="ce-teacher__tags">
                                     @foreach ($categoryTags as $tag)
@@ -127,7 +128,7 @@
                 <div class="col-lg-7">
                     <div class="ce-teacher__video">
                         @if ($videoEmbedUrl)
-                            <iframe src="{{ $videoEmbedUrl }}" title="{{ $instructor->name }}" allowfullscreen
+                            <iframe src="{{ $videoEmbedUrl }}" title="{{ $displayName }}" allowfullscreen
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share">
                             </iframe>
                         @elseif ($videoUrl)

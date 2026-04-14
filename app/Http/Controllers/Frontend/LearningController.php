@@ -323,7 +323,7 @@ class LearningController extends Controller {
             if (!$isEnrolled) {
                 return redirect()->route('student.enrolled-courses')->with([
                     'alert-type' => 'error',
-                    'messege' => __('Derse katilmak icin once kayitli olmalisiniz.'),
+                    'messege' => __('You must be enrolled before joining this lesson.'),
                 ]);
             }
 
@@ -364,14 +364,14 @@ class LearningController extends Controller {
 
                     return redirect()->route('student.enrolled-courses')->with([
                         'alert-type' => 'error',
-                        'messege' => __('Derse katilirken bir sorun olustu. Lutfen tekrar deneyin.'),
+                        'messege' => __('Something went wrong while joining the lesson. Please try again.'),
                     ]);
                 }
 
                 if ($creditError === 'no_credits') {
                     return redirect()->route('student.enrolled-courses')->with([
                         'alert-type' => 'error',
-                        'messege' => __('Krediniz kalmadi. Derse katilmak icin paket satin alin.'),
+                        'messege' => __('No credits remaining. Please purchase a package to join lessons.'),
                     ]);
                 }
             }
@@ -426,21 +426,21 @@ class LearningController extends Controller {
         if ($user?->role === 'student' && (int) $liveLesson->student_id !== (int) $user->id) {
             return redirect()->route('student.enrolled-courses')->with([
                 'alert-type' => 'error',
-                'messege' => __('Bu derse erisim izniniz yok.'),
+                'messege' => __('You do not have access to this lesson.'),
             ]);
         }
 
         if ($user?->role === 'instructor' && (int) $liveLesson->instructor_id !== (int) $user->id) {
             return redirect()->route('instructor.students.index')->with([
                 'alert-type' => 'error',
-                'messege' => __('Bu derse erisim izniniz yok.'),
+                'messege' => __('You do not have access to this lesson.'),
             ]);
         }
 
         if (in_array((string) $liveLesson->status, ['cancelled_teacher', 'cancelled_student'], true)) {
             return redirect()->route($fallbackRoute)->with([
                 'alert-type' => 'error',
-                'messege' => __('Bu ders iptal edildi.'),
+                'messege' => __('This lesson has been cancelled.'),
             ]);
         }
 
@@ -455,7 +455,7 @@ class LearningController extends Controller {
             if (!Schema::hasTable('student_live_lesson_attendances')) {
                 return redirect()->route('student.enrolled-courses')->with([
                     'alert-type' => 'error',
-                    'messege' => __('Canli ders tablosu bulunamadi. Migrasyonu calistirin.'),
+                    'messege' => __('Live lesson attendance table was not found. Please run the migration.'),
                 ]);
             }
 
@@ -495,14 +495,14 @@ class LearningController extends Controller {
 
                 return redirect()->route('student.enrolled-courses')->with([
                     'alert-type' => 'error',
-                    'messege' => __('Derse katilirken bir sorun olustu. Lutfen tekrar deneyin.'),
+                    'messege' => __('Something went wrong while joining the lesson. Please try again.'),
                 ]);
             }
 
             if ($creditError === 'no_credits') {
                 return redirect()->route('student.enrolled-courses')->with([
                     'alert-type' => 'error',
-                    'messege' => __('Krediniz kalmadi. Derse katilmak icin paket satin alin.'),
+                    'messege' => __('No credits remaining. Please purchase a package to join lessons.'),
                 ]);
             }
         }

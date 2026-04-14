@@ -53,7 +53,11 @@ class StudentDashboardController extends Controller {
             });
         }
 
-        return view('frontend.student-dashboard.index', compact('plans'));
+        $upcomingLessonsPreview = $user instanceof User
+            ? $this->buildUpcomingLessonPreview($user, 4)
+            : collect();
+
+        return view('frontend.student-dashboard.index', compact('plans', 'upcomingLessonsPreview'));
     }
 
     public function invite(Request $request): View
@@ -73,6 +77,58 @@ class StudentDashboardController extends Controller {
         $inviteUrl = $referralCode !== '' ? url('/register?ref=' . $referralCode) : url('/register');
 
         return view('frontend.student-dashboard.invite.index', compact('referralCode', 'inviteUrl'));
+    }
+
+    public function reports(Request $request): View
+    {
+        $user = userAuth();
+        if ($user instanceof User) {
+            $this->syncUserPlanFromLatestPaidOrder($user);
+        }
+
+        $startDate = trim((string) $request->query('start_date', ''));
+        $endDate = trim((string) $request->query('end_date', ''));
+        $reports = collect();
+
+        if ($user instanceof User && Schema::hasTable('student_live_lessons')) {
+            $query = StudentLiveLesson::query()
+                ->where('student_id', $user->id)
+                ->whereNotNull('instructor_summary')
+                ->where('instructor_summary', '!=', '')
+                ->with(['instructor:id,name,image'])
+                ->orderByDesc('start_time');
+
+            if ($startDate !== '') {
+                try {
+                    $query->whereDate('start_time', '>=', Carbon::parse($startDate)->toDateString());
+                } catch (\Throwable $e) {
+                    // Ignore invalid date filter.
+                }
+            }
+
+            if ($endDate !== '') {
+                try {
+                    $query->whereDate('start_time', '<=', Carbon::parse($endDate)->toDateString());
+                } catch (\Throwable $e) {
+                    // Ignore invalid date filter.
+                }
+            }
+
+            $reports = $query->get()->map(function (StudentLiveLesson $lesson) {
+                return (object) [
+                    'id' => (int) $lesson->id,
+                    'title' => $lesson->title ?: __('Private Live Lesson'),
+                    'summary' => (string) $lesson->instructor_summary,
+                    'status' => (string) ($lesson->status ?: 'scheduled'),
+                    'instructor_name' => $lesson->instructor?->first_name ?: '-',
+                    'start_time' => $lesson->start_time,
+                    'date_label' => $lesson->start_time ? formattedDateTime($lesson->start_time) : '-',
+                    'written_at' => $lesson->instructor_summary_written_at,
+                ];
+            })->values();
+        }
+
+        return view('frontend.student-dashboard.reports.index', compact('reports', 'startDate', 'endDate'));
     }
 
     public function instructors(Request $request): View
@@ -342,7 +398,7 @@ class StudentDashboardController extends Controller {
 
         if (!Schema::hasTable('student_live_lessons') || !Schema::hasColumn('student_live_lessons', 'student_rating')) {
             return redirect()->route('student.enrolled-courses')->with([
-                'messege' => __('Puanlama ozelligi aktif degil. Lutfen migrasyonlari calistirin.'),
+                'messege' => __('Rating is not available yet. Please run the required migrations.'),
                 'alert-type' => 'error',
             ]);
         }
@@ -387,7 +443,7 @@ class StudentDashboardController extends Controller {
         $lesson->save();
 
         return redirect()->route('student.enrolled-courses')->with([
-            'messege' => __('Puaniniz kaydedildi.'),
+            'messege' => __('Your rating has been saved.'),
             'alert-type' => 'success',
         ]);
     }
@@ -821,7 +877,7 @@ class StudentDashboardController extends Controller {
 
         if ($alreadyRequested) {
             return redirect()->back()->with([
-                'messege' => __('Deneme dersi talebiniz zaten alindi.'),
+                'messege' => __('Your trial lesson request has already been received.'),
                 'alert-type' => 'info',
             ]);
         }
@@ -835,7 +891,7 @@ class StudentDashboardController extends Controller {
         ]);
 
         return redirect()->back()->with([
-            'messege' => __('Deneme dersi talebiniz alindi.'),
+            'messege' => __('Your trial lesson request has been received.'),
             'alert-type' => 'success',
         ]);
     }
@@ -931,9 +987,9 @@ class StudentDashboardController extends Controller {
                 'kind' => 'course',
                 'id' => $live->id,
                 'lesson_id' => $lesson?->id,
-                'title' => $lesson?->title ?: __('Canli Ders'),
+                'title' => $lesson?->title ?: __('Live Lesson'),
                 'course_title' => $course?->title,
-                'instructor_name' => $instructor?->name,
+                'instructor_name' => $instructor?->first_name,
                 'thumbnail' => $course?->thumbnail ?: 'frontend/img/courses/course_thumb01.jpg',
                 'start_time' => $live->start_time,
                 'type' => $live->type,
@@ -951,9 +1007,9 @@ class StudentDashboardController extends Controller {
                 'kind' => 'course',
                 'id' => $live->id,
                 'lesson_id' => $lesson?->id,
-                'title' => $lesson?->title ?: __('Canli Ders'),
+                'title' => $lesson?->title ?: __('Live Lesson'),
                 'course_title' => $course?->title,
-                'instructor_name' => $instructor?->name,
+                'instructor_name' => $instructor?->first_name,
                 'thumbnail' => $course?->thumbnail ?: 'frontend/img/courses/course_thumb01.jpg',
                 'start_time' => $live->start_time,
                 'type' => $live->type,
@@ -970,7 +1026,7 @@ class StudentDashboardController extends Controller {
                 'lesson_id' => $live->id,
                 'title' => $live->title ?: __('Private Live Lesson'),
                 'course_title' => __('Private Lesson'),
-                'instructor_name' => $live->instructor?->name,
+                'instructor_name' => $live->instructor?->first_name,
                 'thumbnail' => $live->instructor?->image ?: 'frontend/img/courses/course_thumb01.jpg',
                 'start_time' => $live->start_time,
                 'type' => $live->type ?: 'zoom',
@@ -990,7 +1046,7 @@ class StudentDashboardController extends Controller {
                 'lesson_id' => $live->id,
                 'title' => $live->title ?: __('Private Live Lesson'),
                 'course_title' => __('Private Lesson'),
-                'instructor_name' => $live->instructor?->name,
+                'instructor_name' => $live->instructor?->first_name,
                 'thumbnail' => $live->instructor?->image ?: 'frontend/img/courses/course_thumb01.jpg',
                 'start_time' => $live->start_time,
                 'type' => $live->type ?: 'zoom',
@@ -1123,7 +1179,7 @@ class StudentDashboardController extends Controller {
         $html = str_replace('[platform_name]', Cache::get('setting')->app_name, $html);
         $html = str_replace('[course]', $course->title, $html);
         $html = str_replace('[date]', formatDate($completed_date), $html);
-        $html = str_replace('[instructor_name]', $course->instructor->name, $html);
+        $html = str_replace('[instructor_name]', $course->instructor->first_name ?? $course->instructor->name, $html);
 
         // Initialize Dompdf
         $dompdf = new Dompdf(array('enable_remote' => true));
@@ -1142,7 +1198,7 @@ class StudentDashboardController extends Controller {
         $planKey = (string) $request->input('plan_key');
         if ($planKey === '') {
             return redirect()->back()->with([
-                'messege' => __('Paket bulunamadı. Lütfen tekrar deneyin.'),
+                'messege' => __('Plan not found. Please try again.'),
                 'alert-type' => 'error',
             ]);
         }
@@ -1160,7 +1216,7 @@ class StudentDashboardController extends Controller {
 
         if (!$plan) {
             return redirect()->back()->with([
-                'messege' => __('Paket bulunamadı. Lütfen admin panelinden paketin aktif olduğundan ve Plan Key alanının doğru olduğundan emin olun.'),
+                'messege' => __('Plan not found. Please make sure the package is active and the plan key is correct in the admin panel.'),
                 'alert-type' => 'error',
             ]);
         }
@@ -1186,7 +1242,7 @@ class StudentDashboardController extends Controller {
         $payableAmount = (float) ($plan->price ?? 0);
         if ($payableAmount <= 0) {
             return redirect()->back()->with([
-                'messege' => __('Bu paket için fiyat tanımlı değil. Lütfen admin panelinden Paket Toplamı (Price) alanını doldurun.'),
+                'messege' => __('This package does not have a valid price. Please fill the package price field in the admin panel.'),
                 'alert-type' => 'error',
             ]);
         }
@@ -1244,6 +1300,80 @@ class StudentDashboardController extends Controller {
         }
 
         return redirect()->route('payment', ['invoice_id' => $order->invoice_id]);
+    }
+
+    private function buildUpcomingLessonPreview(User $user, int $limit = 4)
+    {
+        $courseIds = Enrollment::query()
+            ->where('user_id', $user->id)
+            ->where('has_access', 1)
+            ->pluck('course_id')
+            ->filter()
+            ->unique()
+            ->values();
+
+        $courseUpcomingItems = collect();
+        if ($courseIds->isNotEmpty()) {
+            $courseUpcomingItems = CourseLiveClass::query()
+                ->whereNotNull('start_time')
+                ->where('start_time', '>=', now())
+                ->whereHas('lesson', function ($query) use ($courseIds) {
+                    $query->whereIn('course_id', $courseIds);
+                })
+                ->with([
+                    'lesson:id,course_id,title,duration',
+                    'lesson.course:id,slug,title,thumbnail,instructor_id',
+                    'lesson.course.instructor:id,name,image',
+                ])
+                ->orderBy('start_time')
+                ->get()
+                ->map(function (CourseLiveClass $live) {
+                    $lesson = $live->lesson;
+                    $course = $lesson?->course;
+                    $instructor = $course?->instructor;
+
+                    return (object) [
+                        'kind' => 'course',
+                        'title' => $lesson?->title ?: __('Live Lesson'),
+                        'course_title' => $course?->title ?: __('Course Lesson'),
+                        'instructor_name' => $instructor?->first_name ?: '-',
+                        'start_time' => $live->start_time,
+                        'join_route' => ($course && $lesson) ? route('student.learning.live', [$course->slug, $lesson->id]) : null,
+                    ];
+                });
+        }
+
+        $studentUpcomingItems = collect();
+        if (Schema::hasTable('student_live_lessons')) {
+            $studentQuery = StudentLiveLesson::query()
+                ->where('student_id', $user->id)
+                ->where('start_time', '>=', now())
+                ->with(['instructor:id,name,image'])
+                ->orderBy('start_time');
+
+            if (Schema::hasColumn('student_live_lessons', 'status')) {
+                $studentQuery->whereNotIn('status', ['cancelled_teacher', 'cancelled_student']);
+            }
+
+            $studentUpcomingItems = $studentQuery
+                ->get()
+                ->map(function (StudentLiveLesson $lesson) {
+                    return (object) [
+                        'kind' => 'student',
+                        'title' => $lesson->title ?: __('Private Live Lesson'),
+                        'course_title' => __('Private Lesson'),
+                        'instructor_name' => $lesson->instructor?->first_name ?: '-',
+                        'start_time' => $lesson->start_time,
+                        'join_route' => route('student.live-lessons.join', $lesson->id),
+                    ];
+                });
+        }
+
+        return $courseUpcomingItems
+            ->merge($studentUpcomingItems)
+            ->sortBy('start_time')
+            ->take($limit)
+            ->values();
     }
 
     private function syncUserPlanFromLatestPaidOrder(User $user): void
