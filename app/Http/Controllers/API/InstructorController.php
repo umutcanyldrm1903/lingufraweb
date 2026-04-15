@@ -9,6 +9,7 @@ use App\Models\InstructorAvailability;
 use App\Models\StudentLiveLesson;
 use App\Models\User;
 use App\Models\UserPlan;
+use App\Services\Push\FcmPushService;
 use App\Services\Zoom\ZoomOAuthService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -20,6 +21,11 @@ use Modules\Order\app\Models\Order;
 
 class InstructorController extends Controller
 {
+    public function __construct(
+        private readonly FcmPushService $fcmPushService,
+    ) {
+    }
+
     public function index(Request $request): JsonResponse
     {
         $search = trim((string) $request->query('search', ''));
@@ -530,6 +536,8 @@ class InstructorController extends Controller
             }
 
             $lesson->update($update);
+            $lesson->loadMissing(['student.mobilePushTokens', 'instructor.mobilePushTokens']);
+            $this->sendLessonBookedPushNotifications($lesson);
         } catch (\Throwable $e) {
             report($e);
             if ($lesson) {
@@ -560,6 +568,48 @@ class InstructorController extends Controller
                 'status' => $lesson->status ?? 'scheduled',
             ],
         ], 200);
+    }
+
+    private function sendLessonBookedPushNotifications(StudentLiveLesson $lesson): void
+    {
+        if (!$this->fcmPushService->isConfigured()) {
+            return;
+        }
+
+        $student = $lesson->student;
+        $instructor = $lesson->instructor;
+
+        if ($student) {
+            foreach ($student->mobilePushTokens as $device) {
+                $title = $device->locale === 'tr'
+                    ? 'Ders rezervasyonu onaylandi'
+                    : 'Lesson reservation confirmed';
+                $body = $device->locale === 'tr'
+                    ? 'Yeni dersin ' . formattedDateTime($lesson->start_time) . ' icin planlandi.'
+                    : 'Your new lesson has been scheduled for ' . formattedDateTime($lesson->start_time) . '.';
+
+                $this->fcmPushService->sendToToken($device, $title, $body, [
+                    'type' => 'lesson_booked',
+                    'lesson_id' => $lesson->id,
+                ]);
+            }
+        }
+
+        if ($instructor) {
+            foreach ($instructor->mobilePushTokens as $device) {
+                $title = $device->locale === 'tr'
+                    ? 'Yeni rezervasyon alindi'
+                    : 'You received a new reservation';
+                $body = $device->locale === 'tr'
+                    ? ($student?->first_name ?: __('Bir ogrenci')) . ' ile yeni ders ' . formattedDateTime($lesson->start_time) . ' icin planlandi.'
+                    : 'A new lesson with ' . ($student?->first_name ?: __('a student')) . ' has been scheduled for ' . formattedDateTime($lesson->start_time) . '.';
+
+                $this->fcmPushService->sendToToken($device, $title, $body, [
+                    'type' => 'lesson_booked_instructor',
+                    'lesson_id' => $lesson->id,
+                ]);
+            }
+        }
     }
 
     private function normalizeInstructor(User $instructor): array

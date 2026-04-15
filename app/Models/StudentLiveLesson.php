@@ -20,6 +20,7 @@ class StudentLiveLesson extends Model
         'cancelled_by',
         'cancelled_reason',
         'cancelled_at',
+        'push_reminder_sent_at',
         'ended_at',
         'instructor_summary',
         'instructor_summary_written_at',
@@ -31,6 +32,7 @@ class StudentLiveLesson extends Model
     protected $casts = [
         'start_time' => 'datetime',
         'cancelled_at' => 'datetime',
+        'push_reminder_sent_at' => 'datetime',
         'ended_at' => 'datetime',
         'instructor_summary_written_at' => 'datetime',
         'rated_at' => 'datetime',

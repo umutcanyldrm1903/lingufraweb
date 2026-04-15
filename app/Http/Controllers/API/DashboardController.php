@@ -39,6 +39,7 @@ use App\Models\UserExperience;
 use App\Models\User;
 use App\Models\Message;
 use App\Models\MobileNotificationRead;
+use App\Services\Push\FcmPushService;
 use Carbon\Carbon;
 use Dompdf\Dompdf;
 use Illuminate\Http\JsonResponse;
@@ -59,6 +60,11 @@ use Modules\Order\app\Models\Enrollment;
 use Modules\Order\app\Models\Order;
 
 class DashboardController extends Controller {
+    public function __construct(
+        private readonly FcmPushService $fcmPushService,
+    ) {
+    }
+
     public function enrolled_courses(Request $request): JsonResponse {
         $user_id = auth()->user()->id;
         $limit = $request->filled('limit') && is_numeric($request->limit) ? (int) $request->limit : 6;
@@ -1369,6 +1375,23 @@ class DashboardController extends Controller {
         $trialWhatsAppUrl = $whatsappLeadPhone !== ''
             ? 'https://wa.me/' . $whatsappLeadPhone . '?text=' . rawurlencode($trialMessage)
             : null;
+
+        if ($this->fcmPushService->isConfigured()) {
+            $user->loadMissing('mobilePushTokens');
+            foreach ($user->mobilePushTokens as $device) {
+                $title = $device->locale === 'tr'
+                    ? 'Deneme dersi talebin alindi'
+                    : 'Your trial lesson request has been received';
+                $body = $device->locale === 'tr'
+                    ? 'Ekibimiz sana donus yapana kadar speaking rutinine devam et.'
+                    : 'Keep your speaking routine active while our team reviews your request.';
+
+                $this->fcmPushService->sendToToken($device, $title, $body, [
+                    'type' => 'trial_request_received',
+                    'user_id' => $user->id,
+                ]);
+            }
+        }
 
         return response()->json([
             'status' => 'success',

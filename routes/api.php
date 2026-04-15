@@ -12,6 +12,7 @@ use App\Http\Controllers\API\MessageController;
 use App\Http\Controllers\API\ZoomMeetingSdkController;
 use App\Http\Controllers\API\IyzicoNativePaymentController;
 use App\Http\Controllers\API\PlacementTestController;
+use App\Http\Controllers\API\PushNotificationController;
 
 Route::middleware(['guest:sanctum'])->group(function () {
     Route::post('register', [AuthenticatedController::class, 'register'])->name('api.register');
@@ -87,6 +88,8 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::post('student-plans/purchase', [PlanController::class, 'purchase']);
     Route::post('student-plans/iyzico/3ds-init', [IyzicoNativePaymentController::class, 'initStudentPlan3ds']);
+    Route::post('push/devices/register', [PushNotificationController::class, 'register']);
+    Route::delete('push/devices', [PushNotificationController::class, 'unregister']);
     Route::controller(InstructorController::class)->group(function () {
         Route::post('instructors/{instructor}/schedule', 'book')->whereNumber('instructor');
     });

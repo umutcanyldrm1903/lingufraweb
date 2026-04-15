@@ -90,7 +90,11 @@ class StudentDashboardController extends Controller {
         $endDate = trim((string) $request->query('end_date', ''));
         $reports = collect();
 
-        if ($user instanceof User && Schema::hasTable('student_live_lessons')) {
+        if (
+            $user instanceof User
+            && Schema::hasTable('student_live_lessons')
+            && Schema::hasColumn('student_live_lessons', 'instructor_summary')
+        ) {
             $query = StudentLiveLesson::query()
                 ->where('student_id', $user->id)
                 ->whereNotNull('instructor_summary')
@@ -123,7 +127,9 @@ class StudentDashboardController extends Controller {
                     'instructor_name' => $lesson->instructor?->first_name ?: '-',
                     'start_time' => $lesson->start_time,
                     'date_label' => $lesson->start_time ? formattedDateTime($lesson->start_time) : '-',
-                    'written_at' => $lesson->instructor_summary_written_at,
+                    'written_at' => Schema::hasColumn('student_live_lessons', 'instructor_summary_written_at')
+                        ? $lesson->instructor_summary_written_at
+                        : null,
                 ];
             })->values();
         }

@@ -40,6 +40,7 @@ class Kernel extends ConsoleKernel
         $cronExpression = "*/$live_mail_send_minutes * * * *";
 
         $schedule->command('prenotification:live')->cron($cronExpression)->withoutOverlapping();
+        $schedule->command('push:dispatch-mobile')->everyMinute()->withoutOverlapping();
     }
 
     /**

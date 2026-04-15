@@ -107,6 +107,10 @@ class User extends Authenticatable {
     {
         return $this->hasMany(StudentLiveLesson::class, 'instructor_id');
     }
+    public function mobilePushTokens(): HasMany
+    {
+        return $this->hasMany(MobilePushToken::class, 'user_id');
+    }
     function enrollments(): HasMany {
         return $this->hasMany(Enrollment::class, 'user_id', 'id');
     }
