@@ -64,15 +64,17 @@ jobs:
             ssl_setting="on"
           fi
 
-          lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER" -e "
+          lftp -e "
             set cmd:fail-exit yes;
             set ftp:ssl-allow $ssl_setting;
+            set ftp:ssl-force $ssl_setting;
             set ssl:verify-certificate no;
             set net:max-retries 2;
             set net:timeout 20;
             set xfer:clobber on;
             set ftp:passive-mode true;
-            open -p $FTP_PORT $FTP_SERVER;
+            open -u $FTP_USERNAME,$FTP_PASSWORD -p $FTP_PORT $FTP_SERVER;
+            cls;
             mirror -R . $FTP_TARGET_DIR \
               --verbose \
               --only-newer \
