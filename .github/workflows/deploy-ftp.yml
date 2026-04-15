@@ -39,32 +39,56 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+
+      - name: Install lftp
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y lftp
 
       - name: Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: ${{ secrets.FTP_PORT || 21 }}
-          protocol: ${{ secrets.FTP_PROTOCOL || 'ftp' }}
-          server-dir: ${{ secrets.FTP_TARGET_DIR || '/' }}
-          dangerous-clean-slate: false
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/.github/**
-            **/node_modules/**
-            **/vendor/**
-            **/.env
-            **/.env.*
-            **/storage/**
-            **/bootstrap/cache/**
-            **/mobile/**
-            **/tmp/**
-            **/output/**
-            **/*.zip
-            **/public/uploads/**
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_PORT: ${{ secrets.FTP_PORT || 21 }}
+          FTP_PROTOCOL: ${{ secrets.FTP_PROTOCOL || 'ftp' }}
+          FTP_TARGET_DIR: ${{ secrets.FTP_TARGET_DIR || '/' }}
+        run: |
+          ssl_setting="off"
+          if [ "$FTP_PROTOCOL" = "ftps" ]; then
+            ssl_setting="on"
+          fi
+
+          lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER" -e "
+            set cmd:fail-exit yes;
+            set ftp:ssl-allow $ssl_setting;
+            set ssl:verify-certificate no;
+            set net:max-retries 2;
+            set net:timeout 20;
+            set xfer:clobber on;
+            set ftp:passive-mode true;
+            open -p $FTP_PORT $FTP_SERVER;
+            mirror -R . $FTP_TARGET_DIR \
+              --verbose \
+              --only-newer \
+              --parallel=2 \
+              --exclude-glob .git* \
+              --exclude-glob .github \
+              --exclude-glob node_modules \
+              --exclude-glob vendor \
+              --exclude-glob .env \
+              --exclude-glob .env.* \
+              --exclude-glob storage \
+              --exclude-glob bootstrap/cache \
+              --exclude-glob mobile \
+              --exclude-glob tmp \
+              --exclude-glob output \
+              --exclude-glob *.zip \
+              --exclude-glob public/uploads;
+            bye
+          "
