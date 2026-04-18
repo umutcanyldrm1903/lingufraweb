@@ -7,6 +7,8 @@ use App\Http\Controllers\Admin\RolesController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\OutreachCampaignController;
+use App\Http\Controllers\Admin\GrowthDashboardController;
+use App\Http\Controllers\Admin\MobilePushCampaignController;
 use App\Http\Controllers\Admin\StudentPlanController;
 use App\Http\Controllers\Admin\TrialLessonRequestController;
 use App\Http\Controllers\Global\CloudStorageController;
@@ -46,6 +48,10 @@ Route::group(['as' => 'admin.', 'prefix' => 'admin'], function () {
         Route::put('outreach-messages/{outreachMessage}', [OutreachCampaignController::class, 'updateMessage'])->name('outreach-messages.update');
         Route::post('outreach-messages/{outreachMessage}/approve', [OutreachCampaignController::class, 'approveMessage'])->name('outreach-messages.approve');
         Route::post('outreach-messages/{outreachMessage}/send', [OutreachCampaignController::class, 'sendMessage'])->name('outreach-messages.send');
+        Route::get('growth-dashboard', [GrowthDashboardController::class, 'index'])->name('growth.dashboard');
+        Route::post('growth-dashboard/store-metric', [GrowthDashboardController::class, 'storeMetric'])->name('growth.store-metric');
+        Route::get('growth/push-campaigns', [MobilePushCampaignController::class, 'index'])->name('growth.push-campaigns.index');
+        Route::post('growth/push-campaigns', [MobilePushCampaignController::class, 'store'])->name('growth.push-campaigns.store');
 
         Route::controller(AdminProfileController::class)->group(function () {
             Route::get('edit-profile', 'edit_profile')->name('edit-profile');

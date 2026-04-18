@@ -145,6 +145,7 @@ return [
     ],
     'app_mode' => env('APP_MODE', 'LIVE'),
     'whatsapp_lead_phone' => env('WHATSAPP_LEAD_PHONE', ''),
+    'mobile_analytics_key' => env('MOBILE_ANALYTICS_KEY', ''),
 
     /*
     |--------------------------------------------------------------------------

@@ -13,6 +13,7 @@ use App\Http\Controllers\API\ZoomMeetingSdkController;
 use App\Http\Controllers\API\IyzicoNativePaymentController;
 use App\Http\Controllers\API\PlacementTestController;
 use App\Http\Controllers\API\PushNotificationController;
+use App\Http\Controllers\API\AnalyticsEventController;
 
 Route::middleware(['guest:sanctum'])->group(function () {
     Route::post('register', [AuthenticatedController::class, 'register'])->name('api.register');
@@ -90,6 +91,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('student-plans/iyzico/3ds-init', [IyzicoNativePaymentController::class, 'initStudentPlan3ds']);
     Route::post('push/devices/register', [PushNotificationController::class, 'register']);
     Route::delete('push/devices', [PushNotificationController::class, 'unregister']);
+    Route::get('analytics/speaking-coach-funnel', [AnalyticsEventController::class, 'speakingCoachFunnel']);
+    Route::get('analytics/my-events/export', [AnalyticsEventController::class, 'exportMine']);
+    Route::delete('analytics/my-events', [AnalyticsEventController::class, 'deleteMine']);
     Route::controller(InstructorController::class)->group(function () {
         Route::post('instructors/{instructor}/schedule', 'book')->whereNumber('instructor');
     });
@@ -142,6 +146,11 @@ Route::prefix('placement-test')->controller(PlacementTestController::class)->gro
     Route::get('questions', 'questions');
     Route::post('submit', 'submit')->middleware('throttle:10,1');
 });
+
+Route::post('analytics/events', [AnalyticsEventController::class, 'store'])
+    ->middleware('throttle:120,1');
+Route::post('analytics/store-metrics', [AnalyticsEventController::class, 'ingestStoreMetrics'])
+    ->middleware('throttle:60,1');
 
 Route::controller(FrontendController::class)->group(function () {
     Route::get('settings', 'settings');

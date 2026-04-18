@@ -47,6 +47,16 @@
                     <span>{{ __('Outreach Bot') }}</span>
                 </a>
             </li>
+            <li class="{{ Route::is('admin.growth.*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('admin.growth.dashboard') }}"><i class="fas fa-chart-line"></i>
+                    <span>{{ __('Growth Dashboard') }}</span>
+                </a>
+            </li>
+            <li class="{{ Route::is('admin.growth.push-campaigns.*') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('admin.growth.push-campaigns.index') }}"><i class="fas fa-bell"></i>
+                    <span>{{ __('Push Campaigns') }}</span>
+                </a>
+            </li>
 
             @if (Module::isEnabled('ContactMessage'))
                 <li class="{{ Route::is('admin.contact-messages') || Route::is('admin.contact-message') ? 'active' : '' }}">
