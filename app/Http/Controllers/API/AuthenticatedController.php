@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Services\MailSenderService;
 use App\Http\Controllers\Controller;
@@ -16,11 +17,15 @@ use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Firebase\JWT\JWK;
+use Firebase\JWT\JWT;
 use Modules\GlobalSetting\app\Models\Setting;
 use Modules\GlobalSetting\app\Models\MarketingSetting;
 use Modules\InstructorRequest\app\Models\InstructorRequest;
 
 class AuthenticatedController extends Controller {
+    private const SOCIAL_LOGIN_PROVIDERS = ['google', 'apple'];
+
     public function register(Request $request): JsonResponse {
         $validator = Validator::make($request->all(), [
             'role' => ['nullable', Rule::in(['student', 'instructor'])],
@@ -121,6 +126,202 @@ class AuthenticatedController extends Controller {
 
         }
     }
+    public function socialLogin(Request $request): JsonResponse {
+        $validator = Validator::make($request->all(), [
+            'provider' => ['required', 'string', Rule::in(self::SOCIAL_LOGIN_PROVIDERS)],
+            'id_token' => ['required', 'string'],
+            'name' => ['nullable', 'string', 'max:255'],
+        ], [
+            'provider.required' => 'Provider is required',
+            'id_token.required' => 'Social login token is required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => 'error', 'message' => $validator->errors()], 422);
+        }
+
+        $provider = strtolower((string) $request->input('provider'));
+
+        try {
+            $identity = match ($provider) {
+                'google' => $this->verifyGoogleIdToken((string) $request->input('id_token')),
+                'apple' => $this->verifyAppleIdentityToken((string) $request->input('id_token')),
+            };
+
+            $user = $this->resolveSocialUser(
+                provider: $provider,
+                providerId: $identity['provider_id'],
+                email: $identity['email'],
+                name: trim((string) $request->input('name', '')) ?: $identity['name']
+            );
+
+            if ($user->status !== UserStatus::ACTIVE->value) {
+                return response()->json(['status' => 'error', 'message' => 'Inactive account'], 403);
+            }
+
+            if ($user->is_banned === UserStatus::BANNED->value) {
+                return response()->json(['status' => 'error', 'message' => 'Your account has been banned'], 403);
+            }
+
+            PersonalAccessToken::where('tokenable_id', $user->id)
+                ->where('tokenable_type', User::class)
+                ->where('name', 'extra-token')
+                ->delete();
+
+            $bearerToken = $user->createToken('mobile-social-login', ['*'])->plainTextToken;
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Logged in successfully.',
+                'bearer_token' => $bearerToken,
+                'user_id' => $user->id,
+                'role' => $user->role ?: 'student',
+                'data' => [
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'role' => $user->role ?: 'student',
+                ],
+            ], 200);
+        } catch (Throwable $e) {
+            Log::warning('Mobile social login failed', [
+                'provider' => $provider,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage() ?: 'Social login failed',
+            ], 401);
+        }
+    }
+
+    private function verifyGoogleIdToken(string $idToken): array
+    {
+        $allowedClientIds = config('services.mobile_social_login.google_client_ids', []);
+        if (empty($allowedClientIds)) {
+            throw new \RuntimeException('Google login is not configured.');
+        }
+
+        $response = Http::timeout(8)->get('https://oauth2.googleapis.com/tokeninfo', [
+            'id_token' => $idToken,
+        ]);
+
+        if (!$response->ok()) {
+            throw new \RuntimeException('Invalid Google login token.');
+        }
+
+        $payload = $response->json();
+        $audience = (string) ($payload['aud'] ?? '');
+        if (!in_array($audience, $allowedClientIds, true)) {
+            throw new \RuntimeException('Google login client is not allowed.');
+        }
+
+        $emailVerified = $payload['email_verified'] ?? false;
+        if (!($emailVerified === true || $emailVerified === 'true' || $emailVerified === '1')) {
+            throw new \RuntimeException('Google email is not verified.');
+        }
+
+        $email = strtolower(trim((string) ($payload['email'] ?? '')));
+        $subject = trim((string) ($payload['sub'] ?? ''));
+        if ($email === '' || $subject === '') {
+            throw new \RuntimeException('Google login did not return a usable account.');
+        }
+
+        return [
+            'provider_id' => $subject,
+            'email' => $email,
+            'name' => trim((string) ($payload['name'] ?? Str::before($email, '@'))),
+        ];
+    }
+
+    private function verifyAppleIdentityToken(string $idToken): array
+    {
+        $allowedClientIds = config('services.mobile_social_login.apple_client_ids', []);
+        if (empty($allowedClientIds)) {
+            throw new \RuntimeException('Apple login is not configured.');
+        }
+
+        $keysResponse = Http::timeout(8)->get('https://appleid.apple.com/auth/keys');
+        if (!$keysResponse->ok()) {
+            throw new \RuntimeException('Apple login keys could not be loaded.');
+        }
+
+        $decoded = JWT::decode($idToken, JWK::parseKeySet($keysResponse->json()));
+        $payload = json_decode(json_encode($decoded), true) ?: [];
+
+        if (($payload['iss'] ?? '') !== 'https://appleid.apple.com') {
+            throw new \RuntimeException('Invalid Apple login issuer.');
+        }
+
+        $audience = $payload['aud'] ?? null;
+        $audiences = is_array($audience) ? $audience : [$audience];
+        if (empty(array_intersect($audiences, $allowedClientIds))) {
+            throw new \RuntimeException('Apple login client is not allowed.');
+        }
+
+        $subject = trim((string) ($payload['sub'] ?? ''));
+        $email = strtolower(trim((string) ($payload['email'] ?? '')));
+
+        if ($subject === '') {
+            throw new \RuntimeException('Apple login did not return a usable account.');
+        }
+
+        return [
+            'provider_id' => $subject,
+            'email' => $email,
+            'name' => $email !== '' ? Str::before($email, '@') : 'Apple User',
+        ];
+    }
+
+    private function resolveSocialUser(string $provider, string $providerId, string $email, string $name): User
+    {
+        $socialUser = User::whereHas('socialite', function ($query) use ($provider, $providerId) {
+            $query->where('provider_name', $provider)
+                ->where('provider_id', $providerId);
+        })->first();
+
+        if ($socialUser) {
+            return $socialUser;
+        }
+
+        if ($email === '') {
+            throw new \RuntimeException('Social login email is required for first login.');
+        }
+
+        return DB::transaction(function () use ($provider, $providerId, $email, $name) {
+            $user = User::where('email', $email)->first();
+
+            if (!$user) {
+                $user = User::create([
+                    'role' => 'student',
+                    'name' => $name !== '' ? $name : Str::before($email, '@'),
+                    'email' => $email,
+                    'status' => UserStatus::ACTIVE->value,
+                    'is_banned' => UserStatus::UNBANNED->value,
+                    'password' => Hash::make(Str::random(40)),
+                    'verification_token' => null,
+                    'email_verified_at' => now(),
+                ]);
+            } elseif (!$user->email_verified_at) {
+                $user->email_verified_at = now();
+                $user->save();
+            }
+
+            $user->socialite()->firstOrCreate(
+                [
+                    'provider_name' => $provider,
+                    'provider_id' => $providerId,
+                ],
+                [
+                    'access_token' => null,
+                    'refresh_token' => null,
+                ]
+            );
+
+            return $user;
+        });
+    }
+
     public function forgetPassword(Request $request): JsonResponse {
         $validator = Validator::make($request->all(), [
             'email' => ['required', 'email'],

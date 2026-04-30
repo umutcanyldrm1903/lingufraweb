@@ -18,6 +18,7 @@ use App\Http\Controllers\API\AnalyticsEventController;
 Route::middleware(['guest:sanctum'])->group(function () {
     Route::post('register', [AuthenticatedController::class, 'register'])->name('api.register');
     Route::post('login', [AuthenticatedController::class, 'login'])->name('api.login');
+    Route::post('social-login', [AuthenticatedController::class, 'socialLogin'])->name('api.social-login');
     Route::post('forget-password', [AuthenticatedController::class, 'forgetPassword'])->name('api.forget-password');
     Route::post('reset-password', [AuthenticatedController::class, 'resetPassword'])->name('api.reset-password');
 });

@@ -50,4 +50,9 @@ return [
         'secret' => env('ZOOM_MEETING_SDK_SECRET'),
     ],
 
+    'mobile_social_login' => [
+        'google_client_ids' => array_values(array_filter(array_map('trim', explode(',', (string) env('MOBILE_GOOGLE_CLIENT_IDS', ''))))),
+        'apple_client_ids' => array_values(array_filter(array_map('trim', explode(',', (string) env('MOBILE_APPLE_CLIENT_IDS', ''))))),
+    ],
+
 ];
