@@ -446,14 +446,19 @@ class InstructorController extends Controller
         $lessonDuration = $this->resolveLessonDuration($user);
         $endedAt = $lessonDuration > 0 ? $startTime->copy()->addMinutes($lessonDuration) : null;
 
+        $isFreeTrialBooking = false;
         if (Schema::hasTable('user_plans')) {
             $plan = UserPlan::query()->currentForUser((int) ($user?->id ?? 0))->first();
             if (!$plan || ($plan->lessons_remaining ?? 0) <= 0) {
-                return response()->json([
-                    'status' => 'error',
-                    'error_code' => 'no_credits',
-                    'message' => 'No credits remaining. Please purchase a package to book lessons.',
-                ], 422);
+                if ($user instanceof User && $this->canUseFreeTrialLesson($user)) {
+                    $isFreeTrialBooking = true;
+                } else {
+                    return response()->json([
+                        'status' => 'error',
+                        'error_code' => 'no_credits',
+                        'message' => 'No credits remaining. Please purchase a package to book lessons.',
+                    ], 422);
+                }
             }
         }
 
@@ -497,7 +502,7 @@ class InstructorController extends Controller
         $payload = [
             'instructor_id' => $instructor->id,
             'student_id' => $user?->id,
-            'title' => __('Private Lesson'),
+            'title' => $isFreeTrialBooking ? __('Free Trial Lesson') : __('Private Lesson'),
             'start_time' => $startTime,
             'meeting_id' => 'pending-' . Str::uuid()->toString(),
             'password' => null,
@@ -536,6 +541,9 @@ class InstructorController extends Controller
             }
 
             $lesson->update($update);
+            if ($isFreeTrialBooking && $user instanceof User) {
+                $this->markFreeTrialLessonBooked($user);
+            }
             $lesson->loadMissing(['student.mobilePushTokens', 'instructor.mobilePushTokens']);
             $this->sendLessonBookedPushNotifications($lesson);
         } catch (\Throwable $e) {
@@ -559,15 +567,75 @@ class InstructorController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Reservation request sent.',
+            'message' => $isFreeTrialBooking
+                ? 'Your free trial lesson reservation has been created.'
+                : 'Reservation request sent.',
             'data' => [
                 'lesson_id' => $lesson->id,
                 'start_time' => $lesson->start_time?->toDateTimeString(),
                 'join_url' => $lesson->join_url,
                 'meeting_id' => $lesson->meeting_id,
                 'status' => $lesson->status ?? 'scheduled',
+                'is_trial' => $isFreeTrialBooking,
             ],
         ], 200);
+    }
+
+    private function canUseFreeTrialLesson(User $user): bool
+    {
+        if (!Schema::hasTable('trial_lesson_requests')) {
+            return false;
+        }
+
+        $hasPaidPlan = Order::query()
+            ->where('buyer_id', $user->id)
+            ->where('order_type', 'student_plan')
+            ->where(function ($query) {
+                $query->where('payment_status', 'paid')
+                    ->orWhere('status', 'completed');
+            })
+            ->exists();
+
+        if ($hasPaidPlan) {
+            return false;
+        }
+
+        return !DB::table('trial_lesson_requests')
+            ->where('user_id', $user->id)
+            ->whereIn('status', ['booked', 'completed', 'used'])
+            ->exists();
+    }
+
+    private function markFreeTrialLessonBooked(User $user): void
+    {
+        if (!Schema::hasTable('trial_lesson_requests')) {
+            return;
+        }
+
+        $phone = trim((string) ($user->phone ?? ''));
+        $existing = DB::table('trial_lesson_requests')
+            ->where('user_id', $user->id)
+            ->orderByDesc('id')
+            ->first();
+
+        if ($existing) {
+            DB::table('trial_lesson_requests')
+                ->where('id', $existing->id)
+                ->update([
+                    'phone' => $phone !== '' ? $phone : ($existing->phone ?? null),
+                    'status' => 'booked',
+                    'updated_at' => now(),
+                ]);
+            return;
+        }
+
+        DB::table('trial_lesson_requests')->insert([
+            'user_id' => $user->id,
+            'phone' => $phone !== '' ? $phone : null,
+            'status' => 'booked',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 
     private function sendLessonBookedPushNotifications(StudentLiveLesson $lesson): void
@@ -580,32 +648,44 @@ class InstructorController extends Controller
         $instructor = $lesson->instructor;
 
         if ($student) {
+            $isTrial = str_contains(strtolower((string) $lesson->title), 'trial')
+                || str_contains(strtolower((string) $lesson->title), 'deneme');
             foreach ($student->mobilePushTokens as $device) {
-                $title = $device->locale === 'tr'
-                    ? 'Ders rezervasyonu onaylandi'
-                    : 'Lesson reservation confirmed';
-                $body = $device->locale === 'tr'
-                    ? 'Yeni dersin ' . formattedDateTime($lesson->start_time) . ' icin planlandi.'
-                    : 'Your new lesson has been scheduled for ' . formattedDateTime($lesson->start_time) . '.';
+                $title = $isTrial
+                    ? ($device->locale === 'tr' ? 'Deneme dersin olusturuldu' : 'Your trial lesson is booked')
+                    : ($device->locale === 'tr' ? 'Ders rezervasyonu onaylandi' : 'Lesson reservation confirmed');
+                $body = $isTrial
+                    ? ($device->locale === 'tr'
+                        ? 'Ucretsiz deneme dersin ' . formattedDateTime($lesson->start_time) . ' icin planlandi.'
+                        : 'Your free trial lesson has been scheduled for ' . formattedDateTime($lesson->start_time) . '.')
+                    : ($device->locale === 'tr'
+                        ? 'Yeni dersin ' . formattedDateTime($lesson->start_time) . ' icin planlandi.'
+                        : 'Your new lesson has been scheduled for ' . formattedDateTime($lesson->start_time) . '.');
 
                 $this->fcmPushService->sendToToken($device, $title, $body, [
-                    'type' => 'lesson_booked',
+                    'type' => $isTrial ? 'trial_lesson_booked' : 'lesson_booked',
                     'lesson_id' => $lesson->id,
                 ]);
             }
         }
 
         if ($instructor) {
+            $isTrial = str_contains(strtolower((string) $lesson->title), 'trial')
+                || str_contains(strtolower((string) $lesson->title), 'deneme');
             foreach ($instructor->mobilePushTokens as $device) {
-                $title = $device->locale === 'tr'
-                    ? 'Yeni rezervasyon alindi'
-                    : 'You received a new reservation';
-                $body = $device->locale === 'tr'
-                    ? ($student?->first_name ?: __('Bir ogrenci')) . ' ile yeni ders ' . formattedDateTime($lesson->start_time) . ' icin planlandi.'
-                    : 'A new lesson with ' . ($student?->first_name ?: __('a student')) . ' has been scheduled for ' . formattedDateTime($lesson->start_time) . '.';
+                $title = $isTrial
+                    ? ($device->locale === 'tr' ? 'Yeni deneme dersi rezervasyonu' : 'New trial lesson reservation')
+                    : ($device->locale === 'tr' ? 'Yeni rezervasyon alindi' : 'You received a new reservation');
+                $body = $isTrial
+                    ? ($device->locale === 'tr'
+                        ? ($student?->first_name ?: __('Bir ogrenci')) . ' ucretsiz deneme dersi icin rezervasyon yapti: ' . formattedDateTime($lesson->start_time) . '.'
+                        : ($student?->first_name ?: __('A student')) . ' booked a free trial lesson for ' . formattedDateTime($lesson->start_time) . '.')
+                    : ($device->locale === 'tr'
+                        ? ($student?->first_name ?: __('Bir ogrenci')) . ' ile yeni ders ' . formattedDateTime($lesson->start_time) . ' icin planlandi.'
+                        : 'A new lesson with ' . ($student?->first_name ?: __('a student')) . ' has been scheduled for ' . formattedDateTime($lesson->start_time) . '.');
 
                 $this->fcmPushService->sendToToken($device, $title, $body, [
-                    'type' => 'lesson_booked_instructor',
+                    'type' => $isTrial ? 'trial_lesson_booked_instructor' : 'lesson_booked_instructor',
                     'lesson_id' => $lesson->id,
                 ]);
             }

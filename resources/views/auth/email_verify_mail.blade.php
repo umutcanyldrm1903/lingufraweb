@@ -293,6 +293,10 @@
 </head>
 
 <body>
+    @php
+        $verificationToken = trim((string) ($from_user->verification_token ?? ''));
+        $verificationUrl = $verificationToken !== '' ? route('user-verification', ['token' => $verificationToken]) : url('/login');
+    @endphp
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
         <tr>
             <td>&nbsp;</td>
@@ -318,7 +322,7 @@
                                                     cellspacing="0">
                                                     <tbody>
                                                         <tr>
-                                                            <td> <a href="{{ route('user-verification', $from_user->verification_token) }}"
+                                                            <td> <a href="{{ $verificationUrl }}"
                                                                     target="_blank">{{ __('CONFIRM YOUR EMAIL') }}</a>
                                                             </td>
                                                         </tr>

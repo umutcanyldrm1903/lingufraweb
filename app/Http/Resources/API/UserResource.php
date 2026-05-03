@@ -15,6 +15,9 @@ class UserResource extends JsonResource {
      */
     public function toArray(Request $request): array {
         $plan = null;
+        $trialLessonAvailable = false;
+        $trialLessonStatus = null;
+
         if (Schema::hasTable('user_plans')) {
             $planRow = DB::table('user_plans')
                 ->where('user_id', $this->id)
@@ -36,6 +39,17 @@ class UserResource extends JsonResource {
                     'assigned_instructor_name' => $assignedName ? (string) str($assignedName)->before(' ') : null,
                 ];
             }
+        }
+
+        if (($this->role ?? '') !== 'instructor' && Schema::hasTable('trial_lesson_requests')) {
+            $trialLessonStatus = DB::table('trial_lesson_requests')
+                ->where('user_id', $this->id)
+                ->orderByDesc('id')
+                ->value('status');
+
+            $hasUsedTrial = in_array((string) $trialLessonStatus, ['booked', 'completed', 'used'], true);
+            $hasCredits = $plan !== null && (int) ($plan['lessons_remaining'] ?? 0) > 0;
+            $trialLessonAvailable = !$hasCredits && !$hasUsedTrial;
         }
 
         $instructorProfile = is_array($this->instructor_profile) ? $this->instructor_profile : [];
@@ -70,6 +84,8 @@ class UserResource extends JsonResource {
             'instructor_profile' => $instructorProfile,
             'intro_video_url' => $introVideoUrl,
             'plan'       => $plan,
+            'trial_lesson_available' => $trialLessonAvailable,
+            'trial_lesson_status' => $trialLessonStatus,
         ];
     }
 }

@@ -37,12 +37,17 @@ class MailSenderService {
                 // Registration verification is critical; send immediately for single user
                 // even if queue mode is enabled.
                 if ($user_type === 'single_user') {
+                    if ($user_info && $user_info->email_verified_at !== null) {
+                        return true;
+                    }
+
                     try {
                         $template = EmailTemplate::where('name', 'user_verification')->first();
                         if (!$template) {
                             Log::error('Email template not found', ['template' => 'user_verification']);
                             return false;
                         }
+                        $this->ensureVerificationToken($user_info);
                         $subject = $template->subject;
                         $message = str_replace('{{user_name}}', $user_info->name, $template->message);
                         Mail::to($user_info->email)->send(new UserRegistration($message, $subject, $user_info));
@@ -81,12 +86,17 @@ class MailSenderService {
                             }
                         }
                     } else {
+                        if ($user_info && $user_info->email_verified_at !== null) {
+                            return true;
+                        }
+
                         try {
                             $template = EmailTemplate::where('name', 'user_verification')->first();
                             if (!$template) {
                                 Log::error('Email template not found', ['template' => 'user_verification']);
                                 return false;
                             }
+                            $this->ensureVerificationToken($user_info);
                             $subject = $template->subject;
                             $message = $template->message;
                             $message = str_replace('{{user_name}}', $user_info->name, $message);
@@ -111,6 +121,19 @@ class MailSenderService {
         }
 
         return false;
+    }
+
+    private function ensureVerificationToken(?User $user): void {
+        if (!$user) {
+            return;
+        }
+
+        if (trim((string) ($user->verification_token ?? '')) !== '') {
+            return;
+        }
+
+        $user->verification_token = \Illuminate\Support\Str::random(100);
+        $user->save();
     }
 
     public function sendUserForgetPasswordFromTrait($from_user, $mail_template_path = 'auth') {

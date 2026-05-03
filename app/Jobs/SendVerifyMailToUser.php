@@ -59,10 +59,18 @@ class SendVerifyMailToUser implements ShouldQueue
             }
         } else {
             try {
+                if ($this->user_info && $this->user_info->email_verified_at !== null) {
+                    return;
+                }
+
                 $template = EmailTemplate::where('name', 'user_verification')->first();
                 if (!$template) {
                     Log::error('Email template not found', ['template' => 'user_verification']);
                     return;
+                }
+                if (trim((string) ($this->user_info->verification_token ?? '')) === '') {
+                    $this->user_info->verification_token = \Illuminate\Support\Str::random(100);
+                    $this->user_info->save();
                 }
                 $subject = $template->subject;
                 $message = $template->message;
