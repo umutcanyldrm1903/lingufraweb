@@ -51,8 +51,15 @@ return [
     ],
 
     'mobile_social_login' => [
-        'google_client_ids' => array_values(array_filter(array_map('trim', explode(',', (string) env('MOBILE_GOOGLE_CLIENT_IDS', ''))))),
-        'apple_client_ids' => array_values(array_filter(array_map('trim', explode(',', (string) env('MOBILE_APPLE_CLIENT_IDS', ''))))),
+        'google_client_ids' => array_values(array_filter(array_map('trim', explode(',', (string) env(
+            'MOBILE_GOOGLE_CLIENT_IDS',
+            '284981345033-ssp855uprkfrpetnn25ni3074m0ud7f3.apps.googleusercontent.com,284981345033-uhh8ltpjg2cldtg6iu7n1segitdho9j2.apps.googleusercontent.com'
+        ))))),
+        'apple_client_ids' => array_values(array_filter(array_map('trim', explode(',', (string) env(
+            'MOBILE_APPLE_CLIENT_IDS',
+            'com.lingufranca.app'
+        ))))),
+        'apple_jwks_json' => env('MOBILE_APPLE_JWKS_JSON'),
     ],
 
 ];

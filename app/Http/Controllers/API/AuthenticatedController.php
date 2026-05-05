@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Services\MailSenderService;
@@ -241,12 +242,7 @@ class AuthenticatedController extends Controller {
             throw new \RuntimeException('Apple login is not configured.');
         }
 
-        $keysResponse = Http::timeout(8)->get('https://appleid.apple.com/auth/keys');
-        if (!$keysResponse->ok()) {
-            throw new \RuntimeException('Apple login keys could not be loaded.');
-        }
-
-        $decoded = JWT::decode($idToken, JWK::parseKeySet($keysResponse->json()));
+        $decoded = JWT::decode($idToken, JWK::parseKeySet($this->appleJwkSet()));
         $payload = json_decode(json_encode($decoded), true) ?: [];
 
         if (($payload['iss'] ?? '') !== 'https://appleid.apple.com') {
@@ -271,6 +267,40 @@ class AuthenticatedController extends Controller {
             'email' => $email,
             'name' => $email !== '' ? Str::before($email, '@') : 'Apple User',
         ];
+    }
+
+    private function appleJwkSet(): array
+    {
+        $cacheKey = 'mobile_social_login.apple_jwks';
+        $cachedKeys = Cache::get($cacheKey);
+        if (is_array($cachedKeys) && !empty($cachedKeys['keys'])) {
+            return $cachedKeys;
+        }
+
+        try {
+            $keysResponse = Http::timeout(8)->get('https://appleid.apple.com/auth/keys');
+            if ($keysResponse->ok()) {
+                $keys = $keysResponse->json();
+                if (is_array($keys) && !empty($keys['keys'])) {
+                    Cache::put($cacheKey, $keys, now()->addHours(12));
+                    return $keys;
+                }
+            }
+        } catch (Throwable $e) {
+            Log::warning('Apple login keys request failed', [
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        $fallbackKeysJson = trim((string) config('services.mobile_social_login.apple_jwks_json', ''));
+        if ($fallbackKeysJson !== '') {
+            $fallbackKeys = json_decode($fallbackKeysJson, true);
+            if (is_array($fallbackKeys) && !empty($fallbackKeys['keys'])) {
+                return $fallbackKeys;
+            }
+        }
+
+        throw new \RuntimeException('Apple login keys could not be loaded.');
     }
 
     private function resolveSocialUser(string $provider, string $providerId, string $email, string $name): User

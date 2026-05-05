@@ -52,20 +52,20 @@ class AnalyticsEventController extends Controller
             } catch (\Throwable) {
                 $eventTime = $now;
             }
-            $segment = isset($properties['segment']) ? (string) $properties['segment'] : null;
-            $experiment = isset($properties['experiment']) ? (string) $properties['experiment'] : null;
+            $segment = $this->safeString($properties['segment'] ?? null, 40);
+            $experiment = $this->safeString($properties['experiment'] ?? null, 60);
 
             $insert[] = [
-                'user_id' => $userId,
+                'user_id' => $userId ? (int) $userId : null,
                 'source' => $source,
                 'name' => (string) ($event['name'] ?? ''),
-                'event_time' => $eventTime,
-                'segment' => $segment ? substr($segment, 0, 40) : null,
-                'experiment' => $experiment ? substr($experiment, 0, 60) : null,
+                'event_time' => $eventTime->toDateTimeString(),
+                'segment' => $segment,
+                'experiment' => $experiment,
                 'ip' => $request->ip(),
-                'properties' => $properties,
-                'created_at' => $now,
-                'updated_at' => $now,
+                'properties' => json_encode($properties, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: '{}',
+                'created_at' => $now->toDateTimeString(),
+                'updated_at' => $now->toDateTimeString(),
             ];
         }
 
@@ -226,6 +226,20 @@ class AnalyticsEventController extends Controller
             $clean[$safeKey] = substr((string) $value, 0, 240);
         }
         return $clean;
+    }
+
+    private function safeString(mixed $value, int $limit): ?string
+    {
+        if (!is_scalar($value)) {
+            return null;
+        }
+
+        $clean = trim((string) $value);
+        if ($clean === '') {
+            return null;
+        }
+
+        return substr($clean, 0, $limit);
     }
 
     private function ratio(int $numerator, int $denominator): float

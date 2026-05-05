@@ -828,20 +828,21 @@ if (!function_exists('adminSearchRouteList')) {
 if (!function_exists('set_wasabi_config')) {
     function set_wasabi_config() {
         $wasabi_setting = Cache::get('setting');
-        config(['filesystems.disks.wasabi.key' => $wasabi_setting?->wasabi_access_id]);
-        config(['filesystems.disks.wasabi.secret' => $wasabi_setting?->wasabi_secret_key]);
-        config(['filesystems.disks.wasabi.bucket' => $wasabi_setting?->wasabi_bucket]);
-        config(['filesystems.disks.wasabi.region' => $wasabi_setting?->wasabi_region]);
+        config(['filesystems.disks.wasabi.key' => data_get($wasabi_setting, 'wasabi_access_id')]);
+        config(['filesystems.disks.wasabi.secret' => data_get($wasabi_setting, 'wasabi_secret_key')]);
+        config(['filesystems.disks.wasabi.bucket' => data_get($wasabi_setting, 'wasabi_bucket')]);
+        config(['filesystems.disks.wasabi.region' => data_get($wasabi_setting, 'wasabi_region')]);
     }
 }
 if (!function_exists('set_aws_config')) {
     function set_aws_config() {
         $aws_setting = Cache::get('setting');
-        config(['filesystems.disks.aws.key' => $aws_setting?->aws_access_id]);
-        config(['filesystems.disks.aws.secret' => $aws_setting?->aws_secret_key]);
-        config(['filesystems.disks.aws.bucket' => $aws_setting?->aws_bucket]);
-        config(['filesystems.disks.aws.region' => $aws_setting?->aws_region]);
-        config(['filesystems.disks.aws.url' => "https://{$aws_setting?->aws_bucket}.s3.amazonaws.com/"]);
+        $awsBucket = data_get($aws_setting, 'aws_bucket');
+        config(['filesystems.disks.aws.key' => data_get($aws_setting, 'aws_access_id')]);
+        config(['filesystems.disks.aws.secret' => data_get($aws_setting, 'aws_secret_key')]);
+        config(['filesystems.disks.aws.bucket' => $awsBucket]);
+        config(['filesystems.disks.aws.region' => data_get($aws_setting, 'aws_region')]);
+        config(['filesystems.disks.aws.url' => $awsBucket ? "https://{$awsBucket}.s3.amazonaws.com/" : null]);
     }
 }
 if (!function_exists('generateUniqueSlug')) {

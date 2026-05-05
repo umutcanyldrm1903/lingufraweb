@@ -22,11 +22,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // php artisan schedule:run >> /dev/null 2>&1
-        // run queue jobs
-        $schedule->command('queue:work --tries=3 --stop-when-empty')
-            ->everyMinute()
-            ->withoutOverlapping();
-
+        // Do not run queue:work on shared hosting. Most shared hosts disable
+        // pcntl_* functions, which Laravel's daemon queue worker requires.
 
         $schedule->call(function () {
             Cache::forget('corn_working');
